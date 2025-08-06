@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getUser, updateUser, createUser } from "@/lib/db/users";
+import { getUser, updateUser } from "@/lib/db/users";
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
     const user = await getUser(params.id);
@@ -12,12 +12,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         const body = await req.json();
         const user = await getUser(params.id);
         if (!user) {
-            try {
-                await createUser(params.id, body);
-                return NextResponse.json({ message: "Profile created" }, { status: 201 });
-            } catch (createError: any) {
-                return NextResponse.json({ error: createError.message }, { status: 500 });
-            }
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
         } else {
             try {
                 await updateUser(params.id, body);
