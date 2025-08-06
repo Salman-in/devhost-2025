@@ -13,7 +13,7 @@ import { auth } from './config';
 export const signUp = async (email: string, password: string, displayName?: string): Promise<UserCredential> => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    
+
     if (displayName && userCredential.user) {
       await updateProfile(userCredential.user, {
         displayName: displayName
