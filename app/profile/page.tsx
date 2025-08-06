@@ -9,14 +9,14 @@ export default function ProfilePage() {
 
     useEffect(() => {
         if (!loading && !user) {
-            router.push('/login');
+            router.push('/signin');
         }
     }, [user, loading, router]);
 
     const handleLogout = async () => {
         try {
             await signOut();
-            router.push('/login');
+            router.push('/signin');
         } catch (error) {
             console.error('Error signing out:', error);
         }
