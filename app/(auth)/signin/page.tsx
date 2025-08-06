@@ -1,16 +1,44 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
     const router = useRouter();
-    const { signIn, signInWithGoogle } = useAuth();
+    const { signIn, signInWithGoogle, user } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [googleLoading, setGoogleLoading] = useState(false);
+    const [pendingGoogleCheck, setPendingGoogleCheck] = useState(false);
 
-    //chore: fix error types in both signup and login
+    useEffect(() => {
+        if (pendingGoogleCheck && user?.uid) {
+            // Now user is set, check existence and redirect
+            const checkUserExists = async () => {
+                try {
+                    const res = await fetch(`/api/users/${user.uid}/exists`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.exists) {
+                            router.push('/profile');
+                        } else {
+                            router.push('/complete-profile');
+                        }
+                    } else {
+                        router.push('/complete-profile');
+                    }
+                } catch (err: any) {
+                    setError(err.message);
+                } finally {
+                    setGoogleLoading(false);
+                    setPendingGoogleCheck(false);
+                }
+            };
+            checkUserExists();
+        }
+    }, [pendingGoogleCheck, user, router]);
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -24,11 +52,13 @@ export default function LoginPage() {
 
     const handleGoogleLogin = async () => {
         setError('');
+        setGoogleLoading(true);
         try {
             await signInWithGoogle();
-            router.push('/profile'); 
+            setPendingGoogleCheck(true); // Wait for user to update
         } catch (err: any) {
             setError(err.message);
+            setGoogleLoading(false);
         }
     };
 
