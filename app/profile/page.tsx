@@ -31,6 +31,7 @@ export default function ProfilePage() {
   const [saved, setSaved] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [error, setError] = useState('');
+  const [isFormLoading, setIsFormLoading] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -40,14 +41,24 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (profile) {
-      setForm({
-        name: profile.name || '',
-        email: profile.email || '',
-        phone: profile.phone || '',
-        college: profile.college || '',
-        year: profile.year || 1,
-        branch: profile.branch || ''
-      });
+      // Set form loading state
+      setIsFormLoading(true);
+
+      // Add delay before populating form
+      const timer = setTimeout(() => {
+        setForm({
+          name: profile.name || '',
+          email: profile.email || '',
+          phone: profile.phone || '',
+          college: profile.college || '',
+          year: profile.year || 1,
+          branch: profile.branch || ''
+        });
+        setIsFormLoading(false);
+      }, 1);
+
+      // Cleanup timer on component unmount or profile change
+      return () => clearTimeout(timer);
     }
   }, [profile]);
 
@@ -98,12 +109,14 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading || profileLoading) {
+  if (loading || profileLoading || isFormLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-600">
+            {loading || profileLoading ? 'Loading...' : 'Preparing form...'}
+          </p>
         </div>
       </div>
     );
@@ -147,10 +160,10 @@ export default function ProfilePage() {
                   id="email"
                   type="email"
                   value={form.email}
-onChange={(e) => {
-  setForm({ ...form, name: e.target.value });
-  setIsDirty(true);
-}}
+                  onChange={(e) => {
+                    setForm({ ...form, email: e.target.value });
+                    setIsDirty(true);
+                  }}
                   placeholder="Enter your email"
                   className="text-gray-900 placeholder:text-gray-500 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
@@ -165,10 +178,10 @@ onChange={(e) => {
                   id="phone"
                   type="tel"
                   value={form.phone}
-onChange={(e) => {
-  setForm({ ...form, name: e.target.value });
-  setIsDirty(true);
-}}
+                  onChange={(e) => {
+                    setForm({ ...form, phone: e.target.value });
+                    setIsDirty(true);
+                  }}
                   placeholder="Phone number"
                   className="text-gray-900 placeholder:text-gray-500 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
@@ -180,10 +193,10 @@ onChange={(e) => {
                   id="college"
                   type="text"
                   value={form.college}
-onChange={(e) => {
-  setForm({ ...form, name: e.target.value });
-  setIsDirty(true);
-}}
+                  onChange={(e) => {
+                    setForm({ ...form, college: e.target.value });
+                    setIsDirty(true);
+                  }}
                   placeholder="Your college name"
                   className="text-gray-900 placeholder:text-gray-500 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
@@ -198,10 +211,10 @@ onChange={(e) => {
                   id="branch"
                   type="text"
                   value={form.branch}
-onChange={(e) => {
-  setForm({ ...form, name: e.target.value });
-  setIsDirty(true);
-}}
+                  onChange={(e) => {
+                    setForm({ ...form, branch: e.target.value });
+                    setIsDirty(true);
+                  }}
                   placeholder="Branch"
                   className="text-gray-900 placeholder:text-gray-500 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
@@ -241,6 +254,7 @@ onChange={(e) => {
           </form>
         </div>
       </div>
+      <Button>Hackathon</Button>
     </div>
   );
 }

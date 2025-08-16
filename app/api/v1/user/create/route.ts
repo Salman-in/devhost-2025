@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
         createdAt: new Date().toISOString(),
         branch: '',
         college: '',
+        year: 1,
         team_id: ''
       });
     }
