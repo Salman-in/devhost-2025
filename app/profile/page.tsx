@@ -14,10 +14,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import Link from "next/link";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, loading, signOut, profile, profileLoading, setProfile } = useAuth();
+  const { user, loading, signOut, profile, profileLoading, setProfile, team, teamLoading, setTeam } = useAuth();
 
   const [form, setForm] = useState({
     name: '',
@@ -98,6 +99,12 @@ export default function ProfilePage() {
 
       if (res.ok) {
         const data = await res.json();
+
+        // If API indicates we should refresh token, force refresh to get updated claims
+        if (data.refreshToken) {
+          await user.getIdToken(true);
+        }
+
         setProfile(data.user);
         setSaved(true);
         setIsDirty(false);
@@ -255,8 +262,7 @@ export default function ProfilePage() {
           </form>
         </div>
       </div>
-      <Button>Hackathon</Button>
-      <Events/>
+      <Button asChild><Link href="/profile/hackathon">Hackathon</Link></Button>
     </div>
   );
 }

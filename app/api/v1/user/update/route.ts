@@ -1,4 +1,5 @@
 import { adminDb } from '@/firebase/admin';
+import { adminAuth } from '@/firebase/admin';
 import { verifyToken } from '@/lib/verify-token';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -23,9 +24,23 @@ export async function POST(req: NextRequest) {
       updatedAt: new Date().toISOString(),
     });
 
+    // Update Firebase Auth displayName and custom claims
+    await adminAuth.updateUser(uid, {
+      displayName: name,
+    });
+
+    // Set custom claims with updated user data to refresh token
+    await adminAuth.setCustomUserClaims(uid, {
+      name: name,
+      email: email,
+      phone: phone,
+      updatedAt: new Date().toISOString()
+    });
+
     return NextResponse.json({ 
       success: true, 
-      message: 'Profile updated successfully' 
+      message: 'Profile updated successfully',
+      refreshToken: true // Signal client to refresh token
     });
   } catch (err) {
     console.error('API error:', err);

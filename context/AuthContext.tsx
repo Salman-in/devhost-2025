@@ -12,6 +12,9 @@ interface AuthContextType {
     profile: any; //change this to proper type later
     profileLoading: boolean;
     setProfile: (profile: any) => void;
+    team: any; //change this to proper type later
+    teamLoading: boolean;
+    setTeam: (team: any) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -29,6 +32,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState(null);
     const [profileLoading, setProfileLoading] = useState(true);
+    const [team, setTeam] = useState(null);
+    const [teamLoading, setTeamLoading] = useState(true);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -66,6 +71,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 .then((data) => {
                     setProfile(data);
                     setProfileLoading(false);
+                    if (data.team_id !== "") {
+                        setTeamLoading(true);
+                        user.getIdToken().then((token) => {
+                            fetch(`/api/v1/team/get?team_id=${encodeURIComponent(data.team_id)}`, {
+                                headers: { Authorization: `Bearer ${token}` },
+                            })
+                                .then((res) => {
+                                    if (!res.ok) {
+                                        throw new Error(`Failed to fetch team: ${res.status}`);
+                                    }
+                                    return res.json();
+                                })
+                                .then((teamData) => {
+                                    setTeam(teamData);
+                                    setTeamLoading(false);
+                                })
+                                .catch((error) => {
+                                    console.error('Error fetching team:', error);
+                                    setTeam(null);
+                                    setTeamLoading(false);
+                                });
+                        });
+                    } else {
+                        setTeam(null);
+                        setTeamLoading(false);
+                    }
                 })
                 .catch((error) => {
                     console.error('Error fetching profile:', error);
@@ -99,6 +130,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         profile,
         profileLoading,
         setProfile,
+        team,
+        teamLoading,
+        setTeam
     };
 
     return (
