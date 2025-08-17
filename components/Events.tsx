@@ -1,8 +1,9 @@
 import Image from "next/image";
-import React from "react";
+import React,{useState} from "react";
+import EventCardGrid from "./EventCard";
+import EventModal from "./EventModal";
 
-export default function Events() {
-  interface CardData {
+export interface CardData {
     id: number;
     title: string;
     date: string;
@@ -11,8 +12,8 @@ export default function Events() {
     description: string;
     organizer: string;
     imageSrc: string;
+    amount: number;
   }
-
   const cardData: CardData[] = [
     {
       id: 1,
@@ -24,6 +25,7 @@ export default function Events() {
       date: "8th Nov",
       time: "9:00am - 10:45pm",
       imageSrc: "/events/CSS_Action.png",
+      amount: 0,
     },
     {
       id: 2,
@@ -35,6 +37,7 @@ export default function Events() {
       date: "8th Nov",
       time: "9:00am - 11:00am",
       imageSrc: "/events/CodeForge.png",
+      amount: 0,
     },
     {
       id: 3,
@@ -46,6 +49,7 @@ export default function Events() {
       date: "8th Nov",
       time: "10:30am - 12:00pm",
       imageSrc: "/events/ctf.jpg",
+      amount: 0,
     },
     // {
     //   id: 4,
@@ -57,6 +61,7 @@ export default function Events() {
     //   date: "8th Nov",
     //   time: "12:00pm - 1:30pm",
     //   imageSrc: "/events/SightlessSyntax.png",
+    //   amount: 0,
     // },
     {
       id: 5,
@@ -68,6 +73,7 @@ export default function Events() {
       date: "8th Nov",
       time: "10:30am - 1:30pm",
       imageSrc: "/events/PitchX.png",
+      amount: 0,
     },
     {
       id: 6,
@@ -79,6 +85,7 @@ export default function Events() {
       date: "8th Nov",
       time: "2:00pm - 4:00pm",
       imageSrc: "/events/BGMI.png",
+      amount: 0,
     },
     {
       id: 7,
@@ -90,6 +97,7 @@ export default function Events() {
       date: "All Three Days",
       time: "",
       imageSrc: "/events/Speedcuber.png",
+      amount: 0,
     },
     {
       id: 8,
@@ -101,6 +109,7 @@ export default function Events() {
       date: "All three days",
       time: "",
       imageSrc: "/events/BlazzingFingers.jpg",
+      amount: 0,
     },
     {
       id: 9,
@@ -112,79 +121,31 @@ export default function Events() {
       date: "7th Nov",
       time: "11:00am onwards",
       imageSrc: "/events/surge.jpg",
+      amount: 0,
     },
   ];
 
   const devHostEvents = cardData.filter((card) => card.id <= 9);
 
-  const EventSection = ({
-    title,
-    events,
-  }: {
-    title: string;
-    events: CardData[];
-  }) => (
-    <div>
-      <h2 className="select-none text-center text-3xl md:text-4xl font-semibold md:pb-16 pb-10">
-        {title}
-      </h2>
-      <div
-        className={`grid md:grid-cols-2 max-w-6xl mx-auto gap-12 grid-cols-1`}
-      >
-        {events.map((card) => (
-          <div
-            key={card.id}
-            className="relative flex flex-col transition-shadow duration-300 hover:shadow-[0_0_5px_2px_rgba(180,255,57,0.4)] rounded-xl h-full"
-          >
-            <div className="event_card border-white/10 border rounded-xl p-6 bg-background h-full">
-              <a href="/events">
-                <div className="flex flex-col h-full">
-                  <div className="relative w-full h-0 pb-[52.25%] mb-4">
-                    <Image
-                      src={card.imageSrc}
-                      alt={card.title}
-                      fill
-                      className="rounded-xl object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  </div>
-                  <h2 className="leading-6 mb-1 font-semibold text-xl tracking-wider text-white">
-                    {card.title}
-                  </h2>
-                  <p className="block mb-2 font-semibold leading-none text-white/80 pt-2">
-                    {card.date}
-                  </p>
-                  <time className="block mb-2 font-normal leading-none text-white/60">
-                    {card.time}
-                  </time>
-                  <h3 className="leading-6 mb-1 pt-2 font-semibold text-base text-primary tracking-wider">
-                    {card.caption}
-                  </h3>
-                  <p className="text-sm tracking-wider py-2 flex-grow">
-                    {card.description}
-                  </p>
-                  <div className="mt-auto">
-                    <p className="block font-semibold leading-none text-white mt-2 text-sm">
-                      Organizer:
-                    </p>
-                    <p className="block font-normal leading-none text-white/90 mt-1 text-sm">
-                      {card.organizer}
-                    </p>
-                  </div>
-                </div>
-              </a>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  export default function Events(){
+  const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
 
   return (
     <div className="flex justify-center pb-10 items-center w-full">
       <div className="max-w-6xl mb-20 w-full">
-        <EventSection title="DevHost Events" events={devHostEvents} />
+        <h2 className="select-none text-center text-3xl md:text-4xl font-semibold md:pb-16 pb-10">
+          DevHost Events
+        </h2>
+        <EventCardGrid
+          cards={devHostEvents}
+          onCardClick={(id: number) => {
+            const card = devHostEvents.find(card => card.id === id) || null;
+            setSelectedCard(card);
+          }}/>
       </div>
+      {selectedCard && (
+        <EventModal card={selectedCard} onClose={() => setSelectedCard(null)} />
+      )}
     </div>
   );
-}
+  }

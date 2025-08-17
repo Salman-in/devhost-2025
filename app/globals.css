@@ -120,3 +120,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes modalOpen {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.animate-modal-open {
+  animation: modalOpen 0.2s cubic-bezier(0.4,0,0.2,1);
+}

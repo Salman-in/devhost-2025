@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import Events from '@/components/Events';
 import {
   Select,
   SelectContent,
@@ -255,6 +256,7 @@ export default function ProfilePage() {
         </div>
       </div>
       <Button>Hackathon</Button>
+      <Events/>
     </div>
   );
 }
