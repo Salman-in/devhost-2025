@@ -14,15 +14,18 @@ export async function POST(req: NextRequest) {
     const { team_id } = searchData;
 
     const teamRef = adminDb.collection('teams').doc(team_id);
-    await teamRef.update({
-      peers: FieldValue.arrayRemove({ id: uid, name: name })
-    });
+    const teamSnap = await teamRef.get();
 
-    const userRef = adminDb.collection('users').doc(uid);
-    await userRef.update({
-      team_id: '',
-      updatedAt: new Date().toISOString(),
-    });
+    if (teamSnap.exists && !teamSnap.data()?.finalized) {
+      await teamRef.update({
+        peers: FieldValue.arrayRemove({ id: uid, name: name })
+      });
+      const userRef = adminDb.collection('users').doc(uid);
+      await userRef.update({
+        team_id: '',
+        updatedAt: new Date().toISOString(),
+      });
+    }
 
     return NextResponse.json({ 
       success: true, 

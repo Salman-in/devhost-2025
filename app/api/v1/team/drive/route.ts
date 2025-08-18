@@ -10,28 +10,17 @@ export async function POST(req: NextRequest) {
     const { uid, name } = decoded;
 
     const searchData = await req.json();
-    const { team_id } = searchData;
+    const { drive_link } = searchData;
 
-    const teamRef = adminDb.collection('teams').doc(team_id);
-    const teamSnap = await teamRef.get();
-
-    if (teamSnap.exists && !teamSnap.data()?.finalized) {
-      await teamRef.update({
-        peers: [{ id: uid, name: name }],
-        updatedAt: new Date().toISOString(),
-      });
-
-      const userRef = adminDb.collection('users').doc(uid);
-
-      await userRef.update({
-        team_id: team_id,
-        updatedAt: new Date().toISOString(),
-      });
-    }
+    const teamRef = adminDb.collection('teams').doc(uid);
+    await teamRef.update({
+      drive_link: drive_link,
+      updatedAt: new Date().toISOString(),
+    });
 
     return NextResponse.json({ 
       success: true, 
-      message: `${uid} joined team ${team_id} successfully`
+      message: `Drive link updated for team ${uid} successfully`
     });
   } catch (err) {
     console.error('API error:', err);

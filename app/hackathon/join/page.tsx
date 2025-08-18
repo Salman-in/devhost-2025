@@ -47,19 +47,24 @@ export default function HackathonJoinTeam() {
             if (res.ok) {
                 setJoined(true);
                 setIsDirty(false);
+            } else {
+                const errorData = await res.json();
+                setError('Invalid or non-existent team ID. Please check and try again.');
             }
         } catch (error) {
             console.error('Error joining team:', error);
+            setError('An error occurred while joining the team.');
         } finally {
             setIsJoining(false);
             setTimeout(() => setJoined(false), 2000);
+            router.push('/hackathon/dashboard');
         }
     };
 
     useEffect(() => {
         if (join) {
             const timer = setTimeout(() => {
-                router.push('/profile/hackathon');
+                router.push('/hackathon/dashboard');
             }, 1000);
             return () => clearTimeout(timer);
         }

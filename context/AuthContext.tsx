@@ -15,6 +15,7 @@ interface AuthContextType {
     team: any; //change this to proper type later
     teamLoading: boolean;
     setTeam: (team: any) => void;
+    refreshProfileAndTeam: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -30,9 +31,9 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
-    const [profile, setProfile] = useState(null);
+    const [profile, setProfile] = useState<any>(null);
     const [profileLoading, setProfileLoading] = useState(true);
-    const [team, setTeam] = useState(null);
+    const [team, setTeam] = useState<any>(null);
     const [teamLoading, setTeamLoading] = useState(true);
 
     useEffect(() => {
@@ -44,82 +45,75 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return unsubscribe;
     }, []);
 
-    //to cache the user profile data (fetches the data only once from the db when user is authenticated)
-    useEffect(() => {
-        if (user) {
-            setProfileLoading(true);
-            user.getIdToken().then((token) => {
-                fetch('/api/v1/user/create', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json', 
-                        Authorization: `Bearer ${token}` 
-                    },
-                })
-                .then(() => {
-                    // Then fetch the profile (user definitely exists now)
-                    return fetch('/api/v1/user/profile', {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
-                })
-                .then((res) => {
-                    if (!res.ok) {
-                        throw new Error(`Failed to fetch profile: ${res.status}`);
-                    }
-                    return res.json();
-                })
-                .then((data) => {
-                    setProfile(data);
-                    setProfileLoading(false);
-                    if (data.team_id !== "") {
-                        setTeamLoading(true);
-                        user.getIdToken().then((token) => {
-                            fetch(`/api/v1/team/get?team_id=${encodeURIComponent(data.team_id)}`, {
-                                headers: { Authorization: `Bearer ${token}` },
-                            })
-                                .then((res) => {
-                                    if (!res.ok) {
-                                        throw new Error(`Failed to fetch team: ${res.status}`);
-                                    }
-                                    return res.json();
-                                })
-                                .then((teamData) => {
-                                    setTeam(teamData);
-                                    setTeamLoading(false);
-                                })
-                                .catch((error) => {
-                                    console.error('Error fetching team:', error);
-                                    setTeam(null);
-                                    setTeamLoading(false);
-                                });
-                        });
-                    } else {
-                        setTeam(null);
-                        setTeamLoading(false);
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching profile:', error);
-                    setProfile(null);
-                    setProfileLoading(false);
-                });
-            });
-        } else {
+    // Helper function to refresh profile and team data (caching logic consolidated instead of .then chaining)
+    const refreshProfileAndTeam = async () => {
+        if (!user) {
             setProfile(null);
             setProfileLoading(false);
+            setTeam(null);
+            setTeamLoading(false);
+            return;
         }
+
+        setProfileLoading(true);
+        try {
+            const token = await user.getIdToken();
+
+            // Ensure user exists in DB
+            await fetch('/api/v1/user/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            // Fetch profile
+            const profileRes = await fetch('/api/v1/user/profile', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!profileRes.ok) throw new Error(`Failed to fetch profile: ${profileRes.status}`);
+            const profileData = await profileRes.json();
+            setProfile(profileData);
+
+            // Fetch team if exists
+            if (profileData.team_id) {
+                setTeamLoading(true);
+                const teamRes = await fetch(`/api/v1/team/get?team_id=${encodeURIComponent(profileData.team_id)}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (!teamRes.ok) throw new Error(`Failed to fetch team: ${teamRes.status}`);
+                const teamData = await teamRes.json();
+                setTeam(teamData);
+            } else {
+                setTeam(null);
+            }
+        } catch (err) {
+            console.error('Error fetching profile/team:', err);
+            setProfile(null);
+            setTeam(null);
+        } finally {
+            setProfileLoading(false);
+            setTeamLoading(false);
+        }
+    };
+
+    // Run once when user changes
+    useEffect(() => {
+        refreshProfileAndTeam();
     }, [user]);
-
-
+    
     const signInWithGoogle = async () => {
         const { signInWithGoogle: firebaseSignInWithGoogle } = await import('@/firebase/auth');
         await firebaseSignInWithGoogle();
-        // Profile creation and fetching will be handled by the useEffect above
+        // refreshProfileAndTeam will run automatically via useEffect
     };
 
     const signOut = async () => {
         const { signOut: firebaseSignOut } = await import('@/firebase/auth');
         await firebaseSignOut();
+        setProfile(null);
+        setTeam(null);
     };
 
     const value: AuthContextType = {
@@ -132,7 +126,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setProfile,
         team,
         teamLoading,
-        setTeam
+        setTeam,
+        refreshProfileAndTeam,
     };
 
     return (

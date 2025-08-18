@@ -22,6 +22,8 @@ export async function POST(req: NextRequest) {
                 team_leader: name,
                 peers: [],
                 drive_link: '',
+                finalized: false,
+                shortlisted: false,
                 createdAt: new Date().toISOString(),
             });
         }

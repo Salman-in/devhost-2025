@@ -262,8 +262,7 @@ export default function ProfilePage() {
           </form>
         </div>
       </div>
-      <Button asChild><Link href="/profile/hackathon">Hackathon</Link></Button>
-      <Events/>
+      <Button asChild>{profile?.team_id === "" ? <Link href="/hackathon">Hackathon</Link> : <Link href="/hackathon/dashboard">Hackathon</Link>}</Button>
     </div>
   );
 }

@@ -1,0 +1,20 @@
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+
+export default function HackathonPage() {
+    return (
+        <div className="flex flex-col items-center justify-center bg-white h-screen text-black gap-5">
+            <div>
+                <h1>About Page</h1>
+                <p>This is the about page for the hackathon.</p>
+            </div>
+            <div className="mb-6 bg-white rounded-lg shadow p-8">
+                <Button className="bg-black hover:bg-black/70 text-white m-5" asChild><Link href="/hackathon/join">Join a Team</Link></Button>
+                <Button className="bg-black hover:bg-black/70 text-white m-5" asChild><Link href="/hackathon/create">Create a Team</Link></Button>
+            </div>
+            <div>
+                <p>Already in a team? <Link className="text-blue-500 hover:underline" href="/hackathon/dashboard">Go to Dashboard</Link></p>
+            </div>
+        </div>
+    );
+}
