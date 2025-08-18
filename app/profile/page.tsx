@@ -263,6 +263,7 @@ export default function ProfilePage() {
         </div>
       </div>
       <Button asChild><Link href="/profile/hackathon">Hackathon</Link></Button>
+      <Events/>
     </div>
   );
 }
