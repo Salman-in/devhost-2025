@@ -12,12 +12,7 @@ export default function EventModal({ card, onClose }: Props) {
   const router = useRouter();
 
   const handleRegister = () => {
-    // Redirect to payment page with event details
-    router.push(
-      `/payment?amount=${card.amount}&title=${encodeURIComponent(
-        card.title
-      )}&organizer=${encodeURIComponent(card.organizer)}`
-    );
+    router.push(`/events/${card.id}/register`);
   };
 
   return (

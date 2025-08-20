@@ -263,6 +263,7 @@ export default function ProfilePage() {
         </div>
       </div>
       <Button asChild>{profile?.team_id === "" ? <Link href="/hackathon">Hackathon</Link> : <Link href="/hackathon/dashboard">Hackathon</Link>}</Button>
+      <Events/>
     </div>
   );
 }

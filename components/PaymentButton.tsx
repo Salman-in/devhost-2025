@@ -1,4 +1,5 @@
 "use client";
+
 import Script from "next/script";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
@@ -7,12 +8,16 @@ interface PaymentButtonProps {
   amount: number;
   eventTitle: string;
   organizer: string;
+  eventId: string | number;
+  userEmail: string;
 }
 
 export default function PaymentButton({
-  amount = 10000,
+  amount,
   eventTitle,
   organizer,
+  eventId,
+  userEmail,
 }: PaymentButtonProps) {
   const startPayment = async () => {
     try {
@@ -24,50 +29,57 @@ export default function PaymentButton({
       });
 
       const order = await createRes.json();
-      if (!order || order.error){
-      console.error("Order creation error details:", order);
-      const errorMsg = typeof order.error === "string" ? order.error : JSON.stringify(order.error);
-      alert("Order creation failed: " + errorMsg);
-      return;
+      if (!order || order.error) {
+        alert("Order creation failed: " + (order.error || "Unknown error"));
+        return;
       }
+
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!, // Razorpay Key from env
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
         amount: order.amount,
         currency: order.currency,
-        name: eventTitle, // Use event title as name
-        description: `Registration for ${eventTitle}`, // Description with event info
-        order_id: order.orderId || order.id,
+        name: eventTitle,
+        description: `Registration for ${eventTitle}`,
+        order_id: order.id,
         handler: async function (response: any) {
           // Verify payment on server
           const verifyRes = await fetch("/api/verify-payment", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(response),
+            body: JSON.stringify({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              event_id: String(eventId).trim(),
+              user_email: userEmail.trim().toLowerCase(),
+            }),
           });
 
           const verify = await verifyRes.json();
           if (verify.ok) {
-            // Save payment info to Firestore with event details
+            // Optionally also save payment info separately in Firestore
             await setDoc(doc(db, "payments", response.razorpay_payment_id), {
               orderId: response.razorpay_order_id,
               paymentId: response.razorpay_payment_id,
-              status: "paid",
+              status: "Paid",
               amount: order.amount,
               eventTitle,
               organizer,
+              userEmail,
               createdAt: new Date().toISOString(),
             });
-            alert(
-              `Payment verified and saved for "${eventTitle}". Payment ID: ${response.razorpay_payment_id}`
-            );
+
+            alert(`Payment successful for "${eventTitle}". Payment ID: ${response.razorpay_payment_id}`);
+            // Redirect to dashboard or elsewhere after success
+            window.location.href = "/events/dashboard";
           } else {
-            alert("Verification failed: " + (verify.error || "unknown"));
+            alert("Payment verification failed: " + (verify.error || "unknown"));
           }
         },
         prefill: {
-          name: "Test User",
-          email: "test@example.com",
-          contact: "9999999999",
+          name: "Your Name",
+          email: userEmail,
+          contact: "",
         },
         theme: { color: "#3399cc" },
       };
