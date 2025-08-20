@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
+import { adminDb } from "@/firebase/admin";
 import admin from "@/firebase/admin";
 import { getFirestore } from "firebase-admin/firestore";
 
 export async function POST(req: Request) {
   try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, amount } = await req.json();
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, event_id, user_email } = await req.json();
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
@@ -13,13 +15,27 @@ export async function POST(req: Request) {
 
     
     const generated_signature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+      .createHmac("sha256",process.env.RAZORPAY_KEY_SECRET! )
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
     if (generated_signature !== razorpay_signature) {
+    if (generated_signature !== razorpay_signature) {
       return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
     }
+
+    // ✅ Verified → store in Firestore
+    await adminDb.collection("payments").doc(razorpay_payment_id).set({
+      orderId: razorpay_order_id,
+      paymentId: razorpay_payment_id,
+      status: "paid",
+      amount: amount || null,
+      createdAt: new Date().toISOString(),
+    });
+
+    return NextResponse.json({ ok: true });
+  } catch (err: any) {
+    console.error("Verify-payment error:", err);
 
     // Normalize email to lowercase
     const normalizedEmail = user_email.trim().toLowerCase();

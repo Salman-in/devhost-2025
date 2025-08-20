@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
         const decoded = await verifyToken(req);
         if (!decoded) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
 
-        const { uid, name } = decoded;
+        const { uid, name, email } = decoded;
 
         const teamData = await req.json();
         const { team_name } = teamData;
@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
                 team_id: uid,
                 team_name: team_name,
                 team_leader: name,
+                team_leader_email: email,
                 peers: [],
                 drive_link: '',
                 finalized: false,

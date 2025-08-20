@@ -31,7 +31,9 @@ export default function HackathonDashboardPage() {
         isDirty: false,
         error: '',
         isUpdating: false,
-        updated: false
+        updated: false,
+        isValidating: false,
+        validationResult: null as { accessible: boolean; message: string; status: number } | null
     });
     const [form, setForm] = useState<{
         team_id: string;
@@ -48,6 +50,44 @@ export default function HackathonDashboardPage() {
         drive_link: '',
         finalized: false,
     });
+
+    const validateDriveLink = async (driveLink: string) => {
+        setDriveLinkState(prev => ({ ...prev, isValidating: true, validationResult: null, error: '' }));
+
+        try {
+            const response = await fetch('/api/v1/team/checkdrivelink', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ driveLink }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                setDriveLinkState(prev => ({ 
+                    ...prev, 
+                    validationResult: result,
+                    error: result.accessible ? '' : result.message
+                }));
+                return result;
+            } else {
+                setDriveLinkState(prev => ({ 
+                    ...prev, 
+                    error: result.error || 'Failed to validate drive link'
+                }));
+                return null;
+            }
+        } catch (error) {
+            console.error('Drive link validation error:', error);
+            const errorMessage = 'Failed to validate drive link. Please check your connection.';
+            setDriveLinkState(prev => ({ ...prev, error: errorMessage }));
+            return null;
+        } finally {
+            setDriveLinkState(prev => ({ ...prev, isValidating: false }));
+        }
+    };
 
     const handleDriveLinkChange = async (drive_link: string) => {
         if (!user) return;
@@ -301,6 +341,7 @@ export default function HackathonDashboardPage() {
             const timer = setTimeout(() => {
                 setSuccessStates(prev => ({ ...prev, left: false }));
                 setLeaveTimer(null);
+                window.location.reload();
                 router.push('/hackathon/dashboard');
             }, 2000);
 
@@ -320,11 +361,18 @@ export default function HackathonDashboardPage() {
     const renderDriveLinkModal = () => {
         if (!driveLinkState.showModal) return null;
 
-        const handleSubmit = (e: React.FormEvent) => {
+        const handleValidateAndSubmit = async (e: React.FormEvent) => {
             e.preventDefault();
-            if (driveLinkState.link.trim()) {
+            if (!driveLinkState.link.trim()) return;
+
+            // First validate the drive link
+            const validationResult = await validateDriveLink(driveLinkState.link);
+            
+            if (validationResult && validationResult.accessible) {
+                // If accessible, proceed to save
                 handleDriveLinkChange(driveLinkState.link);
             }
+            // If not accessible, error message is already set by validateDriveLink
         };
         
         return (
@@ -332,7 +380,7 @@ export default function HackathonDashboardPage() {
                 <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
                     <h2 className="text-xl font-bold text-gray-800 mb-4">Add Drive Link</h2>
                     
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleValidateAndSubmit}>
                         <div className="mb-4">
                             <Label htmlFor="drive_link" className="mb-2">Google Drive Link</Label>
                             <Input
@@ -343,7 +391,9 @@ export default function HackathonDashboardPage() {
                                     setDriveLinkState(prev => ({ 
                                         ...prev, 
                                         link: e.target.value, 
-                                        isDirty: true 
+                                        isDirty: true,
+                                        validationResult: null,
+                                        error: ''
                                     }));
                                 }}
                                 placeholder="https://drive.google.com/drive/folders/..."
@@ -351,6 +401,27 @@ export default function HackathonDashboardPage() {
                                 required
                             />
                         </div>
+
+                        {/* Validation Result */}
+                        {driveLinkState.validationResult && (
+                            <div className={`mb-4 p-3 rounded-md ${
+                                driveLinkState.validationResult.accessible 
+                                    ? 'bg-green-50 border border-green-200' 
+                                    : 'bg-red-50 border border-red-200'
+                            }`}>
+                                <p className={`text-sm ${
+                                    driveLinkState.validationResult.accessible 
+                                        ? 'text-green-700' 
+                                        : 'text-red-700'
+                                }`}>
+                                    {driveLinkState.validationResult.accessible ? '✓ ' : '✗ '}
+                                    {driveLinkState.validationResult.message}
+                                </p>
+                                <p className="text-xs text-gray-600 mt-1">
+                                    HTTP Status: {driveLinkState.validationResult.status}
+                                </p>
+                            </div>
+                        )}
                         
                         <div className="mb-6">
                             <p className="text-sm text-gray-600">
@@ -358,7 +429,9 @@ export default function HackathonDashboardPage() {
                             </p>
                         </div>
                         
-                        {driveLinkState.error && <p className="text-red-500 text-sm mb-4">{driveLinkState.error}</p>}
+                        {driveLinkState.error && !driveLinkState.validationResult && (
+                            <p className="text-red-500 text-sm mb-4">{driveLinkState.error}</p>
+                        )}
                         
                         <div className="flex gap-3">
                             <Button 
@@ -369,7 +442,8 @@ export default function HackathonDashboardPage() {
                                         showModal: false,
                                         link: '',
                                         isDirty: false,
-                                        error: ''
+                                        error: '',
+                                        validationResult: null
                                     }));
                                 }}
                                 className="flex-1 px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors"
@@ -379,9 +453,16 @@ export default function HackathonDashboardPage() {
                             <Button 
                                 type="submit"
                                 className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 transition-colors disabled:opacity-50"
-                                disabled={driveLinkState.isUpdating || driveLinkState.updated || !driveLinkState.isDirty}
+                                disabled={
+                                    driveLinkState.isUpdating || 
+                                    driveLinkState.updated || 
+                                    !driveLinkState.isDirty ||
+                                    driveLinkState.isValidating
+                                }
                             >
-                                {driveLinkState.isUpdating ? 'Saving...' : driveLinkState.updated ? 'Saved!' : 'Save Link'}
+                                {driveLinkState.isValidating ? 'Validating...' : 
+                                 driveLinkState.isUpdating ? 'Saving...' : 
+                                 driveLinkState.updated ? 'Saved!' : 'Save Link'}
                             </Button>
                         </div>
                     </form>
@@ -391,9 +472,9 @@ export default function HackathonDashboardPage() {
     };
 
     const displayTeamLeader = () => {
-        const joinLink = `${form.team_id}`;
+        const joinLink = `${profile?.email || ''}`;
         
-        const copyJoinLink = () => {
+        const copyTeamLeaderEmail = () => {
             navigator.clipboard.writeText(joinLink);
             setCopied(true);
             // Reset the copied state after 2 seconds
@@ -416,18 +497,18 @@ export default function HackathonDashboardPage() {
                     </div>
                 </div>
 
-                {/* Copy Join Link - Only show if not finalized */}
+                {/* Copy Team Leader Email - Only show if not finalized */}
                 {!form.finalized && (
                     <div className="mb-4">
                         <button 
-                            onClick={copyJoinLink}
+                            onClick={copyTeamLeaderEmail}
                             className={`w-full px-4 py-2 rounded-lg transition-colors ${
                                 copied 
                                     ? 'bg-green-500 hover:bg-green-600' 
                                     : 'bg-blue-500 hover:bg-blue-600'
                             } text-white`}
                         >
-                            {copied ? 'Copied!' : 'Copy Team ID'}
+                            {copied ? 'Copied!' : 'Copy Team Leader Email'}
                         </button>
                     </div>
                 )}
@@ -521,7 +602,7 @@ export default function HackathonDashboardPage() {
 
                 {/* Team Info */}
                 <div className="mt-4 text-xs text-gray-500 text-center">
-                    Team ID: {form.team_id}
+                    Team Leader Email: {profile?.email || 'Not available'}
                 </div>
                 
                 {/* Drive Link Modal - Only show if not finalized */}

@@ -37,7 +37,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/signin');
+      router.replace('/signin');
     }
   }, [user, loading, router]);
 
@@ -67,7 +67,7 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     try {
       await signOut();
-      router.push('/signin');
+      router.replace('/signin');
     } catch (error) {
       console.error('Error signing out:', error);
     }

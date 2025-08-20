@@ -10,10 +10,14 @@ export async function POST(req: NextRequest) {
     const { uid, name } = decoded;
 
     const teamRef = adminDb.collection('teams').doc(uid);
-    await teamRef.update({
-      finalized: true,
-      updatedAt: new Date().toISOString(),
-    });
+    const teamSnap = await teamRef.get();
+    const teamData = teamSnap.data();
+    if (teamSnap.exists && teamData?.peers >= 3 && teamData?.peers <= 4 && teamData?.drive_link !== "") {
+      await teamRef.update({
+        finalized: true,
+        updatedAt: new Date().toISOString(),
+      });
+    }
 
     return NextResponse.json({ 
       success: true, 

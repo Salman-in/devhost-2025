@@ -12,6 +12,7 @@ interface PaymentButtonProps {
   userEmail: string;
 }
 
+export default function PaymentButton({ amount = 100 }: { amount?: number }) {
 export default function PaymentButton({
   amount,
   eventTitle,
@@ -34,6 +35,23 @@ export default function PaymentButton({
         return;
       }
 
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+      amount: order.amount,
+      currency: order.currency,
+      name: "Hackathon Project",
+      description: "Ticket",
+      order_id: order.id,
+      handler: async function (response: any) {
+        // Verify on server
+        const verifyRes = await fetch("/api/verify-payment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...response,
+            amount: order.amount, // send amount too
+          }),
+        });
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
         amount: order.amount,
@@ -55,6 +73,20 @@ export default function PaymentButton({
             }),
           });
 
+        const verify = await verifyRes.json();
+        if (verify.ok) {
+          alert("Payment verified and stored in Firestore. Payment ID: " + response.razorpay_payment_id);
+        } else {
+          alert("Verification failed: " + (verify.error || "unknown"));
+        }
+      },
+      prefill: {
+        name: "Test User",
+        email: "test@example.com",
+        contact: "9999999999",
+      },
+      theme: { color: "#3399cc" },
+    };
           const verify = await verifyRes.json();
           if (verify.ok) {
             // Optionally also save payment info separately in Firestore

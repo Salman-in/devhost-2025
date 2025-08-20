@@ -9,9 +9,9 @@ import {useRouter} from "next/navigation";
 
 export default function HackathonJoinTeam() {
     const router = useRouter();
-    const { user, loading, signOut, profile, profileLoading, setProfile, team, teamLoading, setTeam } = useAuth();
+    const { user } = useAuth();
     const [form, setForm] = useState({
-        team_id: '',
+        leader_email: '',
     });
 
     const [isJoining, setIsJoining] = useState(false);
@@ -23,7 +23,7 @@ export default function HackathonJoinTeam() {
         e.preventDefault();
         if (!user) return;
 
-        if (!form.team_id) {
+        if (!form.leader_email) {
             setError('All fields are required.');
             return;
         }
@@ -48,8 +48,7 @@ export default function HackathonJoinTeam() {
                 setJoined(true);
                 setIsDirty(false);
             } else {
-                const errorData = await res.json();
-                setError('Invalid or non-existent team ID. Please check and try again.');
+                setError('Team leader not found or team is already finalized. Please check the email and try again.');
             }
         } catch (error) {
             console.error('Error joining team:', error);
@@ -57,14 +56,14 @@ export default function HackathonJoinTeam() {
         } finally {
             setIsJoining(false);
             setTimeout(() => setJoined(false), 2000);
-            router.push('/hackathon/dashboard');
+            router.replace('/hackathon/dashboard');
         }
     };
 
     useEffect(() => {
         if (join) {
             const timer = setTimeout(() => {
-                router.push('/hackathon/dashboard');
+                router.replace('/hackathon/dashboard');
             }, 1000);
             return () => clearTimeout(timer);
         }
@@ -76,17 +75,17 @@ export default function HackathonJoinTeam() {
                 <form className="flex flex-col justify-center items-center space-y-6 text-gray-900" onSubmit={handleSubmit}>
                     <div className="gap-6">
                         <div>
-                            <Label htmlFor="team_id" className="mb-2">Team ID</Label>
+                            <Label htmlFor="leader_email" className="mb-2">Team Leader Email</Label>
                             <Input
-                                id="team_id"
-                                type="text"
-                                value={form.team_id}
+                                id="leader_email"
+                                type="email"
+                                value={form.leader_email}
                                 onChange={(e) => {
-                                    setForm({ ...form, team_id: e.target.value });
+                                    setForm({ ...form, leader_email: e.target.value });
                                     setIsDirty(true);
                                 }}
 
-                                placeholder="Enter team ID"
+                                placeholder="Enter team leader's email"
                                 className="text-gray-900 placeholder:text-gray-500 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
                             />

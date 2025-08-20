@@ -9,7 +9,7 @@ export default function SigninPage() {
     const [error, setError] = useState('');
     useEffect(() => {
         if (!loading && user) {
-            router.push('/profile');
+            router.replace('/profile');
         }
     }, [user, loading, router]);
 
@@ -28,7 +28,7 @@ export default function SigninPage() {
         setError('');
         try {
             await signInWithGoogle();
-            router.push('/profile');
+            router.replace('/profile');
         } catch (err: any) { //change any to appropriate error type later
             setError(err.message);
         }
