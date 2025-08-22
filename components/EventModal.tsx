@@ -16,8 +16,8 @@ export default function EventModal({ card, onClose }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-      <div className="bg-background rounded-2xl shadow-xl max-w-lg w-full relative p-8 animate-modal-open">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+      <div className="bg-background rounded-2xl shadow-xl w-full max-w-6xl relative p-8 animate-modal-open mx-auto">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-xl text-white"
@@ -26,16 +26,16 @@ export default function EventModal({ card, onClose }: Props) {
           &times;
         </button>
         <div className="flex flex-col items-center">
-          <div className="relative w-full max-w-md h-64 mb-4">
+          <div className="relative w-full h-80 mb-4">
             <Image
               src={card.imageSrc}
               alt={card.title}
               fill
               className="rounded-xl object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              sizes="100vw"
             />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">{card.title}</h2>
+          <h2 className="text-3xl font-bold text-white mb-2">{card.title}</h2>
           <h3 className="text-lg text-primary mb-2">{card.caption}</h3>
           <p className="text-white/90 mb-2">{card.description}</p>
           <div className="flex flex-col items-center mb-3">
@@ -43,7 +43,7 @@ export default function EventModal({ card, onClose }: Props) {
             <span className="font-normal text-white/90 text-sm">{card.organizer}</span>
           </div>
           <div className="flex gap-4 w-full justify-center mt-4">
-             <button
+            <button
               onClick={handleRegister}
               className="bg-secondary text-white rounded-lg px-6 py-2 font-semibold hover:bg-primary-dark transition"
             >
