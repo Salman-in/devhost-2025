@@ -19,6 +19,12 @@ export default function DetailsPage() {
   const router = useRouter();
   const { user, loading, profile, profileLoading, setProfile } = useAuth();
 
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/signin');
+    }
+  }, [user, loading, router]);
+
   const [form, setForm] = useState({
     name: '',
     email: '',

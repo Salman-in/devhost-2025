@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 export default function HackathonCreateTeam() {
     const router = useRouter();
-    const { user, loading, signOut, profile, profileLoading, setProfile, team, teamLoading, setTeam, refreshProfileAndTeam } = useAuth();
+    const { user, refreshProfileAndTeam, loading } = useAuth();
     const [form, setForm] = useState({
         team_name: '',
     });
@@ -18,6 +18,13 @@ export default function HackathonCreateTeam() {
     const [create, setCreated] = useState(false);
     const [isDirty, setIsDirty] = useState(false);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        if (!loading && !user) {
+            router.push('/signin');
+        }
+    }, [user, loading, router]);
+
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -59,10 +66,7 @@ export default function HackathonCreateTeam() {
 
     useEffect(() => {
         if (create) {
-            const timer = setTimeout(() => {
-                router.replace('/hackathon/dashboard');
-            }, 1000);
-            return () => clearTimeout(timer);
+            router.replace('/hackathon/dashboard');
         }
     }, [create, router]);
 

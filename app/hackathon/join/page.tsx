@@ -9,7 +9,7 @@ import {useRouter} from "next/navigation";
 
 export default function HackathonJoinTeam() {
     const router = useRouter();
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
     const [form, setForm] = useState({
         leader_email: '',
     });
@@ -18,6 +18,13 @@ export default function HackathonJoinTeam() {
     const [join, setJoined] = useState(false);
     const [isDirty, setIsDirty] = useState(false);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        if (!loading && !user) {
+            router.push('/signin');
+        }
+    }, [user, loading, router]);
+
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
