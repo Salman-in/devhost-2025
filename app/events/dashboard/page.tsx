@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
@@ -50,7 +50,13 @@ export default function EventsDashboardPage() {
         });
         if (!res.ok) throw new Error("Failed to fetch registrations");
         const data = await res.json();
-        setRegistrations(data.registrations || []);
+
+        // Filter registrations to only include those with paymentStatus === "paid"
+        const paidRegistrations = (data.registrations || []).filter(
+          (reg: EventRegistration) => reg.paymentStatus === "Paid"
+        );
+
+        setRegistrations(paidRegistrations);
       } catch (e: any) {
         setError(e.message || "Error loading registrations");
       } finally {
@@ -89,7 +95,6 @@ export default function EventsDashboardPage() {
 
         <div className="flex flex-col gap-6">
           {registrations.map((reg) => {
-            // For display, get event info from mapping or fallback
             const eventInfo = eventData[reg.event_id];
             const isTeam = eventInfo?.type === "team";
 
