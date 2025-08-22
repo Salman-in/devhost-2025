@@ -131,6 +131,7 @@ export default function ProfilePage() {
     } finally {
       setIsSaving(false);
       setTimeout(() => setSaved(false), 2000);
+      window.location.reload(); // Reload to ensure profile is updated
     }
   };
 

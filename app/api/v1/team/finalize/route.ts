@@ -18,6 +18,9 @@ export async function POST(req: NextRequest) {
         updatedAt: new Date().toISOString(),
       });
     }
+    else {
+      return NextResponse.json({ error: 'Need to upload drive link (or) need at least 3 peers' }, { status: 500 });
+    }
 
     return NextResponse.json({ 
       success: true, 
