@@ -5,7 +5,9 @@ import { getFirestore } from "firebase-admin/firestore";
 import { z } from "zod";
 
 const eventRegistrationSchema = z.object({
-  event_id: z.union([z.string(), z.number()]).transform((val) => val.toString()),
+  event_id: z
+    .union([z.string(), z.number()])
+    .transform((val) => val.toString()),
   leader_email: z.string().email(),
   type: z.enum(["team", "individual"]),
   members: z.array(z.string().email()).optional().default([]),
@@ -14,11 +16,13 @@ const eventRegistrationSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const token = request.headers.get("authorization")?.split("Bearer ")[1];
-    if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!token)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const decodedToken = await getAuth(admin.app()).verifyIdToken(token);
     const authEmail = decodedToken.email;
-    if (!authEmail) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!authEmail)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await request.json();
     const parsed = eventRegistrationSchema.safeParse(body);
@@ -32,7 +36,10 @@ export async function POST(request: NextRequest) {
 
     if (authEmail.toLowerCase() !== leader_email.toLowerCase())
       return NextResponse.json(
-        { error: "You must be logged in with the team leader's email for registration." },
+        {
+          error:
+            "You must be logged in with the team leader's email for registration.",
+        },
         { status: 403 }
       );
 
@@ -45,10 +52,27 @@ export async function POST(request: NextRequest) {
       .get();
 
     if (!existing.empty)
-      return NextResponse.json({ error: "Already registered" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Already registered" },
+        { status: 400 }
+      );
 
+    // Validate all team member emails are registered users
     if (type === "team") {
+      const usersSnap = await firestore.collection("users").get();
+      const validEmailsSet = new Set(
+        usersSnap.docs
+          .map((doc) => doc.data().email?.toLowerCase())
+          .filter(Boolean)
+      );
       for (const email of members) {
+        if (!validEmailsSet.has(email.toLowerCase()))
+          return NextResponse.json(
+            {
+              error: `${email} is not registered via Google OAuth on this site.`,
+            },
+            { status: 400 }
+          );
         const memberCheck = await registrations
           .where("event_id", "==", event_id)
           .where("participants", "array-contains", email)
@@ -64,15 +88,18 @@ export async function POST(request: NextRequest) {
     await registrations.add({
       event_id,
       leader_email,
-      participants: type === "team" ? [leader_email, ...members] : [leader_email],
+      participants:
+        type === "team" ? [leader_email, ...members] : [leader_email],
       createdAt: new Date(),
-      paymentStatus: "pending",   // Add a paymentStatus field to track payment
+      paymentStatus: "pending",
       paymentDetails: null,
     });
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (err) {
-    console.error("Registration error:", err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
-import admin from "@/firebase/admin"; // Make sure this exports initialized Firebase Admin SDK
+import admin from "@/firebase/admin";
 import { getFirestore } from "firebase-admin/firestore";
 
 export async function POST(request: Request) {
@@ -20,7 +20,10 @@ export async function POST(request: Request) {
     const { event_id } = body;
 
     if (!event_id) {
-      return NextResponse.json({ error: "Event ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Event ID is required" },
+        { status: 400 }
+      );
     }
 
     const firestore = getFirestore(admin.app());
@@ -33,7 +36,10 @@ export async function POST(request: Request) {
       .get();
 
     if (snapshot.empty) {
-      return NextResponse.json({ error: "You are not registered for this event" }, { status: 404 });
+      return NextResponse.json(
+        { error: "You are not registered for this event" },
+        { status: 404 }
+      );
     }
 
     const registrationDoc = snapshot.docs[0];
@@ -50,13 +56,17 @@ export async function POST(request: Request) {
       if (newParticipants.length === 0) {
         await eventsRef.doc(registrationDoc.id).delete();
       } else {
-        await eventsRef.doc(registrationDoc.id).update({ participants: newParticipants });
+        await eventsRef
+          .doc(registrationDoc.id)
+          .update({ participants: newParticipants });
       }
     }
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    console.error("Leave event error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

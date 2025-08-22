@@ -1,9 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+
+interface EventRegistration {
+  event_id: number;
+  type: "individual" | "team";
+  leader_email: string;
+  participants: string[];
+  createdAt: string;
+  paymentStatus?: string;
+  paymentDetails?: { transactionId?: string };
+}
 
 const eventData: Record<number, { title: string; type: "team" | "individual" }> = {
   1: { title: "CSS Action", type: "individual" },
@@ -16,85 +25,41 @@ const eventData: Record<number, { title: string; type: "team" | "individual" }> 
   9: { title: "The Surge", type: "team" },
 };
 
-interface EventRegistration {
-  event_id: number;
-  type: "individual" | "team";
-  leader_email: string;
-  participants: string[];
-  createdAt: string;
-  paymentStatus?: string;
-  paymentDetails?: { transactionId?: string };
-}
-
 export default function EventsDashboardPage() {
   const { user } = useAuth();
   const router = useRouter();
 
-  const [loading, setLoading] = useState(true);
   const [registrations, setRegistrations] = useState<EventRegistration[]>([]);
-  const [leaveLoading, setLeaveLoading] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchRegistrations = async () => {
+    async function fetchRegistrations() {
       if (!user) {
         setRegistrations([]);
         setLoading(false);
         return;
       }
       try {
-        setLoading(true);
         setError("");
-        const idToken = await user.getIdToken(true);
+        setLoading(true);
+        const token = await user.getIdToken(true);
         const res = await fetch("/api/v1/event/my-registrations", {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
-
         if (!res.ok) throw new Error("Failed to fetch registrations");
         const data = await res.json();
         setRegistrations(data.registrations || []);
-      } catch (err: any) {
-        setError(err.message || "Error loading dashboard");
+      } catch (e: any) {
+        setError(e.message || "Error loading registrations");
       } finally {
         setLoading(false);
       }
-    };
+    }
+
     fetchRegistrations();
   }, [user]);
-
-  const handleLeaveEvent = async (event_id: number, leader_email: string) => {
-    if (!user) return;
-    if (leader_email.toLowerCase() !== user.email?.toLowerCase()) {
-      setError("Only the team leader can leave the event.");
-      return;
-    }
-
-    setLeaveLoading(String(event_id));
-    setError("");
-    try {
-      const idToken = await user.getIdToken(true);
-      const res = await fetch("/api/v1/event/leave", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({ event_id }),
-      });
-      if (!res.ok) {
-        const { error } = await res.json();
-        throw new Error(error || "Failed to leave event");
-      }
-      setRegistrations(registrations.filter((reg) => reg.event_id !== event_id));
-    } catch (err: any) {
-      setError(err.message || "Could not leave/cancel event");
-    } finally {
-      setLeaveLoading(null);
-    }
-  };
 
   if (loading) {
     return (
@@ -111,60 +76,64 @@ export default function EventsDashboardPage() {
     <div className="min-h-screen bg-gray-50 py-8 flex flex-col items-center">
       <div className="max-w-2xl w-full px-4">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">My Event Registrations</h1>
-        {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+
+        {error && (
+          <div className="text-red-500 text-sm mb-4" role="alert">
+            {error}
+          </div>
+        )}
+
         {!registrations.length && (
           <div className="text-gray-700">You have not registered for any events yet.</div>
         )}
+
         <div className="flex flex-col gap-6">
           {registrations.map((reg) => {
-            const isLeader = user?.email?.toLowerCase() === reg.leader_email.toLowerCase();
+            // For display, get event info from mapping or fallback
+            const eventInfo = eventData[reg.event_id];
+            const isTeam = eventInfo?.type === "team";
 
             return (
-              <div key={reg.event_id} className="bg-white shadow rounded-lg p-5 flex flex-col gap-2">
+              <div
+                key={reg.event_id + "-" + reg.createdAt}
+                className="bg-white shadow rounded-lg p-5 flex flex-col gap-2"
+                aria-label={`Event registration: ${eventInfo?.title ?? `Event #${reg.event_id}`}`}
+              >
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-xl font-semibold" style={{ color: "black" }}>
-                      {eventData[reg.event_id]?.title || `Event #${reg.event_id}`}
+                      {eventInfo?.title ?? `Event #${reg.event_id}`}
                     </h2>
-                    <p className="text-sm text-gray-500">
-                      {eventData[reg.event_id]?.type === "team" ? "Team event" : "Individual event"}
-                    </p>
+                    <p className="text-sm text-gray-500">{isTeam ? "Team event" : "Individual event"}</p>
                   </div>
-                  <Button
-                    className="bg-red-500 text-white hover:bg-red-600"
-                    onClick={() => handleLeaveEvent(reg.event_id, reg.leader_email)}
-                    disabled={!!leaveLoading || !isLeader}
-                    title={!isLeader ? "Only team leader can leave this event" : undefined}
-                  >
-                    {leaveLoading === String(reg.event_id) ? "Leaving..." : "Leave Event"}
-                  </Button>
                 </div>
-                <div className="text-sm mt-2 font-medium">
-                  {eventData[reg.event_id]?.type === "team" ? (
+
+                <div className="text-sm mt-2 font-medium" style={{ color: "black" }}>
+                  {isTeam ? (
                     <>
                       <span className="text-yellow-700">Team Leader:</span>
-                      <p style={{ color: "black" }}>{reg.leader_email}</p>
+                      <p>{reg.leader_email}</p>
                       <br />
                       <span className="text-blue-700">Team Members:</span>
                       <ul className="ml-4 list-disc">
-                        {reg.participants.map((member, index) => (
-                          <li key={`${member}-${index}`} style={{ color: "black" }}>
-                            {member}
-                          </li>
+                        {reg.participants.map((member, idx) => (
+                          <li key={`${member}-${idx}`}>{member}</li>
                         ))}
                       </ul>
                     </>
                   ) : (
                     <>
-                      Registered as: <span className="text-gray-800">{reg.leader_email}</span>
+                      <p>Registered as: <strong>{reg.leader_email}</strong></p>
                     </>
                   )}
                 </div>
+
                 <div className="text-xs text-gray-400 mt-2">
                   Registered {new Date(reg.createdAt).toLocaleString()}
                 </div>
+
                 <div className="text-xs text-gray-400 mt-2">
-                  Payment Status: <strong>{reg.paymentStatus || "Pending"}</strong>
+                  Payment Status: <strong>{reg.paymentStatus ?? "Pending"}</strong>
                   {reg.paymentDetails?.transactionId && (
                     <>
                       <br />

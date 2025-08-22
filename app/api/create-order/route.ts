@@ -10,8 +10,6 @@ export async function POST(req: Request) {
     }
 
     const instance = new Razorpay({
-      key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-      key_secret:process.env.RAZORPAY_KEY_SECRET!,
       key_id: process.env.RAZORPAY_KEY_ID!,
       key_secret: process.env.RAZORPAY_KEY_SECRET!,
     });
@@ -28,7 +26,6 @@ export async function POST(req: Request) {
   } catch (err: any) {
     console.log(err)
     return NextResponse.json({ error: err|| String(err) }, { status: 500 });
-    console.error("Razorpay order creation failed:", err);
     const message =
       err?.error?.description ||
       err?.message ||

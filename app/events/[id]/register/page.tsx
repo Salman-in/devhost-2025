@@ -4,7 +4,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 interface EventDetail {
@@ -15,6 +14,7 @@ interface EventDetail {
   fee: number;
 }
 
+// Events metadata
 const eventData: Record<string, EventDetail> = {
   "1": { id: 1, title: "CSS Action", type: "individual", fee: 0 },
   "2": { id: 2, title: "Code Forge", type: "individual", fee: 0 },
@@ -33,68 +33,141 @@ export default function EventRegisterPage() {
   const eventId = params?.id as string;
 
   const [loading, setLoading] = useState(false);
-  const [leaderEmail, setLeaderEmail] = useState(user?.email || "");
-  const [emails, setEmails] = useState<string[]>([]);
+  const [emails, setEmails] = useState<string[]>([]); // Team member emails
   const [error, setError] = useState("");
+  const [registeredUsers, setRegisteredUsers] = useState<string[]>([]); // For validation
 
   const event = eventData[eventId];
+  const leaderEmail = user?.email?.toLowerCase() || "";
 
+  // Initialize one input field for team events
   useEffect(() => {
-    if (!event) {
-      router.push("/events");
-      return;
+    if (event?.type === "team" && emails.length === 0) {
+      setEmails([""]);
     }
-    if (event.type === "team") {
-      setEmails([]);
-      if (user?.email) setLeaderEmail(user.email);
+  }, [event, emails.length]);
+
+  // Redirect to sign-in if no user logged in
+  useEffect(() => {
+    if (!user) {
+      router.push("/signin");
     }
-  }, [event, router, user]);
+  }, [user, router]);
 
-  const handleLeaderEmailChange = (val: string) => setLeaderEmail(val);
+  // Fetch list of registered users for email validation
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const res = await fetch("/api/v1/users");
+        if (!res.ok) throw new Error("Failed to fetch users");
 
-  const handleTeamEmailChange = (index: number, val: string) => {
-    const newEmails = [...emails];
-    newEmails[index] = val;
-    setEmails(newEmails);
-  };
+        const data = await res.json();
+        if (!Array.isArray(data)) throw new Error("Invalid users response");
 
+        const usersList = data
+          .map((u: any) => u.email?.toLowerCase())
+          .filter(Boolean);
+        setRegisteredUsers(usersList);
+      } catch (err: any) {
+        setError("Unable to load registered users list");
+      }
+    }
+    if (user) fetchUsers();
+  }, [user]);
+
+  // Check if payment is pending from sessionStorage
+  // If yes, redirect immediately to payment page to prevent returning to registration form
+  useEffect(() => {
+    if (!event || !user) return;
+    const paymentPendingKey = `paymentPending_event_${event.id}_${leaderEmail}`;
+    const paymentPending = sessionStorage.getItem(paymentPendingKey);
+
+    if (paymentPending === "true") {
+      router.push(
+        `/payment?title=${encodeURIComponent(
+          event.title
+        )}&organizer=${encodeURIComponent(
+          leaderEmail
+        )}&eventId=${encodeURIComponent(
+          event.id
+        )}&userEmail=${encodeURIComponent(
+          user.email || ""
+        )}&members=${encodeURIComponent(emails.join(","))}&amount=${
+          event.fee * 100
+        }`
+      );
+    }
+  }, [event, user, leaderEmail, emails, router]);
+
+  // Add a new empty member email input if allowed
   const handleAddMember = () => {
-    if (emails.length < (event?.maxTeamSize || 2)) {
-      setEmails([...emails, ""]);
+    const maxMembers = (event?.maxTeamSize ?? 2) - 1;
+    if (emails.length < maxMembers) {
+      setEmails((prev) => [...prev, ""]);
     }
   };
 
+  // Update email value for a member
+  const handleMemberChange = (index: number, val: string) => {
+    setEmails((prev) => {
+      const copy = [...prev];
+      copy[index] = val;
+      return copy;
+    });
+  };
+
+  // Handle form submit and validations
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !event) return;
 
-    if (leaderEmail.trim().toLowerCase() !== user.email?.toLowerCase()) {
-      setError(
-        "You must be logged in with the team leader’s email to register."
-      );
-      return;
-    }
-
-    if (event.type === "team" && emails.some((e) => !e.trim())) {
-      setError("Please fill all team members' email addresses.");
-      return;
-    }
-
     try {
       setError("");
       setLoading(true);
+
       const idToken = await user.getIdToken(true);
 
+      // Team event validation
+      if (event.type === "team") {
+        if (emails.some((e) => !e.trim())) {
+          setError("Please enter all team members' email addresses.");
+          setLoading(false);
+          return;
+        }
+
+        const normalizedEmails = emails.map((e) => e.trim().toLowerCase());
+
+        if (normalizedEmails.includes(leaderEmail)) {
+          setError("Team members cannot include the leader's email.");
+          setLoading(false);
+          return;
+        }
+
+        const invalidEmails = normalizedEmails.filter(
+          (email) => !registeredUsers.includes(email)
+        );
+        if (invalidEmails.length) {
+          setError(
+            `The following emails are not registered users: ${invalidEmails.join(
+              ", "
+            )}`
+          );
+          setLoading(false);
+          return;
+        }
+
+        setEmails(normalizedEmails);
+      }
+
+      // Prepare registration payload
       const payload = {
         event_id: event.id,
         type: event.type,
-        leader_email: leaderEmail.trim().toLowerCase(),
-        members:
-          event.type === "team"
-            ? emails.map((e) => e.trim().toLowerCase())
-            : [],
+        leader_email: leaderEmail,
+        members: event.type === "team" ? emails : [],
       };
 
+      // Register user with backend
       const res = await fetch("/api/v1/event/register", {
         method: "POST",
         headers: {
@@ -109,7 +182,11 @@ export default function EventRegisterPage() {
         throw new Error(data.error || "Event registration failed");
       }
 
-      // Redirect automatically to payment page with event details and amounts
+      // Save payment pending flag in sessionStorage for this user and event
+      const paymentPendingKey = `paymentPending_event_${event.id}_${leaderEmail}`;
+      sessionStorage.setItem(paymentPendingKey, "true");
+
+      // Redirect to payment page with all needed params
       router.push(
         `/payment?title=${encodeURIComponent(
           event.title
@@ -117,7 +194,9 @@ export default function EventRegisterPage() {
           leaderEmail
         )}&eventId=${encodeURIComponent(
           event.id
-        )}&userEmail=${encodeURIComponent(user.email || "")}&amount=${
+        )}&userEmail=${encodeURIComponent(
+          user.email || ""
+        )}&members=${encodeURIComponent(emails.join(","))}&amount=${
           event.fee * 100
         }`
       );
@@ -130,47 +209,36 @@ export default function EventRegisterPage() {
 
   if (!event) return null;
 
+  const maxMembers = (event?.maxTeamSize ?? 2) - 1;
+
   return (
     <div className="flex items-center justify-center min-h-screen p-6 bg-gray-50">
       <div className="bg-white shadow rounded-lg p-8 max-w-md w-full">
-        <h2
-          className="text-2xl font-bold mb-4 text-center"
-          style={{ color: "black" }}
-        >
+        <h2 className="text-2xl font-bold mb-4 text-center text-black">
           {event.title} Registration
         </h2>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {event.type === "team" && (
             <>
-              <Label className="block mb-2" style={{ color: "black" }}>
-                Team Leader Email
+              <Label className="block mb-2 text-black">
+                Enter Team Members’ Email:
               </Label>
-              <Input
-                type="email"
-                value={leaderEmail}
-                onChange={(e) => handleLeaderEmailChange(e.target.value)}
-                placeholder="Enter team leader email"
-                className="mb-4"
-                required
-                style={{ color: "black" }}
-              />
 
-              <Label className="block mb-2" style={{ color: "black" }}>
-                Team Members' Emails
-              </Label>
               {emails.map((email, idx) => (
-                <Input
+                <input
                   key={idx}
                   type="email"
                   value={email}
-                  onChange={(e) => handleTeamEmailChange(idx, e.target.value)}
-                  placeholder="Enter member email"
-                  className="mb-2"
+                  placeholder={`Member ${idx + 1} email`}
+                  onChange={(e) => handleMemberChange(idx, e.target.value)}
+                  className="w-full border rounded p-2 text-black"
                   required
-                  style={{ color: "black" }}
+                  autoComplete="email"
                 />
               ))}
-              {emails.length < (event.maxTeamSize || 2) && (
+
+              {emails.length < maxMembers && (
                 <Button
                   type="button"
                   className="w-full bg-gray-200 text-black hover:bg-gray-300"
@@ -184,8 +252,9 @@ export default function EventRegisterPage() {
 
           {event.type === "individual" && (
             <p className="text-sm text-gray-600 mb-2">
-              You are registering as an <strong>individual participant</strong>.
-              After registration you will be redirected to payment page.
+              You are registering as an <strong>individual participant</strong>.{" "}
+              <br />
+              Registered email: <strong>{leaderEmail}</strong>
             </p>
           )}
 

@@ -1,43 +1,53 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-import { useEffect, useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import Events from '@/components/Events';
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import Events from "@/components/Events";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import Link from "next/link";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, loading, signOut, profile, profileLoading, setProfile, team, teamLoading, setTeam } = useAuth();
+  const {
+    user,
+    loading,
+    signOut,
+    profile,
+    profileLoading,
+    setProfile,
+    team,
+    teamLoading,
+    setTeam,
+  } = useAuth();
 
   const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    college: '',
-    branch: '',
+    name: "",
+    email: "",
+    phone: "",
+    college: "",
+    branch: "",
     year: 1,
   });
 
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isFormLoading, setIsFormLoading] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
-      router.replace('/signin');
+      router.replace("/signin");
     }
   }, [user, loading, router]);
 
@@ -49,12 +59,12 @@ export default function ProfilePage() {
       // Add delay before populating form
       const timer = setTimeout(() => {
         setForm({
-          name: profile.name || '',
-          email: profile.email || '',
-          phone: profile.phone || '',
-          college: profile.college || '',
+          name: profile.name || "",
+          email: profile.email || "",
+          phone: profile.phone || "",
+          college: profile.college || "",
           year: profile.year || 1,
-          branch: profile.branch || ''
+          branch: profile.branch || "",
         });
         setIsFormLoading(false);
       }, 1);
@@ -67,9 +77,9 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     try {
       await signOut();
-      router.replace('/signin');
+      router.replace("/signin");
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error("Error signing out:", error);
     }
   };
 
@@ -77,22 +87,29 @@ export default function ProfilePage() {
     e.preventDefault();
     if (!user) return;
 
-    if (!form.name || !form.email || !form.phone || !form.college || !form.branch || !form.year) {
-      setError('All fields are required.');
+    if (
+      !form.name ||
+      !form.email ||
+      !form.phone ||
+      !form.college ||
+      !form.branch ||
+      !form.year
+    ) {
+      setError("All fields are required.");
       return;
     }
-    setError('');
+    setError("");
 
     setIsSaving(true);
     setSaved(false);
 
     try {
       const idToken = await user.getIdToken();
-      const res = await fetch('/api/v1/user/update', {
-        method: 'POST',
+      const res = await fetch("/api/v1/user/update", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
         },
         body: JSON.stringify(form),
       });
@@ -110,7 +127,7 @@ export default function ProfilePage() {
         setIsDirty(false);
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
+      setError("Failed to save profile. Please try again later.");
     } finally {
       setIsSaving(false);
       setTimeout(() => setSaved(false), 2000);
@@ -123,7 +140,7 @@ export default function ProfilePage() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">
-            {loading || profileLoading ? 'Loading...' : 'Preparing form...'}
+            {loading || profileLoading ? "Loading..." : "Preparing form..."}
           </p>
         </div>
       </div>
@@ -147,23 +164,26 @@ export default function ProfilePage() {
           <form className="space-y-6 text-gray-900" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label htmlFor="name" className="mb-2 block">Name</Label>
+                <Label htmlFor="name" className="mb-2 block">
+                  Name
+                </Label>
                 <Input
                   id="name"
                   type="text"
                   value={form.name}
                   onChange={(e) => {
-  setForm({ ...form, name: e.target.value });
-  setIsDirty(true);
-}}
-
+                    setForm({ ...form, name: e.target.value });
+                    setIsDirty(true);
+                  }}
                   placeholder="Enter your name"
                   className="text-gray-900 placeholder:text-gray-500 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="email" className="mb-2 block">Email</Label>
+                <Label htmlFor="email" className="mb-2 block">
+                  Email
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -181,7 +201,9 @@ export default function ProfilePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="phone" className="mb-2 block">Phone</Label>
+                <Label htmlFor="phone" className="mb-2 block">
+                  Phone
+                </Label>
                 <Input
                   id="phone"
                   type="tel"
@@ -196,7 +218,9 @@ export default function ProfilePage() {
                 />
               </div>
               <div>
-                <Label htmlFor="college" className="mb-2 block">College</Label>
+                <Label htmlFor="college" className="mb-2 block">
+                  College
+                </Label>
                 <Input
                   id="college"
                   type="text"
@@ -214,7 +238,9 @@ export default function ProfilePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="branch" className="mb-2 block">Branch</Label>
+                <Label htmlFor="branch" className="mb-2 block">
+                  Branch
+                </Label>
                 <Input
                   id="branch"
                   type="text"
@@ -229,7 +255,9 @@ export default function ProfilePage() {
                 />
               </div>
               <div>
-                <Label htmlFor="year" className="mb-2 block">Year</Label>
+                <Label htmlFor="year" className="mb-2 block">
+                  Year
+                </Label>
                 <Select
                   value={String(form.year)}
                   onValueChange={(value) => {
@@ -257,13 +285,19 @@ export default function ProfilePage() {
               className="bg-black hover:bg-black/70 text-white px-6 py-2 rounded-md transition-colors disabled:opacity-50 cursor-pointer"
               disabled={isSaving || saved || !isDirty}
             >
-              {isSaving ? 'Saving...' : saved ? 'Saved!' : 'Save'}
+              {isSaving ? "Saving..." : saved ? "Saved!" : "Save"}
             </Button>
           </form>
         </div>
       </div>
-      <Button asChild>{profile?.team_id === "" ? <Link href="/hackathon">Hackathon</Link> : <Link href="/hackathon/dashboard">Hackathon</Link>}</Button>
-      <Events/>
+      <Button asChild>
+        {profile?.team_id === "" ? (
+          <Link href="/hackathon">Hackathon</Link>
+        ) : (
+          <Link href="/hackathon/dashboard">Hackathon</Link>
+        )}
+      </Button>
+      <Events />
     </div>
   );
 }

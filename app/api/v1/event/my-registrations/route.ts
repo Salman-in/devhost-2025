@@ -5,7 +5,6 @@ import { getFirestore } from "firebase-admin/firestore";
 
 export async function GET(request: NextRequest) {
   try {
-    // Get Firebase ID token from Authorization header
     const token = request.headers.get("authorization")?.split("Bearer ")[1];
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -24,10 +23,14 @@ export async function GET(request: NextRequest) {
     const registrationsRef = firestore.collection("event_registrations");
 
     // Fetch registrations where user is leader
-    const leaderSnapshot = await registrationsRef.where("leader_email", "==", email).get();
+    const leaderSnapshot = await registrationsRef
+      .where("leader_email", "==", email)
+      .get();
 
     // Fetch registrations where user is participant
-    const participantSnapshot = await registrationsRef.where("participants", "array-contains", email).get();
+    const participantSnapshot = await registrationsRef
+      .where("participants", "array-contains", email)
+      .get();
 
     // Merge results without duplicates
     const registrationsMap = new Map();
@@ -46,15 +49,18 @@ export async function GET(request: NextRequest) {
       type: reg.type,
       leader_email: reg.leader_email,
       participants: reg.participants,
-      createdAt:
-      reg.createdAt?.toDate ? reg.createdAt.toDate().toISOString() : reg.createdAt,
+      createdAt: reg.createdAt?.toDate
+        ? reg.createdAt.toDate().toISOString()
+        : reg.createdAt,
       paymentStatus: reg.paymentStatus || "Pending",
       paymentDetails: reg.paymentDetails || null,
     }));
 
     return NextResponse.json({ registrations });
   } catch (error) {
-    console.error("Error fetching registrations:", error);
-    return NextResponse.json({ error: "Failed to fetch registrations" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch registrations" },
+      { status: 500 }
+    );
   }
 }

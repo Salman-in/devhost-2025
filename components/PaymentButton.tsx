@@ -3,6 +3,7 @@
 import Script from "next/script";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
+import { useState } from "react";
 
 interface PaymentButtonProps {
   amount: number;
@@ -12,17 +13,18 @@ interface PaymentButtonProps {
   userEmail: string;
 }
 
-export default function PaymentButton({ amount = 100 }: { amount?: number }) {
 export default function PaymentButton({
-  amount,
+  amount = 100,
   eventTitle,
   organizer,
   eventId,
   userEmail,
 }: PaymentButtonProps) {
+  const [errorMsg, setErrorMsg] = useState<string>("");
+
   const startPayment = async () => {
     try {
-      // Create order on server
+      // Request order creation from backend
       const createRes = await fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -31,27 +33,11 @@ export default function PaymentButton({
 
       const order = await createRes.json();
       if (!order || order.error) {
-        alert("Order creation failed: " + (order.error || "Unknown error"));
+        setErrorMsg(order?.error || "Failed to create order.");
         return;
       }
 
-    const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-      amount: order.amount,
-      currency: order.currency,
-      name: "Hackathon Project",
-      description: "Ticket",
-      order_id: order.id,
-      handler: async function (response: any) {
-        // Verify on server
-        const verifyRes = await fetch("/api/verify-payment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...response,
-            amount: order.amount, // send amount too
-          }),
-        });
+      // Initialize Razorpay checkout options
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
         amount: order.amount,
@@ -70,26 +56,14 @@ export default function PaymentButton({
               razorpay_signature: response.razorpay_signature,
               event_id: String(eventId).trim(),
               user_email: userEmail.trim().toLowerCase(),
+              amount: order.amount,
             }),
           });
 
-        const verify = await verifyRes.json();
-        if (verify.ok) {
-          alert("Payment verified and stored in Firestore. Payment ID: " + response.razorpay_payment_id);
-        } else {
-          alert("Verification failed: " + (verify.error || "unknown"));
-        }
-      },
-      prefill: {
-        name: "Test User",
-        email: "test@example.com",
-        contact: "9999999999",
-      },
-      theme: { color: "#3399cc" },
-    };
           const verify = await verifyRes.json();
+
           if (verify.ok) {
-            // Optionally also save payment info separately in Firestore
+            // Save payment info to Firestore
             await setDoc(doc(db, "payments", response.razorpay_payment_id), {
               orderId: response.razorpay_order_id,
               paymentId: response.razorpay_payment_id,
@@ -101,26 +75,28 @@ export default function PaymentButton({
               createdAt: new Date().toISOString(),
             });
 
-            alert(`Payment successful for "${eventTitle}". Payment ID: ${response.razorpay_payment_id}`);
-            // Redirect to dashboard or elsewhere after success
+            // Redirect to dashboard after success
             window.location.href = "/events/dashboard";
           } else {
-            alert("Payment verification failed: " + (verify.error || "unknown"));
+            // Show error message in UI
+            setErrorMsg(verify.error || "Payment verification failed.");
           }
         },
         prefill: {
-          name: "Your Name",
+          name: "Your Name", // Replace with user info if available
           email: userEmail,
           contact: "",
         },
         theme: { color: "#3399cc" },
       };
 
+      // Open Razorpay checkout form
       const rzp = new (window as any).Razorpay(options);
       rzp.open();
-    } catch (error) {
-      alert("Payment initialization failed. Please try again.");
-      console.error(error);
+    } catch (error: any) {
+      setErrorMsg(
+        error?.message || "Payment initialization failed. Please try again."
+      );
     }
   };
 
@@ -133,6 +109,7 @@ export default function PaymentButton({
       >
         Pay ₹{(amount / 100).toFixed(2)}
       </button>
+      {errorMsg && <div className="mt-3 text-red-600 text-sm">{errorMsg}</div>}
     </>
   );
 }
