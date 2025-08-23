@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { eventsById } from "@/lib/events";
 
 interface EventRegistration {
   event_id: number;
@@ -13,17 +14,6 @@ interface EventRegistration {
   paymentStatus?: string;
   paymentDetails?: { transactionId?: string };
 }
-
-const eventData: Record<number, { title: string; type: "team" | "individual" }> = {
-  1: { title: "CSS Action", type: "individual" },
-  2: { title: "Code Forge", type: "individual" },
-  3: { title: "Bit Breaker", type: "team" },
-  5: { title: "PitchX", type: "team" },
-  6: { title: "BGMI", type: "team" },
-  7: { title: "Speed Cuber", type: "individual" },
-  8: { title: "Blazzing Fingers", type: "individual" },
-  9: { title: "The Surge", type: "team" },
-};
 
 export default function EventsDashboardPage() {
   const { user } = useAuth();
@@ -95,7 +85,8 @@ export default function EventsDashboardPage() {
 
         <div className="flex flex-col gap-6">
           {registrations.map((reg) => {
-            const eventInfo = eventData[reg.event_id];
+            // Use eventsById imported from the single source of truth
+            const eventInfo = eventsById[reg.event_id];
             const isTeam = eventInfo?.type === "team";
 
             return (

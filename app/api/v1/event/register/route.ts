@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuth } from "firebase-admin/auth";
-import admin from "../../../../../firebase/admin";
-import { getFirestore } from "firebase-admin/firestore";
+import {adminDb,adminAuth} from "../../../../../firebase/admin";
 import { z } from "zod";
 
 const eventRegistrationSchema = z.object({
@@ -19,7 +17,7 @@ export async function POST(request: NextRequest) {
     if (!token)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const decodedToken = await getAuth(admin.app()).verifyIdToken(token);
+    const decodedToken = await adminAuth.verifyIdToken(token);
     const authEmail = decodedToken.email;
     if (!authEmail)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -43,8 +41,7 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       );
 
-    const firestore = getFirestore(admin.app());
-    const registrations = firestore.collection("event_registrations");
+    const registrations = adminDb.collection("event_registrations");
 
     const existing = await registrations
       .where("event_id", "==", event_id)
@@ -59,7 +56,7 @@ export async function POST(request: NextRequest) {
 
     // Validate all team member emails are registered users
     if (type === "team") {
-      const usersSnap = await firestore.collection("users").get();
+      const usersSnap = await adminDb.collection("users").get();
       const validEmailsSet = new Set(
         usersSnap.docs
           .map((doc) => doc.data().email?.toLowerCase())

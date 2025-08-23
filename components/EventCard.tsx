@@ -1,5 +1,14 @@
-import Image from "next/image";
 import React from "react";
+import Image from "next/image";
+import { Button } from "./ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export interface CardData {
   id: number;
@@ -20,32 +29,38 @@ interface Props {
 
 export function EventCard({ card, onClick }: Props) {
   return (
-    <button
-      className="bg-background rounded-xl border border-white/10 group w-full transition-all duration-300 shadow-md hover:shadow-[0_0_8px_3px_rgba(180,255,57,0.4)] hover:scale-[1.02] focus:outline-none"
+    <Card
       onClick={onClick}
-      style={{ minHeight: 220, padding: 0 }}
+      className="cursor-pointer bg-background border border-white/10 w-full flex flex-col h-full transition-all duration-300 shadow-md hover:shadow-[0_0_8px_3px_rgba(180,255,57,0.4)] hover:scale-[1.02] focus:outline-none"
     >
-      <div className="h-full p-4 flex flex-col">
-        <div className="relative w-full h-60 mb-3">
+      <CardHeader className="p-0">
+        <div className="relative w-full aspect-video">
           <Image
             src={card.imageSrc}
             alt={card.title}
             fill
-            className="rounded-lg object-cover"
-            sizes="50vw"
+            className="rounded-t-lg object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
           />
         </div>
-        <h2 className="text-lg font-bold mb-1 text-white">{card.title}</h2>
-        <p className="mb-1 font-semibold text-white/80">{card.date}</p>
+      </CardHeader>
+      <CardContent className="p-4 flex flex-col h-full">
+        <CardTitle className="text-lg font-bold text-white mb-1">{card.title}</CardTitle>
+        <CardDescription className="mb-1 font-semibold text-white/80">{card.date}</CardDescription>
         <time className="mb-2 font-normal text-white/60">{card.time}</time>
-        <h3 className="mb-1 pt-1 font-semibold text-primary">{card.caption}</h3>
-        <div className="text-sm tracking-wider py-1 grow text-white/80">{card.description}</div>
-        <div className="mt-auto">
+        <CardDescription className="pt-1 font-semibold text-primary">{card.caption}</CardDescription>
+        <CardDescription className="text-sm tracking-wider py-1 grow text-white/80">{card.description}</CardDescription>
+      </CardContent>
+      <CardFooter className="mt-auto flex flex-col items-start p-4 pt-0">
+        <div className="text-sm tracking-wide">
           <span className="block font-semibold text-white text-xs">Organizer:</span>
           <span className="block font-normal text-white/90 text-sm">{card.organizer}</span>
         </div>
-      </div>
-    </button>
+        <div className="mt-4 w-full bg-gray-800 text-white rounded-md px-4 py-2 text-center pointer-events-none">
+          View Details
+        </div>
+      </CardFooter>
+    </Card>
   );
 }
 
@@ -62,6 +77,7 @@ export default function EventCardGrid({ cards, onCardClick }: GridProps) {
     >
       {cards.map((card) => (
         <div key={card.id} className="w-full">
+          {/* onCardClick is now passed to the EventCard */}
           <EventCard card={card} onClick={() => onCardClick(card.id)} />
         </div>
       ))}

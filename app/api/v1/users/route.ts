@@ -1,7 +1,7 @@
 import { adminDb } from "@/firebase/admin";
 import { NextResponse } from "next/server";
 
-// To get registered users
+// To get registered users for email validation [ Not only the signed in single user]
 export async function GET() {
   try {
     const snapshot = await adminDb.collection("users").get();

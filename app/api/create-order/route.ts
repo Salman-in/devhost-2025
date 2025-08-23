@@ -3,10 +3,23 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { amount } = await req.json(); // Amount in paise, e.g. 10000 for ₹100
-
-    if (!amount) {
-      return NextResponse.json({ error: "Amount is required" }, { status: 400 });
+    const body = await req.json(); // Amount in paise, e.g. 10000 for ₹100
+    const amount = body?.amount;
+    if (amount == null) {
+      return NextResponse.json(
+        { error: "Amount is required" },
+        { status: 400 }
+      );
+    }
+    if (
+      typeof amount !== "number" ||
+      !Number.isInteger(amount) ||
+      amount <= 0
+    ) {
+      return NextResponse.json(
+        { error: "Amount must be a positive integer in paise" },
+        { status: 400 }
+      );
     }
 
     const instance = new Razorpay({
@@ -24,13 +37,11 @@ export async function POST(req: Request) {
     const order = await instance.orders.create(options);
     return NextResponse.json(order);
   } catch (err: any) {
-    console.log(err)
-    return NextResponse.json({ error: err|| String(err) }, { status: 500 });
+    console.error(err);
     const message =
-      err?.error?.description ||
-      err?.message ||
+      err?.error?.description ??
+      err?.message ??
       (typeof err === "string" ? err : "Unknown error");
-
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

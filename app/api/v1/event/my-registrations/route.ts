@@ -1,26 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuth } from "firebase-admin/auth";
-import admin from "@/firebase/admin";
-import { getFirestore } from "firebase-admin/firestore";
+import { FieldValue } from "firebase-admin/firestore";
+import { adminDb, adminAuth } from "@/firebase/admin"; 
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.headers.get("authorization")?.split("Bearer ")[1];
+    const authHeader = request.headers.get("authorization");
+    const token = authHeader?.startsWith("Bearer ")
+      ? authHeader.slice(7).trim()
+      : undefined;
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Verify token and get user email
-    const decodedToken = await getAuth(admin.app()).verifyIdToken(token);
+    const decodedToken = await adminAuth.verifyIdToken(token);
     const email = decodedToken.email;
 
     if (!email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    // Get Firestore instance
-    const firestore = getFirestore(admin.app());
-    const registrationsRef = firestore.collection("event_registrations");
+    
+    const registrationsRef = adminDb.collection("event_registrations");
 
     // Fetch registrations where user is leader
     const leaderSnapshot = await registrationsRef
@@ -58,6 +57,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ registrations });
   } catch (error) {
+    console.error("API Error:", error);
     return NextResponse.json(
       { error: "Failed to fetch registrations" },
       { status: 500 }

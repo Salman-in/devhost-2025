@@ -6,24 +6,28 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 export default function PaymentSuccessPage() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // Get event title from query param if needed
   const eventTitle = searchParams.get("title") || "Event";
 
-  // Redirect to signin if user not logged in
+  // Redirect only after auth has finished initializing
   useEffect(() => {
-    if (!user) {
-      router.push("/signin");
+    if (!loading && user === null) {
+      router.replace("/signin");
     }
-  }, [user, router]);
+  }, [loading, user, router]);
 
-  if (!user) {
+  // While auth is initializing, show a lightweight placeholder
+  if (loading) {
     return <p>Loading...</p>;
   }
 
+   if (!user) {
+    return null;
+  }
   const leaderEmail = user.email || "Unknown";
 
   return (

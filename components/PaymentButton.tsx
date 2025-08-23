@@ -76,7 +76,7 @@ export default function PaymentButton({
               organizer,
               userEmail,
               createdAt: new Date().toISOString(),
-            });
+            },{merge:true});
 
             // Clear the paymentPending flag upon successful payment
             sessionStorage.removeItem(paymentPendingKey);

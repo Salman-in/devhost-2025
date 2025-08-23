@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { getAuth } from "firebase-admin/auth";
-import admin from "@/firebase/admin";
-import { getFirestore } from "firebase-admin/firestore";
+import { FieldValue } from "firebase-admin/firestore";
+import { adminDb, adminAuth } from "@/firebase/admin";
 
 export async function POST(request: Request) {
   try {
@@ -10,9 +9,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const decoded = await getAuth(admin.app()).verifyIdToken(token);
+    // Use the imported adminAuth directly, which is already linked to the app
+    const decoded = await adminAuth.verifyIdToken(token); 
     const email = decoded.email;
-    if (!email) {
+    const normEmail = email?.trim().toLowerCase();
+    if (!normEmail) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -26,8 +27,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const firestore = getFirestore(admin.app());
-    const eventsRef = firestore.collection("event_registrations");
+    // Use the imported adminDb directly, which is already the Firestore client
+    const eventsRef = adminDb.collection("event_registrations");
 
     // Find the user's registration document for this event
     const snapshot = await eventsRef
@@ -49,16 +50,16 @@ export async function POST(request: Request) {
       // Leader leaves: delete whole registration
       await eventsRef.doc(registrationDoc.id).delete();
     } else {
-      // Participant leaves: remove self from participants
-      const newParticipants = (regData.participants || []).filter(
-        (member: string) => member !== email
-      );
-      if (newParticipants.length === 0) {
+      // Participant leaves: remove self atomically
+      const afterRemoveCount = (regData.participants || []).filter(
+        (member: string) => member !== normEmail
+      ).length;
+      if (afterRemoveCount === 0) {
         await eventsRef.doc(registrationDoc.id).delete();
       } else {
         await eventsRef
           .doc(registrationDoc.id)
-          .update({ participants: newParticipants });
+          .update({ participants: FieldValue.arrayRemove(normEmail) });
       }
     }
 

@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { adminDb } from "@/firebase/admin";
-import admin from "@/firebase/admin";
-import { getFirestore } from "firebase-admin/firestore";
 
 export async function POST(req: Request) {
   try {
@@ -42,8 +40,7 @@ export async function POST(req: Request) {
       });
 
     // Update registration document payment status
-    const firestore = getFirestore(admin.app());
-    const registrationsRef = firestore.collection("event_registrations");
+    const registrationsRef = adminDb.collection("event_registrations");
 
     const normalizedEmail = user_email.trim().toLowerCase();
     const eventIdStr = String(event_id).trim();

@@ -80,7 +80,7 @@ export default function EventRegisterPage() {
     if (user) fetchUsers();
   }, [user]);
 
-  // ✅ Check from backend if already registered
+  // Check from backend if already registered
   useEffect(() => {
     async function checkRegistration() {
       if (!event || !user) return;
