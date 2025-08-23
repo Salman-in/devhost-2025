@@ -22,6 +22,9 @@ export default function PaymentButton({
 }: PaymentButtonProps) {
   const [errorMsg, setErrorMsg] = useState<string>("");
 
+  // Construct the paymentPendingKey here for cleaning later
+  const paymentPendingKey = `paymentPending_event_${eventId}_${userEmail.toLowerCase()}`;
+
   const startPayment = async () => {
     try {
       // Request order creation from backend
@@ -75,15 +78,17 @@ export default function PaymentButton({
               createdAt: new Date().toISOString(),
             });
 
+            // Clear the paymentPending flag upon successful payment
+            sessionStorage.removeItem(paymentPendingKey);
+
             // Redirect to dashboard after success
             window.location.href = "/events/dashboard";
           } else {
-            // Show error message in UI
             setErrorMsg(verify.error || "Payment verification failed.");
           }
         },
         prefill: {
-          name: "Your Name", // Replace with user info if available
+          name: "Your Name",
           email: userEmail,
           contact: "",
         },

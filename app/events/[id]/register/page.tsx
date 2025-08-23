@@ -33,12 +33,17 @@ export default function EventRegisterPage() {
   const eventId = params?.id as string;
 
   const [loading, setLoading] = useState(false);
-  const [emails, setEmails] = useState<string[]>([]); // Team member emails
+  const [emails, setEmails] = useState<string[]>([]);
   const [error, setError] = useState("");
-  const [registeredUsers, setRegisteredUsers] = useState<string[]>([]); // For validation
+  const [registeredUsers, setRegisteredUsers] = useState<string[]>([]);
+  const [alreadyRegistered, setAlreadyRegistered] = useState(false);
 
   const event = eventData[eventId];
   const leaderEmail = user?.email?.toLowerCase() || "";
+
+  const paymentPendingKey = event
+    ? `paymentPending_event_${event.id}_${leaderEmail}`
+    : "";
 
   // Initialize one input field for team events
   useEffect(() => {
@@ -75,14 +80,37 @@ export default function EventRegisterPage() {
     if (user) fetchUsers();
   }, [user]);
 
-  // Check if payment is pending from sessionStorage
-  // If yes, redirect immediately to payment page to prevent returning to registration form
+  // ✅ Check from backend if already registered
+  useEffect(() => {
+    async function checkRegistration() {
+      if (!event || !user) return;
+      try {
+        const res = await fetch(
+          `/api/v1/event/status?eventId=${event.id}&email=${leaderEmail}`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.registered === true) {
+            // ✅ Mark user as registered
+            setAlreadyRegistered(true);
+            setError("Already Registered for this event");
+            // ✅ Clear paymentPending since this user has completed payment
+            sessionStorage.removeItem(paymentPendingKey);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to check registration status", err);
+      }
+    }
+    checkRegistration();
+  }, [event, user, leaderEmail, paymentPendingKey]);
+
+  // Only redirect to payment if payment is pending *and* NOT already registered
   useEffect(() => {
     if (!event || !user) return;
-    const paymentPendingKey = `paymentPending_event_${event.id}_${leaderEmail}`;
     const paymentPending = sessionStorage.getItem(paymentPendingKey);
 
-    if (paymentPending === "true") {
+    if (paymentPending === "true" && !alreadyRegistered) {
       router.push(
         `/payment?title=${encodeURIComponent(
           event.title
@@ -97,9 +125,9 @@ export default function EventRegisterPage() {
         }`
       );
     }
-  }, [event, user, leaderEmail, emails, router]);
+  }, [event, user, leaderEmail, emails, alreadyRegistered, router, paymentPendingKey]);
 
-  // Add a new empty member email input if allowed
+  // Add new empty member email input if allowed
   const handleAddMember = () => {
     const maxMembers = (event?.maxTeamSize ?? 2) - 1;
     if (emails.length < maxMembers) {
@@ -116,10 +144,15 @@ export default function EventRegisterPage() {
     });
   };
 
-  // Handle form submit and validations
+  // Handle form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !event) return;
+
+    if (alreadyRegistered) {
+      setError("Already Registered for this event");
+      return;
+    }
 
     try {
       setError("");
@@ -155,11 +188,9 @@ export default function EventRegisterPage() {
           setLoading(false);
           return;
         }
-
         setEmails(normalizedEmails);
       }
 
-      // Prepare registration payload
       const payload = {
         event_id: event.id,
         type: event.type,
@@ -167,7 +198,6 @@ export default function EventRegisterPage() {
         members: event.type === "team" ? emails : [],
       };
 
-      // Register user with backend
       const res = await fetch("/api/v1/event/register", {
         method: "POST",
         headers: {
@@ -179,14 +209,22 @@ export default function EventRegisterPage() {
 
       if (!res.ok) {
         const data = await res.json();
+        if (
+          res.status === 409 ||
+          data.error?.toLowerCase().includes("already registered")
+        ) {
+          setAlreadyRegistered(true);
+          // ✅ Clear paymentPending here too
+          sessionStorage.removeItem(paymentPendingKey);
+          throw new Error("Already Registered for this event");
+        }
         throw new Error(data.error || "Event registration failed");
       }
 
-      // Save payment pending flag in sessionStorage for this user and event
-      const paymentPendingKey = `paymentPending_event_${event.id}_${leaderEmail}`;
+      // Save paymentPending flag
       sessionStorage.setItem(paymentPendingKey, "true");
 
-      // Redirect to payment page with all needed params
+      // Redirect to payment
       router.push(
         `/payment?title=${encodeURIComponent(
           event.title
@@ -235,10 +273,11 @@ export default function EventRegisterPage() {
                   className="w-full border rounded p-2 text-black"
                   required
                   autoComplete="email"
+                  disabled={alreadyRegistered}
                 />
               ))}
 
-              {emails.length < maxMembers && (
+              {emails.length < maxMembers && !alreadyRegistered && (
                 <Button
                   type="button"
                   className="w-full bg-gray-200 text-black hover:bg-gray-300"
@@ -262,10 +301,18 @@ export default function EventRegisterPage() {
 
           <Button
             type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            disabled={loading || alreadyRegistered}
+            className={`w-full ${
+              alreadyRegistered
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            } text-white`}
           >
-            {loading ? "Registering..." : "Register"}
+            {alreadyRegistered
+              ? "Already Registered"
+              : loading
+              ? "Registering..."
+              : "Register"}
           </Button>
         </form>
       </div>
