@@ -1,5 +1,40 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+# Event Registration
+
+
+
+
+
+
+
+https://github.com/user-attachments/assets/d0d2a5c4-6481-49db-945d-01dbfc0b4589
+
+
+
+
+# Indivual Registration
+
+
+
+
+
+![Indivual Register](https://github.com/user-attachments/assets/50103b16-3e28-4223-9a8d-c9efe9b07b86)
+
+# Payment Page
+
+
+
+
+
+
+![Payment Page](https://github.com/user-attachments/assets/d06c6a1b-94f2-4b26-b568-13dfcd5ce333)
+
+
+
+
+
+
 ## Getting Started
 
 First, run the development server:
