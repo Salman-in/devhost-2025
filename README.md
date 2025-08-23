@@ -15,11 +15,11 @@ bun dev
 ```
 # Event Registration
 
-https://github.com/user-attachments/assets/d0d2a5c4-6481-49db-945d-01dbfc0b4589
+![Event Registration flow](https://github.com/user-attachments/assets/d0d2a5c4-6481-49db-945d-01dbfc0b4589)
 
 # Individual Registration
 
-![Indivual Register](https://github.com/user-attachments/assets/50103b16-3e28-4223-9a8d-c9efe9b07b86)
+![Individual registration Screen](https://github.com/user-attachments/assets/50103b16-3e28-4223-9a8d-c9efe9b07b86)
 
 # Payment Page
 
