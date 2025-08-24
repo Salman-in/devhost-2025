@@ -13,18 +13,6 @@ pnpm dev
 # or
 bun dev
 ```
-# Event Registration
-
-![Event Registration flow](https://github.com/user-attachments/assets/d0d2a5c4-6481-49db-945d-01dbfc0b4589)
-
-# Individual Registration
-
-![Individual registration Screen](https://github.com/user-attachments/assets/50103b16-3e28-4223-9a8d-c9efe9b07b86)
-
-# Payment Page
-
-![Payment Page](https://github.com/user-attachments/assets/d06c6a1b-94f2-4b26-b568-13dfcd5ce333)
-
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
