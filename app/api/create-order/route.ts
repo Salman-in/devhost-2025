@@ -22,10 +22,15 @@ export async function POST(req: Request) {
       );
     }
 
-    const instance = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID!,
-      key_secret: process.env.RAZORPAY_KEY_SECRET!,
-    });
+    const key_id = process.env.RAZORPAY_KEY_ID;
+    const key_secret = process.env.RAZORPAY_KEY_SECRET;
+    if (!key_id || !key_secret) {
+      return NextResponse.json(
+        { error: "Server misconfiguration: missing Razorpay credentials" },
+        { status: 500 }
+      );
+    }
+    const instance = new Razorpay({ key_id, key_secret });
 
     const options = {
       amount,

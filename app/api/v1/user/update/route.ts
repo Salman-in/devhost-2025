@@ -2,6 +2,7 @@ import { adminDb } from "@/firebase/admin";
 import { adminAuth } from "@/firebase/admin";
 import { verifyToken } from "@/lib/verify-token";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,8 +12,24 @@ export async function POST(req: NextRequest) {
 
     const { uid } = decoded;
 
-    const profileData = await req.json();
-    const { name, email, phone, college, branch, year, bio } = profileData;
+    const body = await req.json();
+    const ProfileSchema = z.object({
+      name: z.string().trim().min(1).max(100),
+      email: z.string().trim().email(),
+      phone: z.string().trim().max(20).optional().default(""),
+      college: z.string().trim().max(100).optional().default(""),
+      branch: z.string().trim().max(100).optional().default(""),
+      year: z.coerce.number().int().min(1).max(8),
+      bio: z.string().trim().max(500).optional().default(""),
+    });
+    const parsed = ProfileSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid profile data" },
+        { status: 400 }
+      );
+    }
+    const { name, email, phone, college, branch, year, bio } = parsed.data;
 
     const userRef = adminDb.collection("users").doc(uid);
     await userRef.update({

@@ -117,7 +117,7 @@ export const allEvents: EventDetail[] = [
 ];
 
 export const eventData: Record<string, EventDetail> = allEvents.reduce((acc, event) => {
-  acc[event.id.toString()] = event;
+  acc[event.id] = event;
   return acc;
 }, {} as Record<string, EventDetail>);
 

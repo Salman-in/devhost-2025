@@ -9,7 +9,7 @@ interface PaymentButtonProps {
   amount: number;
   eventTitle: string;
   organizer: string;
-  eventId: string | number;
+  eventId: number;
   userEmail: string;
 }
 
@@ -41,8 +41,15 @@ export default function PaymentButton({
       }
 
       // Initialize Razorpay checkout options
+      const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+      if (!keyId) {
+        setErrorMsg(
+          "Payment is temporarily unavailable. Missing Razorpay key."
+        );
+        return;
+      }
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+        key: keyId,
         amount: order.amount,
         currency: order.currency,
         name: eventTitle,
@@ -67,16 +74,20 @@ export default function PaymentButton({
 
           if (verify.ok) {
             // Save payment info to Firestore
-            await setDoc(doc(db, "payments", response.razorpay_payment_id), {
-              orderId: response.razorpay_order_id,
-              paymentId: response.razorpay_payment_id,
-              status: "Paid",
-              amount: order.amount,
-              eventTitle,
-              organizer,
-              userEmail,
-              createdAt: new Date().toISOString(),
-            },{merge:true});
+            await setDoc(
+              doc(db, "payments", response.razorpay_payment_id),
+              {
+                orderId: response.razorpay_order_id,
+                paymentId: response.razorpay_payment_id,
+                status: "Paid",
+                amount: order.amount,
+                eventTitle,
+                organizer,
+                userEmail,
+                createdAt: new Date().toISOString(),
+              },
+              { merge: true }
+            );
 
             // Clear the paymentPending flag upon successful payment
             sessionStorage.removeItem(paymentPendingKey);

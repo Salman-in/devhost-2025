@@ -8,9 +8,23 @@ import { allEvents } from "../lib/events";
 
 export default function Events() {
   const [selectedCard, setSelectedCard] = useState<EventDetail | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Filter the events to display on this page
   const devHostEvents = allEvents.filter((card) => card.id <= 9);
+
+  // Handle opening the modal when a card is clicked
+  const handleCardClick = (id: number) => {
+    const card = devHostEvents.find((card) => card.id === id) || null;
+    setSelectedCard(card);
+    setIsModalOpen(true);
+  };
+
+  // Handle closing the modal
+  const handleCloseModal = () => {
+    setSelectedCard(null);
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="flex justify-center pb-10 items-center w-full">
@@ -20,14 +34,11 @@ export default function Events() {
         </h2>
         <EventCardGrid
           cards={devHostEvents}
-          onCardClick={(id: number) => {
-            const card = devHostEvents.find((card) => card.id === id) || null;
-            setSelectedCard(card);
-          }}
+          onCardClick={handleCardClick}
         />
       </div>
       {selectedCard && (
-        <EventModal card={selectedCard} onClose={() => setSelectedCard(null)} />
+        <EventModal card={selectedCard} open={isModalOpen} onClose={handleCloseModal} />
       )}
     </div>
   );

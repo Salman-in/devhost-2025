@@ -11,19 +11,19 @@ interface EventDetail {
   title: string;
   type: "team" | "individual";
   maxTeamSize?: number;
-  fee: number;
+  amount: number;
 }
 
 // Events metadata
 const eventData: Record<string, EventDetail> = {
-  "1": { id: 1, title: "CSS Action", type: "individual", fee: 0 },
-  "2": { id: 2, title: "Code Forge", type: "individual", fee: 0 },
-  "3": { id: 3, title: "Bit Breaker", type: "team", maxTeamSize: 2, fee: 0 },
-  "5": { id: 5, title: "PitchX", type: "team", maxTeamSize: 3, fee: 0 },
-  "6": { id: 6, title: "BGMI", type: "team", maxTeamSize: 4, fee: 100 },
-  "9": { id: 9, title: "The Surge", type: "team", maxTeamSize: 5, fee: 100 },
-  "7": { id: 7, title: "Speed Cuber", type: "individual", fee: 50 },
-  "8": { id: 8, title: "Blazzing Fingers", type: "individual", fee: 50 },
+  "1": { id: 1, title: "CSS Action", type: "individual", amount: 0 },
+  "2": { id: 2, title: "Code Forge", type: "individual", amount: 0 },
+  "3": { id: 3, title: "Bit Breaker", type: "team", maxTeamSize: 2, amount: 0 },
+  "5": { id: 5, title: "PitchX", type: "team", maxTeamSize: 3, amount: 0 },
+  "6": { id: 6, title: "BGMI", type: "team", maxTeamSize: 4, amount: 100 },
+  "9": { id: 9, title: "The Surge", type: "team", maxTeamSize: 5, amount: 100 },
+  "7": { id: 7, title: "Speed Cuber", type: "individual", amount: 50 },
+  "8": { id: 8, title: "Blazzing Fingers", type: "individual", amount: 50 },
 };
 
 export default function EventRegisterPage() {
@@ -91,10 +91,10 @@ export default function EventRegisterPage() {
         if (res.ok) {
           const data = await res.json();
           if (data?.registered === true) {
-            // ✅ Mark user as registered
+            // Mark user as registered
             setAlreadyRegistered(true);
             setError("Already Registered for this event");
-            // ✅ Clear paymentPending since this user has completed payment
+            // Clear paymentPending since this user has completed payment
             sessionStorage.removeItem(paymentPendingKey);
           }
         }
@@ -121,11 +121,19 @@ export default function EventRegisterPage() {
         )}&userEmail=${encodeURIComponent(
           user.email || ""
         )}&members=${encodeURIComponent(emails.join(","))}&amount=${
-          event.fee * 100
+          event.amount * 100
         }`
       );
     }
-  }, [event, user, leaderEmail, emails, alreadyRegistered, router, paymentPendingKey]);
+  }, [
+    event,
+    user,
+    leaderEmail,
+    emails,
+    alreadyRegistered,
+    router,
+    paymentPendingKey,
+  ]);
 
   // Add new empty member email input if allowed
   const handleAddMember = () => {
@@ -168,7 +176,9 @@ export default function EventRegisterPage() {
           return;
         }
 
-        const normalizedEmails = emails.map((e) => e.trim().toLowerCase());
+        const normalizedEmails = Array.from(
+          new Set(emails.map((e) => e.trim().toLowerCase()))
+        );
 
         if (normalizedEmails.includes(leaderEmail)) {
           setError("Team members cannot include the leader's email.");
@@ -214,7 +224,7 @@ export default function EventRegisterPage() {
           data.error?.toLowerCase().includes("already registered")
         ) {
           setAlreadyRegistered(true);
-          // ✅ Clear paymentPending here too
+          // Clear paymentPending here too
           sessionStorage.removeItem(paymentPendingKey);
           throw new Error("Already Registered for this event");
         }
@@ -235,7 +245,7 @@ export default function EventRegisterPage() {
         )}&userEmail=${encodeURIComponent(
           user.email || ""
         )}&members=${encodeURIComponent(emails.join(","))}&amount=${
-          event.fee * 100
+          event.amount * 100
         }`
       );
     } catch (err: any) {

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { FieldValue } from "firebase-admin/firestore";
 import { adminDb, adminAuth } from "@/firebase/admin"; 
 
 export async function GET(request: NextRequest) {
@@ -32,7 +31,7 @@ export async function GET(request: NextRequest) {
       .get();
 
     // Merge results without duplicates
-    const registrationsMap = new Map();
+    const registrationsMap = new Map<string, any>();
 
     leaderSnapshot.forEach((doc) => {
       registrationsMap.set(doc.id, { id: doc.id, ...doc.data() });
@@ -42,9 +41,9 @@ export async function GET(request: NextRequest) {
       registrationsMap.set(doc.id, { id: doc.id, ...doc.data() });
     });
 
-    // Convert to array and normalize createdAt date
+    // Convert to array and normalize createdAt date, convert event_id to number 
     const registrations = Array.from(registrationsMap.values()).map((reg) => ({
-      event_id: reg.event_id,
+      event_id: typeof reg.event_id === "string" ? Number(reg.event_id) : reg.event_id,
       type: reg.type,
       leader_email: reg.leader_email,
       participants: reg.participants,
