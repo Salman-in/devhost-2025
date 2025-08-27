@@ -18,8 +18,8 @@ export async function POST(req: Request) {
 
     const order = await instance.orders.create(options);
     return NextResponse.json(order);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.log(err)
-    return NextResponse.json({ error: err|| String(err) }, { status: 500 });
+    return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 500 });
   }
 }

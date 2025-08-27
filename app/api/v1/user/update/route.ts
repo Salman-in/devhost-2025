@@ -1,22 +1,29 @@
-import { adminDb } from '@/firebase/admin';
+import { adminDb, verifySessionCookie } from '@/firebase/admin';
 import { adminAuth } from '@/firebase/admin';
-import { verifyToken } from '@/lib/verify-token';
+import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
-    const decoded = await verifyToken(req);
-    if (!decoded) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    const cookieStore = await cookies();
+    const session = cookieStore.get('__session')?.value;
+
+    if (!session) {
+      return NextResponse.json({ error: 'Missing session cookie' }, { status: 401 });
+    }
+    const decoded = await verifySessionCookie(session);
+    if (!decoded) {
+      return NextResponse.json({ error: 'Invalid session cookie' }, { status: 401 });
+    }
 
     const { uid } = decoded;
 
     const profileData = await req.json();
-    const { name, email, phone, college, branch, year, bio } = profileData;
+    const { name, email, phone, college, branch, year } = profileData;
 
     const userRef = adminDb.collection('users').doc(uid);
     await userRef.update({
       name,
-      email,
       phone,
       college,
       branch,
@@ -37,8 +44,8 @@ export async function POST(req: NextRequest) {
       updatedAt: new Date().toISOString()
     });
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: 'Profile updated successfully',
       refreshToken: true // Signal client to refresh token
     });

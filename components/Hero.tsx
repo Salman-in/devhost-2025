@@ -4,9 +4,27 @@ import Logo from "./animated/Logo";
 import DecryptText from "./animated/TextAnimation";
 import { User } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Hero() {
+  const router = useRouter();
+  const { user, signInWithGoogle } = useAuth();
+
+const handleGoogleLogin = async () => {
+  if (user) {
+    router.push('/profile');
+  } else {
+    try {
+      await signInWithGoogle();
+      // Wait for auth state to update, then redirect
+        router.push('/profile');
+    } catch (error) {
+      console.error('Sign in failed:', error);
+    }
+  }
+};
+    
   return (
     <Fragment>
       <div className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden text-zinc-300">
@@ -69,17 +87,16 @@ export default function Hero() {
 
         {/* Floating Dock (Top Right) */}
         <div className="font-orbitron absolute top-10 right-10 z-20 flex gap-4">
-          <Link href="/profile" className="cursor-pointer">
             <button
               className="bg-primary relative flex cursor-pointer items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest text-black uppercase transition"
               style={{
                 clipPath:
                   "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
               }}
+              onClick={handleGoogleLogin}
             >
               <User size={14} /> Profile
             </button>
-          </Link>
         </div>
 
         {/* Scroll Hint */}

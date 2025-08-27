@@ -29,5 +29,13 @@ if (!admin.apps.length) {
   adminAuth = admin.auth(app);
 }
 
+export async function createSessionCookie(idToken: string, expiresIn: number) {
+  return adminAuth.createSessionCookie(idToken, { expiresIn });
+}
+
+export async function verifySessionCookie(session: string) {
+  return adminAuth.verifySessionCookie(session, true);
+}
+
 export { adminDb, adminAuth };
 export default admin;

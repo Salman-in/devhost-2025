@@ -7,11 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, CheckIcon, CopyIcon } from "lucide-react";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function HackathonDashboardPage() {
     const router = useRouter();
-    const { user, loading, profile, setProfile, team, teamLoading, setTeam } = useAuth();
+    const { user, loading, profile, setProfile, team, teamLoading, setTeam, profileLoading } = useAuth();
+    const [initialDataLoaded, setInitialDataLoaded] = useState(false);
     const [loadingStates, setLoadingStates] = useState({
         removing: false,
         deleting: false,
@@ -200,9 +203,9 @@ export default function HackathonDashboardPage() {
                 setProfile({ ...profile, team_id: '' });
                 setSuccessStates(prev => ({ ...prev, deleted: true }));
 
-                // Navigate after short delay
+                // Reload the page after short delay
                 setTimeout(() => {
-                    router.push('/hackathon/dashboard');
+                    window.location.reload();
                 }, 800);
             } else {
                 const errorData = await res.json();
@@ -273,6 +276,20 @@ export default function HackathonDashboardPage() {
             });
         }
     }, [team]);
+
+    // Track when initial data loading is complete
+    useEffect(() => {
+        if (!loading && !profileLoading && !teamLoading && profile !== null) {
+            setInitialDataLoaded(true);
+        }
+    }, [loading, profileLoading, teamLoading, profile]);
+
+    // Redirect to hackathon page if no team found
+    useEffect(() => {
+        if (initialDataLoaded && !form.team_id) {
+            router.replace('/hackathon');
+        }
+    }, [initialDataLoaded, form.team_id, router]);
 
     const handleLeaveTeam = async () => {
         if (!user) return;
@@ -631,19 +648,14 @@ export default function HackathonDashboardPage() {
 
     useEffect(() => {
         if (!loading && !user) {
-            router.push('/signin');
+            router.push('/');
         }
     }, [user, loading, router]);
 
-    if (loading || teamLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Loading...</p>
-                </div>
-            </div>
-        );
+    // Show loading while initial data is being fetched
+    // This prevents the flash of "No Team Found" before data loads
+    if (loading || !initialDataLoaded || (user && (profileLoading || teamLoading))) {
+        return <LoadingSpinner />;
     }
 
     if (!user) {
@@ -664,26 +676,12 @@ export default function HackathonDashboardPage() {
                 </div>
             </div>
             <div className="w-full max-w-4xl">
-                {form.team_id ? (
+                {form.team_id && (
                     form.team_id === user?.uid ? (
                         <div className="animate-fade-in-up">{displayTeamLeader()}</div>
                     ) : (
                         <div className="animate-fade-in-up">{displayTeamMember()}</div>
                     )
-                ) : (
-                    <div className="flex flex-col items-center justify-center bg-white rounded-xl shadow-lg p-10 animate-fade-in-up">
-                        <img src="/globe.svg" alt="No Team" className="w-24 h-24 mb-4 opacity-80" />
-                        <h2 className="text-2xl font-semibold text-gray-800 mb-2">No Team Found</h2>
-                        <p className="text-gray-500 mb-6">You are not part of any team yet. Create or join a team to get started!</p>
-                        <div className="flex gap-4">
-                            <Link href="/hackathon/join">
-                                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6">Join a Team</Button>
-                            </Link>
-                            <Link href="/hackathon/create">
-                                <Button className="bg-purple-600 hover:bg-purple-700 text-white px-6">Create a Team</Button>
-                            </Link>
-                        </div>
-                    </div>
                 )}
             </div>
         </div>

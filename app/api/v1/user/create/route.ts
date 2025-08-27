@@ -1,13 +1,24 @@
-import { adminDb } from '@/firebase/admin';
-import { verifyToken } from '@/lib/verify-token';
+import { adminDb, verifySessionCookie } from '@/firebase/admin';
+import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
-    const decoded = await verifyToken(req);
-    if (!decoded) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    const cookieStore = await cookies();
+    const session = cookieStore.get('__session')?.value;
 
-    const { uid, email, name, phone } = decoded;
+    if (!session) {
+      return NextResponse.json({ error: 'Missing session cookie' }, { status: 401 });
+    }
+    const decoded = await verifySessionCookie(session);
+    if (!decoded) {
+      return NextResponse.json({ error: 'Invalid session cookie' }, { status: 401 });
+    }
+
+    const { uid } = decoded;
+
+    const profileData = await req.json();
+    const { name, email, phone, college, branch, year } = profileData;
 
     const userRef = adminDb.collection('users').doc(uid);
     const userSnap = await userRef.get();
@@ -17,9 +28,10 @@ export async function POST(req: NextRequest) {
         name,
         email,
         createdAt: new Date().toISOString(),
-        branch: '',
-        college: '',
-        year: 1,
+        branch,
+        college,
+        phone,
+        year,
         team_id: ''
       });
     }

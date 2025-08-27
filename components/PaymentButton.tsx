@@ -1,6 +1,39 @@
 "use client";
 import Script from "next/script";
 
+interface SuccessResponse {
+  razorpay_signature: string;
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+}
+
+interface CheckoutOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  image?: string;
+  order_id: string;
+  handler: (response: SuccessResponse) => void;
+  prefill?: {
+    name?: string;
+    email?: string;
+    contact?: string;
+    method?: "card" | "netbanking" | "wallet" | "emi" | "upi";
+  };
+  theme?: {
+    color: string;
+  };
+  notes?: Record<string, any>;
+}
+
+declare global {
+  interface Window {
+    Razorpay: new (options: CheckoutOptions) => { open(): void };
+  }
+}
+
 export default function PaymentButton({ amount = 100 }: { amount?: number }) {
   const startPayment = async () => {
     // Create order on server
@@ -19,7 +52,7 @@ export default function PaymentButton({ amount = 100 }: { amount?: number }) {
       name: "Hackathon Project",
       description: "Ticket",
       order_id: order.id,
-      handler: async function (response: any) {
+      handler: async function (response: SuccessResponse) {
         // Verify on server
         const verifyRes = await fetch("/api/verify-payment", {
           method: "POST",
@@ -45,7 +78,7 @@ export default function PaymentButton({ amount = 100 }: { amount?: number }) {
       theme: { color: "#3399cc" },
     };
 
-    const rzp = new (window as any).Razorpay(options);
+    const rzp = new window.Razorpay(options);
     rzp.open();
   };
 

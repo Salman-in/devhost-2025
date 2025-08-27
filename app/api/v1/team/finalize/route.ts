@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     const decoded = await verifyToken(req);
     if (!decoded) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
 
-    const { uid, name } = decoded;
+    const { uid } = decoded;
 
     const teamRef = adminDb.collection('teams').doc(uid);
     const teamSnap = await teamRef.get();

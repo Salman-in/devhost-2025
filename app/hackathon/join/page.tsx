@@ -9,7 +9,7 @@ import {useRouter} from "next/navigation";
 
 export default function HackathonJoinTeam() {
     const router = useRouter();
-    const { user, loading } = useAuth();
+    const { user, loading, refreshProfileAndTeam } = useAuth();
     const [form, setForm] = useState({
         leader_email: '',
     });
@@ -54,6 +54,12 @@ export default function HackathonJoinTeam() {
             if (res.ok) {
                 setJoined(true);
                 setIsDirty(false);
+                // Refresh profile and team data immediately
+                await refreshProfileAndTeam();
+                // Then redirect to dashboard
+                setTimeout(() => {
+                    router.push('/hackathon/dashboard');
+                }, 1000);
             } else {
                 setError('Team leader not found or team is already finalized. Please check the email and try again.');
             }
@@ -63,14 +69,13 @@ export default function HackathonJoinTeam() {
         } finally {
             setIsJoining(false);
             setTimeout(() => setJoined(false), 2000);
-            router.replace('/hackathon/dashboard');
         }
     };
 
     useEffect(() => {
         if (join) {
             const timer = setTimeout(() => {
-                router.replace('/hackathon/dashboard');
+                router.push('/hackathon/dashboard');
             }, 1000);
             return () => clearTimeout(timer);
         }
