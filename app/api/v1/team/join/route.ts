@@ -1,11 +1,13 @@
-import { adminDb } from '@/firebase/admin';
-import { verifyToken } from '@/lib/verify-token';
-import { NextRequest, NextResponse } from 'next/server';
+import { adminDb } from "@/firebase/admin";
+import { verifyToken } from "@/lib/verify-token";
+import { NextRequest, NextResponse } from "next/server";
+import { FieldValue } from "firebase-admin/firestore";
 
 export async function POST(req: NextRequest) {
   try {
     const decoded = await verifyToken(req);
-    if (!decoded) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    if (!decoded)
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
 
     const { uid, name } = decoded;
 
@@ -13,18 +15,25 @@ export async function POST(req: NextRequest) {
     const { leader_email } = searchData;
 
     if (!leader_email) {
-      return NextResponse.json({ error: 'Team leader email is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Team leader email is required" },
+        { status: 400 },
+      );
     }
 
     // Query teams by leader email with index
-    const teamsQuery = await adminDb.collection('teams')
-      .where('team_leader_email', '==', leader_email.toLowerCase().trim())
-      .where('finalized', '==', false)
+    const teamsQuery = await adminDb
+      .collection("teams")
+      .where("team_leader_email", "==", leader_email.toLowerCase().trim())
+      .where("finalized", "==", false)
       .limit(1)
       .get();
 
     if (teamsQuery.empty) {
-      return NextResponse.json({ error: 'Team not found or already finalized' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Team not found or already finalized" },
+        { status: 404 },
+      );
     }
 
     const teamDoc = teamsQuery.docs[0];
@@ -32,25 +41,24 @@ export async function POST(req: NextRequest) {
     const teamData = teamDoc.data();
     const team_id = teamData.team_id;
 
-    // Add user to team's peers array
     await teamRef.update({
-      peers: [{ id: uid, name: name }],
+      peers: FieldValue.arrayUnion({ id: uid, name: name }),
       updatedAt: new Date().toISOString(),
     });
 
     // Update user's team_id
-    const userRef = adminDb.collection('users').doc(uid);
+    const userRef = adminDb.collection("users").doc(uid);
     await userRef.update({
       team_id: team_id,
       updatedAt: new Date().toISOString(),
     });
 
-    return NextResponse.json({ 
-      success: true, 
-      message: `${uid} joined team ${team_id} successfully`
+    return NextResponse.json({
+      success: true,
+      message: `${uid} joined team ${team_id} successfully`,
     });
   } catch (err) {
-    console.error('API error:', err);
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+    console.error("API error:", err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

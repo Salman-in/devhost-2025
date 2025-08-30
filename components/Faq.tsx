@@ -145,7 +145,7 @@ export default function FAQ() {
                 <CyberpunkBorder>
                   <div className="relative bg-black/95 backdrop-blur-sm transition-all duration-300 group-hover:shadow-[0_0_20px_#a3ff1230]">
                     {/* Side accent bar */}
-                    <div className="absolute top-0 left-0 h-full w-1 origin-top scale-y-0 transform bg-primary shadow-[0_0_10px_#a3ff12] transition-transform duration-300 group-hover:scale-y-100"></div>
+                    <div className="bg-primary absolute top-0 left-0 h-full w-1 origin-top scale-y-0 transform shadow-[0_0_10px_#a3ff12] transition-transform duration-300 group-hover:scale-y-100"></div>
 
                     {/* Content */}
                     <AccordionTrigger className="relative px-8 py-6 text-left text-base font-medium text-white transition-all duration-300 group-hover:pl-12 group-hover:text-[#a3ff12] md:text-lg">
@@ -168,9 +168,6 @@ export default function FAQ() {
                         {faq.answer}
                       </div>
                     </AccordionContent>
-
-                    {/* Scan line effect */}
-                    <div className="absolute inset-0 -skew-x-12 transform bg-gradient-to-r from-transparent via-[#a3ff1210] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
                   </div>
                 </CyberpunkBorder>
               </AccordionItem>

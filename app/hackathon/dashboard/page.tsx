@@ -7,14 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowLeft, CheckIcon, CopyIcon } from "lucide-react";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { useUserAndTeam } from "@/lib/hooks/useUserData";
 
 export default function HackathonDashboardPage() {
     const router = useRouter();
-    const { user, loading, profile, setProfile, team, teamLoading, setTeam, profileLoading } = useAuth();
-    const [initialDataLoaded, setInitialDataLoaded] = useState(false);
+    const { user, loading: authLoading } = useAuth();
+    const { profile, team, isLoading, hasTeam, refreshAll } = useUserAndTeam();
+    
     const [loadingStates, setLoadingStates] = useState({
         removing: false,
         deleting: false,
@@ -38,21 +39,6 @@ export default function HackathonDashboardPage() {
         updated: false,
         isValidating: false,
         validationResult: null as { accessible: boolean; message: string; status: number } | null
-    });
-    const [form, setForm] = useState<{
-        team_id: string;
-        team_name: string;
-        team_leader: string;
-        peers: Array<{ id: string; name: string }>;
-        drive_link: string;
-        finalized: boolean;
-    }>({
-        team_id: '',
-        team_name: '',
-        team_leader: '',
-        peers: [],
-        drive_link: '',
-        finalized: false,
     });
 
     const validateDriveLink = async (driveLink: string) => {
@@ -106,7 +92,7 @@ export default function HackathonDashboardPage() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${idToken}`,
                 },
-                body: JSON.stringify({ drive_link, team_id: form.team_id }),
+                body: JSON.stringify({ drive_link, team_id: team?.team_id }),
             });
 
             if (res.ok) {
@@ -116,11 +102,8 @@ export default function HackathonDashboardPage() {
                     showModal: false,
                     isDirty: false
                 }));
-                setForm(prev => ({ ...prev, drive_link }));
-                // Update team state immediately
-                if (team) {
-                    setTeam({ ...team, drive_link });
-                }
+                // Refresh team data to get updated drive link
+                refreshAll();
                 // Reset success state after showing success
                 setTimeout(() => {
                     setDriveLinkState(prev => ({ ...prev, updated: false }));
@@ -160,14 +143,10 @@ export default function HackathonDashboardPage() {
             });
 
             if (res.ok) {
-                // Update states immediately
-                setTeam(null);
-                setProfile({ ...profile, team_id: '' });
                 setSuccessStates(prev => ({ ...prev, removed: true }));
-
-                // Refresh after short delay
+                // Refresh data after removal
                 setTimeout(() => {
-                    window.location.reload();
+                    refreshAll();
                 }, 800);
             } else {
                 const errorData = await res.json();
@@ -194,15 +173,11 @@ export default function HackathonDashboardPage() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${idToken}`,
                 },
-                body: JSON.stringify({ team_id: form.team_id }),
+                body: JSON.stringify({ team_id: team?.team_id }),
             });
 
             if (res.ok) {
-                // Update states immediately
-                setTeam(null);
-                setProfile({ ...profile, team_id: '' });
                 setSuccessStates(prev => ({ ...prev, deleted: true }));
-
                 // Reload the page after short delay
                 setTimeout(() => {
                     window.location.reload();
@@ -233,19 +208,14 @@ export default function HackathonDashboardPage() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${idToken}`,
                 },
-                body: JSON.stringify({ team_id: form.team_id }),
+                body: JSON.stringify({ team_id: team?.team_id }),
             });
 
             if (res.ok) {
-                // Update team state to reflect finalized status immediately
-                if (team) {
-                    setTeam({ ...team, finalized: true });
-                }
-                // Update form state to reflect finalized status
-                setForm(prev => ({ ...prev, finalized: true }));
                 setSuccessStates(prev => ({ ...prev, finalized: true }));
                 setFinalizeError(null);
-
+                // Refresh team data to reflect finalized status
+                refreshAll();
                 // Reset success state
                 setTimeout(() => {
                     setSuccessStates(prev => ({ ...prev, finalized: false }));
@@ -264,33 +234,6 @@ export default function HackathonDashboardPage() {
         }
     }
 
-    useEffect(() => {
-        if (team) {
-            setForm({
-                team_id: team.team_id || '',
-                team_name: team.team_name || '',
-                team_leader: team.team_leader || '',
-                peers: (team.peers as Array<{ id: string; name: string }>) || [],
-                drive_link: team.drive_link || '',
-                finalized: team.finalized || false,
-            });
-        }
-    }, [team]);
-
-    // Track when initial data loading is complete
-    useEffect(() => {
-        if (!loading && !profileLoading && !teamLoading && profile !== null) {
-            setInitialDataLoaded(true);
-        }
-    }, [loading, profileLoading, teamLoading, profile]);
-
-    // Redirect to hackathon page if no team found
-    useEffect(() => {
-        if (initialDataLoaded && !form.team_id) {
-            router.replace('/hackathon');
-        }
-    }, [initialDataLoaded, form.team_id, router]);
-
     const handleLeaveTeam = async () => {
         if (!user) return;
 
@@ -304,15 +247,11 @@ export default function HackathonDashboardPage() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${idToken}`,
                 },
-                body: JSON.stringify({ team_id: form.team_id }),
+                body: JSON.stringify({ team_id: team?.team_id }),
             });
 
             if (res.ok) {
-                // Update states immediately
-                setTeam(null);
-                setProfile({ ...profile, team_id: '' });
                 setSuccessStates(prev => ({ ...prev, left: true }));
-
                 // Navigate after short delay
                 setTimeout(() => {
                     window.location.reload();
@@ -329,6 +268,13 @@ export default function HackathonDashboardPage() {
             setLoadingStates(prev => ({ ...prev, leaving: false }));
         }
     }
+
+    const copyTeamLeaderEmail = () => {
+        const leaderEmail = profile?.email || '';
+        navigator.clipboard.writeText(leaderEmail);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+    };
 
     const renderDriveLinkModal = () => {
         if (!driveLinkState.showModal) return null;
@@ -441,23 +387,18 @@ export default function HackathonDashboardPage() {
         );
     };
 
-    const copyTeamLeaderEmail = () => {
-        const leaderEmail = profile?.email || '';
-        navigator.clipboard.writeText(leaderEmail);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
-    };
-
     const displayTeamLeader = () => {
+        if (!team) return null;
+        
         return (
             <div className="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8">
                 {/* Team Name with Copy Email Button */}
                 <div className="text-center mb-6">
                     <h2 className="text-3xl font-bold text-blue-900 mb-3 tracking-tight">
-                        {form.team_name || 'Team Name'}
-                        {form.finalized && <span className="ml-2 text-green-600 text-lg align-middle">✓ Finalized</span>}
+                        {team.team_name || 'Team Name'}
+                        {team.finalized && <span className="ml-2 text-green-600 text-lg align-middle">✓ Finalized</span>}
                     </h2>
-                    {!form.finalized && (
+                    {!team.finalized && (
                         <div className="flex text-black justify-center space-x-2 items-center">
                             <div className="text-neutral-600">
                                 Email: {profile?.email}
@@ -480,16 +421,16 @@ export default function HackathonDashboardPage() {
                         <div className="flex items-center justify-between bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg px-4 py-3 border border-yellow-200">
                             <div className="flex items-center gap-3">
                                 <span className="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-bold">LEADER</span>
-                                <span className="text-gray-800 font-medium">{form.team_leader}</span>
+                                <span className="text-gray-800 font-medium">{team.team_leader}</span>
                             </div>
                         </div>
 
                         {/* Team Members */}
-                        {form.peers && form.peers.length > 0 ? (
-                            form.peers.map((peer) => (
+                        {team.peers && team.peers.length > 0 ? (
+                            team.peers.map((peer) => (
                                 <div key={peer.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border border-gray-200">
                                     <span className="text-gray-800 font-medium">{peer.name}</span>
-                                    {!form.finalized && (
+                                    {!team.finalized && (
                                         <button
                                             onClick={() => handleRemovePeer(peer.id, peer.name)}
                                             className="bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600 transition-colors"
@@ -510,23 +451,23 @@ export default function HackathonDashboardPage() {
 
                 {/* Actions */}
                 <div className="flex flex-col gap-3 mt-6">
-                    {form.finalized && form.drive_link ? (
+                    {team.finalized && team.drive_link ? (
                         /* Show drive link if finalized and link exists */
                         <a
-                            href={form.drive_link}
+                            href={team.drive_link}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full bg-blue-500 text-white px-4 py-3 rounded-lg hover:bg-blue-600 transition-colors text-center block font-medium"
                         >
                             Open Drive Link
                         </a>
-                    ) : !form.finalized ? (
+                    ) : !team.finalized ? (
                         /* Show add drive link button if not finalized */
                         <button
                             onClick={() => {
                                 setDriveLinkState(prev => ({
                                     ...prev,
-                                    link: form.drive_link || '',
+                                    link: team.drive_link || '',
                                     isDirty: false,
                                     error: '',
                                     showModal: true
@@ -538,13 +479,13 @@ export default function HackathonDashboardPage() {
                         </button>
                     ) : null}
 
-                    {!form.finalized && (
+                    {!team.finalized && (
                         <div className="flex flex-col gap-3">
                             <div className="flex gap-3">
                                 <button
                                     onClick={handleDeleteTeam}
                                     className="flex-1 bg-red-500 text-white px-4 py-3 rounded-lg hover:bg-red-600 transition-colors font-medium"
-                                    disabled={loadingStates.deleting || (form.peers && form.peers.length > 0)}
+                                    disabled={loadingStates.deleting || (team.peers && team.peers.length > 0)}
                                 >
                                     {loadingStates.deleting ? 'Deleting...' : successStates.deleted ? 'Deleted!' : 'Delete Team'}
                                 </button>
@@ -564,18 +505,20 @@ export default function HackathonDashboardPage() {
                 </div>
 
                 {/* Drive Link Modal - Only show if not finalized */}
-                {!form.finalized && renderDriveLinkModal()}
+                {!team.finalized && renderDriveLinkModal()}
             </div>
         );
     }
 
     const displayTeamMember = () => {
+        if (!team) return null;
+        
         return (
             <div className="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8">
                 {/* Team Name */}
                 <h2 className="text-3xl font-bold text-blue-900 mb-6 text-center tracking-tight">
-                    {form.team_name || 'Team Name'}
-                    {form.finalized && <span className="ml-2 text-green-600 text-lg align-middle">✓ Finalized</span>}
+                    {team.team_name || 'Team Name'}
+                    {team.finalized && <span className="ml-2 text-green-600 text-lg align-middle">✓ Finalized</span>}
                 </h2>
 
                 {/* Members List */}
@@ -586,13 +529,13 @@ export default function HackathonDashboardPage() {
                         <div className="flex items-center justify-between bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg px-4 py-3 border border-yellow-200">
                             <div className="flex items-center gap-3">
                                 <span className="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-bold">LEADER</span>
-                                <span className="text-gray-800 font-medium">{form.team_leader}</span>
+                                <span className="text-gray-800 font-medium">{team.team_leader}</span>
                             </div>
                         </div>
 
                         {/* Team Members */}
-                        {form.peers && form.peers.length > 0 ? (
-                            form.peers.map((peer) => {
+                        {team.peers && team.peers.length > 0 ? (
+                            team.peers.map((peer) => {
                                 const isCurrentUser = peer?.id === user?.uid;
                                 return (
                                     <div key={peer.id} className={`flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border border-gray-200 ${isCurrentUser ? 'ring-2 ring-blue-400 bg-blue-50' : ''}`}>
@@ -612,10 +555,10 @@ export default function HackathonDashboardPage() {
                 </div>
 
                 {/* Drive Link */}
-                {form.drive_link && (
+                {team.drive_link && (
                     <div className="mb-6">
                         <a
-                            href={form.drive_link}
+                            href={team.drive_link}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full bg-blue-500 text-white px-4 py-3 rounded-lg hover:bg-blue-600 transition-colors text-center block font-medium"
@@ -626,7 +569,7 @@ export default function HackathonDashboardPage() {
                 )}
 
                 {/* Leave Team Button - Only show if not finalized */}
-                {!form.finalized && (
+                {!team.finalized && (
                     <div className="mt-6">
                         <button
                             onClick={handleLeaveTeam}
@@ -640,26 +583,57 @@ export default function HackathonDashboardPage() {
 
                 {/* Team Info */}
                 <div className="mt-6 text-xs text-gray-500 text-center">
-                    Team ID: {form.team_id}
+                    Team ID: {team.team_id}
                 </div>
             </div>
         );
     }
 
+    // Redirect if not authenticated
     useEffect(() => {
-        if (!loading && !user) {
-            router.push('/');
+        if (!authLoading && !user) {
+            router.push('/signin');
         }
-    }, [user, loading, router]);
+    }, [user, authLoading, router]);
 
-    // Show loading while initial data is being fetched
-    // This prevents the flash of "No Team Found" before data loads
-    if (loading || !initialDataLoaded || (user && (profileLoading || teamLoading))) {
+    // Redirect if no team - but only if we have loaded the data and confirmed no team
+    useEffect(() => {
+        if (!isLoading && profile && !hasTeam) {
+            // Check if we just came from team creation/joining to prevent redirect loop
+            const urlParams = new URLSearchParams(window.location.search);
+            const fromTeamAction = urlParams.get('created') === 'true' || urlParams.get('joined') === 'true';
+            
+            if (!fromTeamAction) {
+                router.replace('/hackathon');
+            }
+        }
+    }, [profile, hasTeam, isLoading, router]);
+
+    // Clean up URL params if they exist
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('created') || urlParams.get('joined')) {
+            window.history.replaceState({}, '', '/hackathon/dashboard');
+        }
+    }, []);
+
+    if (authLoading || isLoading) {
         return <LoadingSpinner />;
     }
 
     if (!user) {
         return null;
+    }
+
+    if (!profile || !team) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Loading team data...</h1>
+                    <LoadingSpinner />
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -676,8 +650,8 @@ export default function HackathonDashboardPage() {
                 </div>
             </div>
             <div className="w-full max-w-4xl">
-                {form.team_id && (
-                    form.team_id === user?.uid ? (
+                {team && (
+                    team.team_id === user?.uid ? (
                         <div className="animate-fade-in-up">{displayTeamLeader()}</div>
                     ) : (
                         <div className="animate-fade-in-up">{displayTeamMember()}</div>

@@ -5,24 +5,27 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { useUserProfile } from "@/lib/hooks/useUserData";
 
 export default function HackathonPage() {
-    const { profile, profileLoading, loading, user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
+    const { profile, profileLoading } = useUserProfile();
     const router = useRouter();
 
-        useEffect(() => {
-        if (!loading && !user) {
+    useEffect(() => {
+        if (!authLoading && !user) {
             router.push('/signin');
         }
-    }, [user, loading, router]);    
+    }, [user, authLoading, router]);    
 
     useEffect(() => {
+        // Only redirect if we have profile data and user has a team
         if (!profileLoading && profile?.team_id) {
             router.replace("/hackathon/dashboard");
         }
     }, [profile, profileLoading, router]);
 
-    if (profileLoading) {
+    if (authLoading || profileLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
