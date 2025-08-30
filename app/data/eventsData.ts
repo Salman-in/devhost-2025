@@ -11,6 +11,7 @@ export const events = [
     organizer: "Yishith",
     contact: "+91 9964057549",
     image: "/demo.jpeg",
+    price: 100, 
   },
   {
     id: 2,
@@ -22,6 +23,7 @@ export const events = [
     organizer: "Koshin",
     contact: "+91 7899715941",
     image: "/demo.jpeg",
+    price: 150,
   },
   {
     id: 3,
@@ -33,6 +35,7 @@ export const events = [
     organizer: "Varsha",
     contact: "+91 7022709062",
     image: "/demo.jpeg",
+    price: 200,
   },
   {
     id: 4,
@@ -44,6 +47,7 @@ export const events = [
     organizer: "Manvitha",
     contact: "+91 9686515869",
     image: "/demo.jpeg",
+    price: 120,
   },
   {
     id: 5,
@@ -55,6 +59,7 @@ export const events = [
     organizer: "Sthuthi",
     contact: "+91 7795009031",
     image: "/demo.jpeg",
+    price: 180,
   },
   {
     id: 6,
@@ -66,6 +71,7 @@ export const events = [
     organizer: "Hitha",
     contact: "+91 9740451519",
     image: "/demo.jpeg",
+    price: 130,
   },
   {
     id: 7,
@@ -77,6 +83,7 @@ export const events = [
     organizer: "TBA",
     contact: "later",
     image: "/demo.jpeg",
+    price: 90,
   },
   {
     id: 8,
@@ -88,5 +95,6 @@ export const events = [
     organizer: "TBA",
     contact: "later",
     image: "/demo.jpeg",
+    price: 110,
   },
 ];

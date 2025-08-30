@@ -1,5 +1,8 @@
 "use client";
+
 import Script from "next/script";
+import { useRouter } from "next/navigation";
+import React from "react";
 
 interface SuccessResponse {
   razorpay_signature: string;
@@ -34,45 +37,74 @@ declare global {
   }
 }
 
-export default function PaymentButton({ amount = 100 }: { amount?: number }) {
+interface PaymentButtonProps {
+  amount: number; // in paise
+  leader: string;
+  eventId: string | number;
+  eventName: string;
+}
+
+export default function PaymentButton({
+  amount,
+  leader,
+  eventId,
+  eventName,
+}: PaymentButtonProps) {
+  const router = useRouter();
+
   const startPayment = async () => {
-    // Create order on server
     const createRes = await fetch("/api/create-order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount }),
+      body: JSON.stringify({ amount, eventId, leader }),
     });
-    const order = await createRes.json();
-    if (!order || order.error) return alert("Order creation failed: " + (order?.error || "unknown"));
 
-    const options = {
+    const order = await createRes.json();
+    if (!order || order.error) {
+      alert(
+        "Order creation failed: " +
+          (typeof order?.error === "string"
+            ? order.error
+            : JSON.stringify(order?.error || "unknown")),
+      );
+
+      return;
+    }
+
+    const options: CheckoutOptions = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
       amount: order.amount,
       currency: order.currency,
-      name: "Hackathon Project",
-      description: "Ticket",
+      name: eventName,
+      description: `Registration for ${eventName}`,
       order_id: order.id,
       handler: async function (response: SuccessResponse) {
-        // Verify on server
         const verifyRes = await fetch("/api/verify-payment", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             ...response,
-            amount: order.amount, // send amount too
+            amount: order.amount,
+            eventId,
+            leader,
           }),
         });
 
         const verify = await verifyRes.json();
         if (verify.ok) {
-          alert("Payment verified and stored in Firestore. Payment ID: " + response.razorpay_payment_id);
+          // Move redirect here
+          router.push(
+            `/events/individual/${eventId}/success?paymentId=${response.razorpay_payment_id}&email=${encodeURIComponent(
+              leader,
+            )}`,
+          );
         } else {
           alert("Verification failed: " + (verify.error || "unknown"));
         }
       },
       prefill: {
         name: "Test User",
-        email: "test@example.com",
+        email: leader,
         contact: "9999999999",
       },
       theme: { color: "#3399cc" },
@@ -85,7 +117,12 @@ export default function PaymentButton({ amount = 100 }: { amount?: number }) {
   return (
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-      <button onClick={startPayment}>Pay ₹{(amount / 100).toFixed(2)}</button>
+      <button
+        onClick={startPayment}
+        className="rounded bg-green-600 px-6 py-2 font-bold text-white"
+      >
+        Pay ₹{(amount / 100).toFixed(2)}
+      </button>
     </>
   );
 }

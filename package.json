@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -19,10 +19,10 @@
     "@radix-ui/react-tabs": "^1.1.12",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "firebase": "^12.2.1",
+    "firebase-admin": "^13.4.0",
     "gsap": "^3.13.0",
     "lenis": "^1.3.9",
-    "firebase": "^12.1.0",
-    "firebase-admin": "^13.4.0",
     "lucide-react": "^0.536.0",
     "motion": "^12.23.12",
     "next": "15.4.5",
@@ -45,6 +45,11 @@
     "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.6",
-    "typescript": "^5"
+    "typescript": "^5.9.2"
+  },
+  "browser": {
+    "tls": "false",
+    "net": "false",
+    "fs": "false"
   }
 }

@@ -1,61 +1,87 @@
 import { individualEvents } from "@/app/config/eventsConfig";
-import { adminAuth } from "@/firebase/admin"; 
+import { adminAuth, adminDb } from "@/firebase/admin";
 import { cookies } from "next/headers";
+import PaymentButton from "@/components/PaymentButton";
 import { redirect } from "next/navigation";
+import React from "react";
+import BackButton from "@/components/BackButton";
 
 interface Props {
   params: { id: string };
 }
 
 export default async function IndividualEventPage({ params }: Props) {
-  const eventId = parseInt(params.id);
+  const eventId = parseInt(params.id, 10);
+
+  // Find the event by id
   const event = individualEvents.find((e) => e.id === eventId);
 
+  // Redirect if event not found
   if (!event) {
     redirect("/events");
-    return null;
   }
 
-  // Extract the Firebase ID token from cookies (adjust cookie name if different)
+  // Get authentication cookies
   const cookieStore = await cookies();
-  const token = cookieStore.get("session_token")?.value;
+  const token = cookieStore.get("__session")?.value;
 
-  let userEmail = "guest@example.com";
+  let userEmail: string | null = null;
+  let alreadyRegistered = false;
 
   try {
     if (token) {
-      // Verify ID token with Firebase Admin SDK to get user info securely server-side
-      const decodedToken = await adminAuth.verifyIdToken(token);
+      // Verify Firebase session cookie
+      const decodedToken = await adminAuth.verifySessionCookie(token, true);
       if (decodedToken.email) {
         userEmail = decodedToken.email;
+
+        // Check if user already registered with completed payment for this event
+        const registrationRef = await adminDb
+          .collection("registrations")
+          .where("eventId", "==", eventId)
+          .where("userEmail", "==", userEmail)
+          .where("paymentStatus", "==", "paid")
+          .limit(1)
+          .get();
+
+        if (!registrationRef.empty) {
+          alreadyRegistered = true;
+        }
       }
     }
   } catch (error) {
-    console.error("Error verifying token:", error);
+    console.error("Token verification error:", error);
   }
 
-   const currentEventId = event.id;
-
-  // Next.js Server Action to handle form submission and redirect
-  async function register() {
-    "use server";
-    if (!currentEventId) {
-      throw new Error("Event ID is missing");
-    }
-    redirect(`/payment?event=${currentEventId}&email=${userEmail}`);
+  // If user not authenticated, redirect to login/profile
+  if (!userEmail) {
+    redirect("/profile");
   }
 
   return (
-    <div className="max-w-lg mx-auto py-10 text-center">
+    <div className="relative mx-auto max-w-xl py-12 text-center">
+      <BackButton />
       <h1 className="text-3xl font-bold">{event.title}</h1>
-      <p className="mt-4">{event.description}</p>
-      <p className="mt-2 text-sm text-gray-500">Signed in as: {userEmail}</p>
-
-      <form action={register}>
-        <button type="submit" className="mt-6 bg-green-400 px-6 py-2 text-black font-bold">
-          Register & Pay
-        </button>
-      </form>
+      <p className="mt-4 text-lg text-gray-600">{event.description}</p>
+      {alreadyRegistered ? (
+        <div className="mt-8">
+          <p className="font-semibold text-green-600">
+            ✅ You have already registered for this event.
+          </p>
+        </div>
+      ) : (
+        <div className="mt-8">
+          <p className="mb-2 text-sm text-gray-500">
+            Signed in as: {userEmail}
+          </p>
+          <PaymentButton
+            amount={event.price * 100}
+            leader={userEmail}
+            eventId={eventId}
+            eventName={event.title}
+          />
+        </div>
+      )}
     </div>
   );
 }
