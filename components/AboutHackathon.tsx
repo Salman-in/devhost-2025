@@ -319,9 +319,9 @@ export default function Home() {
         {/* Content under DEVHACK */}
         <div
           ref={contentRef}
-          className="flex flex-col items-center space-y-6 px-4 opacity-0 sm:mt-10"
+          className="flex flex-col items-center space-y-2 px-4 opacity-0 sm:mt-10"
         >
-          <div className="max-w-4xl px-6 text-center">
+          <div className="max-w-4xl text-center">
             <p className="mb-4 font-mono text-sm leading-relaxed text-gray-300 sm:text-base md:text-lg">
               Join us for an intense 36-hour hackathon where innovation meets
               execution. Build, code, and create the future in one epic weekend

@@ -12,7 +12,7 @@ gsap.registerPlugin(ScrollTrigger);
 const events = [
   {
     id: 1,
-    title: "Loot & Lead",
+    title: "Loot & Load",
     tagline: "Battle it out in BGMI",
     description:
       "Compete with the best teams in a high stakes BGMI tournament.",
