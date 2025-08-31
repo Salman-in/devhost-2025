@@ -61,13 +61,18 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
   const progressRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
+  const isValidPhone = (phone: string) => {
+    const phoneRegex = /^[+]?[0-9\s\-\(\)]{10,}$/;
+    return phoneRegex.test(phone.replace(/\s/g, ''));
+  };
+
   // Calculate profile completion percentage
   useEffect(() => {
     let fieldsCompleted = 0;
     const totalRequiredFields = 5; // name, phone, college, branch, year (email is pre-filled)
 
     if (form.name) fieldsCompleted++;
-    if (form.phone) fieldsCompleted++;
+    if (form.phone && isValidPhone(form.phone)) fieldsCompleted++;
     if (form.college) fieldsCompleted++;
     if (form.branch) fieldsCompleted++;
     if (form.year) fieldsCompleted++;
@@ -373,13 +378,13 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                     className="cyberpunk-label mb-2 flex items-center gap-1"
                   >
                     <Phone size={14} className="inline-block" /> Phone Number *
-                    {form.phone && (
+                    {form.phone && isValidPhone(form.phone) && (
                       <CheckCircle2 size={14} className="ml-1 text-[#9dff2c]" />
                     )}
                   </Label>
                   <Input
                     id="phone"
-                    type="tel"
+                    type="text"
                     value={form.phone}
                     onChange={(e) =>
                       setForm({ ...form, phone: e.target.value })
