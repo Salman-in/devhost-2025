@@ -4,17 +4,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { useUserProfile } from "@/lib/hooks/useUserData";
 import DecryptText from "@/components/animated/TextAnimation";
 import { ClippedCard } from "@/components/ClippedCard";
 
 export default function HackathonPage() {
   const { user, loading: authLoading } = useAuth();
-  const { profile, profileLoading } = useUserProfile();
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
 
-  // Check authentication and profile only once
+  // Check authentication only
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
@@ -25,14 +23,9 @@ export default function HackathonPage() {
     }
   }, [user, authLoading, router]);
 
-  // Check if user already has a team
-  useEffect(() => {
-    if (!profileLoading && profile?.team_id) {
-      router.replace("/hackathon/dashboard");
-    }
-  }, [profile, profileLoading, router]);
+  // Note: Team redirect is now handled by middleware server-side
 
-  if (isChecking || authLoading || profileLoading) {
+  if (isChecking || authLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-black">
         <div className="text-center">

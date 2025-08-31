@@ -87,7 +87,6 @@ export default function HackathonCreateTeam() {
       });
 
       if (res.ok) {
-        sessionStorage.setItem('teamJustCreated', 'true');
         window.location.href = '/hackathon/dashboard?created=true';
       } else {
         const errorData = await res.json();

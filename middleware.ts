@@ -19,6 +19,23 @@ export function middleware(request: NextRequest) {
                 return NextResponse.redirect(url);
             }
         }
+        
+        // Server-side redirect based on team status
+        const hasTeam = request.cookies.get('hasTeam')?.value === 'true';
+        
+        // If user is on /hackathon but has a team, redirect to dashboard
+        if (pathname === '/hackathon' && hasTeam) {
+            const url = request.nextUrl.clone();
+            url.pathname = '/hackathon/dashboard';
+            return NextResponse.redirect(url);
+        }
+        
+        // If user is on /hackathon/dashboard but has no team, redirect to hackathon
+        if (pathname === '/hackathon/dashboard' && !hasTeam && !created && !joined) {
+            const url = request.nextUrl.clone();
+            url.pathname = '/hackathon';
+            return NextResponse.redirect(url);
+        }
     }
     
     return NextResponse.next();

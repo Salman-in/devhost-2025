@@ -1,5 +1,6 @@
 import useSWR from 'swr';
 import { useAuth } from '@/context/AuthContext';
+import { useEffect } from 'react';
 
 interface UserProfile {
     uid: string;
@@ -92,6 +93,21 @@ export function useUserAndTeam() {
         refreshTeam();
     };
     
+    const hasTeam = Boolean(profile?.team_id);
+    
+    // Sync team status with cookie for middleware
+    useEffect(() => {
+        if (!profileLoading) {
+            if (hasTeam) {
+                // Set cookie when user has a team
+                document.cookie = 'hasTeam=true; path=/; max-age=86400'; // 24 hours
+            } else {
+                // Clear cookie when user has no team
+                document.cookie = 'hasTeam=false; path=/; max-age=0'; // Expire immediately
+            }
+        }
+    }, [hasTeam, profileLoading]);
+    
     return {
         profile,
         profileLoading,
@@ -100,7 +116,7 @@ export function useUserAndTeam() {
         teamLoading,
         teamError,
         refreshAll,
-        hasTeam: Boolean(profile?.team_id),
+        hasTeam,
         isLoading: profileLoading || (profile?.team_id && teamLoading)
     };
 }

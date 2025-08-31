@@ -110,7 +110,6 @@ export default function HackathonJoinTeam() {
       });
 
       if (res.ok) {
-        sessionStorage.setItem("teamJustJoined", "true");
         window.location.href = "/hackathon/dashboard?joined=true";
       } else {
         const errorData = await res.json();
