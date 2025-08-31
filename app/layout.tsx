@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import ReactLenis from "lenis/react";
+import { Toaster } from "@/components/ui/sonner";
 
 const amiga = localFont({
   src: "../assets/fonts/amiga4ever.woff2",
@@ -82,6 +83,7 @@ export default function RootLayout({
         <ReactLenis root />
         <AuthProvider>
           {children}
+          <Toaster position="top-center" />
         </AuthProvider>
       </body>
     </html>

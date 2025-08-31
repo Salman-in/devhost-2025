@@ -1,33 +1,42 @@
-import { adminDb } from '@/firebase/admin';
-import { verifyToken } from '@/lib/verify-token';
-import { NextRequest, NextResponse } from 'next/server';
+import { adminDb } from "@/firebase/admin";
+import { verifyToken } from "@/lib/verify-token";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
     const decoded = await verifyToken(req);
-    if (!decoded) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    if (!decoded)
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
 
     const { uid } = decoded;
 
-    const teamRef = adminDb.collection('teams').doc(uid);
+    const teamRef = adminDb.collection("teams").doc(uid);
     const teamSnap = await teamRef.get();
     const teamData = teamSnap.data();
-    if (teamSnap.exists && teamData?.peers >= 3 && teamData?.peers <= 4 && teamData?.drive_link !== "") {
+    if (
+      teamSnap.exists &&
+      Array.isArray(teamData?.peers) &&
+      teamData.peers.length >= 2 &&
+      teamData.peers.length <= 3 &&
+      teamData?.drive_link !== ""
+    ) {
       await teamRef.update({
         finalized: true,
         updatedAt: new Date().toISOString(),
       });
-    }
-    else {
-      return NextResponse.json({ error: 'Need to upload drive link (or) need at least 3 peers' }, { status: 500 });
+    } else {
+      return NextResponse.json(
+        { error: "Need to upload drive link (or) need at least 3 members" },
+        { status: 500 },
+      );
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      message: `Team ${uid} finalized successfully`
+    return NextResponse.json({
+      success: true,
+      message: `Team ${uid} finalized successfully`,
     });
   } catch (err) {
-    console.error('API error:', err);
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+    console.error("API error:", err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

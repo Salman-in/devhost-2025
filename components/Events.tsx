@@ -6,6 +6,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import DecryptText from "./animated/TextAnimation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -111,6 +112,7 @@ export default function Events() {
   const eventsTitleRef = useRef<HTMLHeadingElement>(null);
   const eventsCaptionRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -193,6 +195,10 @@ export default function Events() {
     return () => ctx.revert();
   }, []);
 
+  function onCardClick(eventId: number) {
+    router.push(`/events/${eventId}`);
+  }
+
   return (
     <div
       ref={sectionRef}
@@ -252,6 +258,7 @@ export default function Events() {
                 clipPath:
                   "polygon(20px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
               }}
+              onClick={() => onCardClick && onCardClick(event.id)}
             >
               <div
                 className="relative z-10 m-[2px] flex h-full flex-col p-4 sm:flex-row"
