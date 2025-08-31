@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useUserProfile } from "@/lib/hooks/useUserData";
 import DecryptText from "@/components/animated/TextAnimation";
 import { ClippedCard } from "@/components/ClippedCard";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function HackathonPage() {
   const { user, loading: authLoading } = useAuth();
@@ -33,14 +34,7 @@ export default function HackathonPage() {
   }, [profile, profileLoading, router]);
 
   if (isChecking || authLoading || profileLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-black">
-        <div className="text-center">
-          <div className="border-primary mx-auto h-12 w-12 animate-spin rounded-full border-b-2"></div>
-          <p className="font-orbitron text-primary mt-4">Loading...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (

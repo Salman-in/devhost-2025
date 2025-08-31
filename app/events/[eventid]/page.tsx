@@ -23,21 +23,11 @@ export default async function EventDetails({
   }
 
   return (
-    <div className="flex h-screen w-screen items-center justify-center px-4">
-      <EventRegistration eventId={eventid} />
-      <div className="pointer-events-none fixed inset-0 -z-10 opacity-10">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `
-        linear-gradient(#a3ff12 2px, transparent 1px),
-        linear-gradient(90deg, #a3ff12 2px, transparent 1px)
-      `,
-            backgroundSize: "80px 80px",
-            backgroundPosition: "center",
-          }}
-        ></div>
+    <div className="flex h-screen items-center justify-center">
+      <div className="absolute inset-0 opacity-15">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#a3ff12_1px,transparent_1px),linear-gradient(to_bottom,#a3ff12_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] bg-[size:4rem_4rem]"></div>
       </div>
+      <EventRegistration eventId={eventid} />
     </div>
   );
 }
