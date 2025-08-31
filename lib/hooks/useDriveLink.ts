@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useErrorModal } from './useErrorModal';
 
 interface DriveLinkState {
     showModal: boolean;
@@ -14,6 +15,7 @@ interface DriveLinkState {
 
 export function useDriveLink(refreshAll: () => void) {
     const { user } = useAuth();
+    const errorModal = useErrorModal({ defaultTitle: 'Drive Link Error' });
     
     const [driveLinkState, setDriveLinkState] = useState<DriveLinkState>({
         showModal: false,
@@ -54,9 +56,9 @@ export function useDriveLink(refreshAll: () => void) {
                 }));
                 return null;
             }
-        } catch (error) {
-            console.error('Drive link validation error:', error);
+        } catch {
             const errorMessage = 'Failed to validate drive link. Please check your connection.';
+            errorModal.showError(errorMessage);
             setDriveLinkState(prev => ({ ...prev, error: errorMessage }));
             return null;
         } finally {
@@ -98,11 +100,12 @@ export function useDriveLink(refreshAll: () => void) {
                     error: errorData.error || 'Failed to update drive link'
                 }));
             }
-        } catch (error) {
-            console.error('Error updating drive link:', error);
+        } catch {
+            const errorMessage = 'An error occurred while updating the drive link';
+            errorModal.showError(errorMessage);
             setDriveLinkState(prev => ({
                 ...prev,
-                error: 'An error occurred while updating the drive link'
+                error: errorMessage
             }));
         } finally {
             setDriveLinkState(prev => ({ ...prev, isUpdating: false }));
@@ -143,6 +146,7 @@ export function useDriveLink(refreshAll: () => void) {
 
     return {
         driveLinkState,
+        errorModal,
         validateDriveLink,
         handleDriveLinkChange,
         openModal,

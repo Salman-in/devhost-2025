@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useTeamActions } from '@/lib/hooks/useTeamActions';
+import ErrorModal from '@/components/ui/ErrorModal';
 
 interface Team {
     team_id: string;
@@ -24,6 +25,7 @@ export default function TeamMemberView({ team, refreshAll }: TeamMemberViewProps
     const {
         loadingStates,
         successStates,
+        errorModal,
         handleLeaveTeam
     } = useTeamActions(refreshAll);
 
@@ -99,6 +101,15 @@ export default function TeamMemberView({ team, refreshAll }: TeamMemberViewProps
             <div className="mt-6 text-xs text-gray-500 text-center">
                 Team ID: {team.team_id}
             </div>
+            
+            {/* Error Modal */}
+            <ErrorModal
+                isOpen={errorModal.isOpen}
+                onClose={errorModal.hideError}
+                title={errorModal.title}
+                message={errorModal.message}
+                type={errorModal.type}
+            />
         </div>
     );
 }

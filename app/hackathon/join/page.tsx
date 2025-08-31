@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import DecryptText from "@/components/animated/TextAnimation";
 import gsap from "gsap";
+import ErrorModal from "@/components/ui/ErrorModal";
+import { useErrorModal } from "@/lib/hooks/useErrorModal";
 
 interface JoinFormData {
   leader_email: string;
@@ -17,6 +19,7 @@ export default function HackathonJoinTeam() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [mounted, setMounted] = useState(false); // SSR guard
+  const errorModal = useErrorModal({ defaultTitle: 'Team Join Error' });
 
   const {
     register,
@@ -119,8 +122,8 @@ export default function HackathonJoinTeam() {
             "Team leader not found or team is already finalized. Please check the email and try again.",
         });
       }
-    } catch (error) {
-      console.error("Error joining team:", error);
+    } catch {
+      errorModal.showError("An error occurred while joining the team.", "Team Join Error");
       setError("root", {
         message: "An error occurred while joining the team.",
       });
@@ -295,6 +298,15 @@ export default function HackathonJoinTeam() {
 
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 h-12 w-full bg-gradient-to-t from-black/95 via-black/80 to-transparent" />
+      
+      {/* Error Modal */}
+      <ErrorModal
+        isOpen={errorModal.isOpen}
+        onClose={errorModal.hideError}
+        title={errorModal.title}
+        message={errorModal.message}
+        type={errorModal.type}
+      />
     </div>
   );
 }

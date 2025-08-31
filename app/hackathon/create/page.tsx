@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import DecryptText from "@/components/animated/TextAnimation";
 import gsap from "gsap";
+import ErrorModal from "@/components/ui/ErrorModal";
+import { useErrorModal } from "@/lib/hooks/useErrorModal";
 
 interface TeamFormData {
   team_name: string;
@@ -17,6 +19,7 @@ export default function HackathonCreateTeam() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [mounted, setMounted] = useState(false); // SSR guard
+  const errorModal = useErrorModal({ defaultTitle: 'Team Creation Error' });
 
   const {
     register,
@@ -92,8 +95,8 @@ export default function HackathonCreateTeam() {
         const errorData = await res.json();
         setError('root', { message: errorData.error || 'Failed to create team' });
       }
-    } catch (error) {
-      console.error('Error creating team:', error);
+    } catch {
+      errorModal.showError('An error occurred while creating the team', 'Team Creation Error');
       setError('root', { message: 'An error occurred while creating the team' });
     }
   };
@@ -219,6 +222,15 @@ export default function HackathonCreateTeam() {
 
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 h-12 w-full bg-gradient-to-t from-black/95 via-black/80 to-transparent" />
+      
+      {/* Error Modal */}
+      <ErrorModal
+        isOpen={errorModal.isOpen}
+        onClose={errorModal.hideError}
+        title={errorModal.title}
+        message={errorModal.message}
+        type={errorModal.type}
+      />
     </div>
   );
 }

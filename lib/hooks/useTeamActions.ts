@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { useErrorModal } from './useErrorModal';
 
 interface LoadingStates {
     removing: boolean;
@@ -19,6 +20,7 @@ interface SuccessStates {
 export function useTeamActions(refreshAll: () => void) {
     const { user } = useAuth();
     const router = useRouter();
+    const errorModal = useErrorModal({ defaultTitle: 'Team Action Error' });
     
     const [loadingStates, setLoadingStates] = useState<LoadingStates>({
         removing: false,
@@ -59,11 +61,10 @@ export function useTeamActions(refreshAll: () => void) {
                 }, 800);
             } else {
                 const errorData = await res.json();
-                console.log(errorData.error || 'Failed to remove team');
+                errorModal.showError(errorData.error || 'Failed to remove team member');
             }
-        } catch (error) {
-            console.error('Error removing from team:', error);
-            console.log('An error occurred while removing from the team');
+        } catch {
+            errorModal.showError('An error occurred while removing from the team');
         } finally {
             setLoadingStates(prev => ({ ...prev, removing: false }));
         }
@@ -93,11 +94,10 @@ export function useTeamActions(refreshAll: () => void) {
                 }, 800);
             } else {
                 const errorData = await res.json();
-                console.log(errorData.error || 'Failed to remove team');
+                errorModal.showError(errorData.error || 'Failed to delete team');
             }
-        } catch (error) {
-            console.error('Error removing from team:', error);
-            console.log('An error occurred while removing from the team');
+        } catch {
+            errorModal.showError('An error occurred while deleting the team');
         } finally {
             setLoadingStates(prev => ({ ...prev, deleting: false }));
         }
@@ -130,12 +130,11 @@ export function useTeamActions(refreshAll: () => void) {
             } else {
                 const errorData = await res.json();
                 setFinalizeError(errorData.error || 'Failed to finalize team');
-                console.log(errorData.error || 'Failed to finalize team');
+                errorModal.showError(errorData.error || 'Failed to finalize team');
             }
-        } catch (error) {
+        } catch {
             setFinalizeError('An error occurred while finalizing the team');
-            console.error('Error finalizing team:', error);
-            console.log('An error occurred while finalizing the team');
+            errorModal.showError('An error occurred while finalizing the team');
         } finally {
             setLoadingStates(prev => ({ ...prev, finalizing: false }));
         }
@@ -165,11 +164,10 @@ export function useTeamActions(refreshAll: () => void) {
                 }, 800);
             } else {
                 const errorData = await res.json();
-                console.log(errorData.error || 'Failed to leave team');
+                errorModal.showError(errorData.error || 'Failed to leave team');
             }
-        } catch (error) {
-            console.error('Error leaving team:', error);
-            console.log('An error occurred while leaving the team');
+        } catch {
+            errorModal.showError('An error occurred while leaving the team');
         } finally {
             setLoadingStates(prev => ({ ...prev, leaving: false }));
         }
@@ -179,6 +177,7 @@ export function useTeamActions(refreshAll: () => void) {
         loadingStates,
         successStates,
         finalizeError,
+        errorModal,
         handleRemovePeer,
         handleDeleteTeam,
         handleFinalizeTeam,

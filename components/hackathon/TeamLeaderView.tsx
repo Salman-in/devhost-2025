@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { CheckIcon, CopyIcon } from "lucide-react";
 import DriveLinkModal from './DriveLinkModal';
+import ErrorModal from '@/components/ui/ErrorModal';
 import { useDriveLink } from '@/lib/hooks/useDriveLink';
 import { useTeamActions } from '@/lib/hooks/useTeamActions';
 
@@ -39,6 +40,7 @@ export default function TeamLeaderView({ team, profile, refreshAll }: TeamLeader
     
     const {
         driveLinkState,
+        errorModal: driveLinkErrorModal,
         validateDriveLink,
         handleDriveLinkChange,
         openModal,
@@ -50,6 +52,7 @@ export default function TeamLeaderView({ team, profile, refreshAll }: TeamLeader
         loadingStates,
         successStates,
         finalizeError,
+        errorModal: teamActionsErrorModal,
         handleRemovePeer,
         handleDeleteTeam,
         handleFinalizeTeam
@@ -189,6 +192,22 @@ export default function TeamLeaderView({ team, profile, refreshAll }: TeamLeader
                     validationResult={driveLinkState.validationResult}
                 />
             )}
+            
+            {/* Error Modals */}
+            <ErrorModal
+                isOpen={driveLinkErrorModal.isOpen}
+                onClose={driveLinkErrorModal.hideError}
+                title={driveLinkErrorModal.title}
+                message={driveLinkErrorModal.message}
+                type={driveLinkErrorModal.type}
+            />
+            <ErrorModal
+                isOpen={teamActionsErrorModal.isOpen}
+                onClose={teamActionsErrorModal.hideError}
+                title={teamActionsErrorModal.title}
+                message={teamActionsErrorModal.message}
+                type={teamActionsErrorModal.type}
+            />
         </div>
     );
 }
