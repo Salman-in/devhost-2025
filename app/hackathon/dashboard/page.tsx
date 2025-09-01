@@ -14,7 +14,7 @@ import TeamMemberView from "@/components/hackathon/TeamMemberView";
 export default function HackathonDashboardPage() {
     const router = useRouter();
     const { user, loading: authLoading } = useAuth();
-    const { profile, team, isLoading, hasTeam, refreshAll } = useUserAndTeam();
+    const { profile, team, isLoading, refreshAll } = useUserAndTeam();
 
     // Redirect if not authenticated
     useEffect(() => {
@@ -23,30 +23,39 @@ export default function HackathonDashboardPage() {
         }
     }, [user, authLoading, router]);
 
-    // Redirect if no team - but only if we have loaded the data and confirmed no team
+    // Handle team status and redirects
     useEffect(() => {
-        // Set hasTeam cookie based on whether the team data loaded successfully
         if (!isLoading) {
-            if (team) {
-                console.log('Dashboard: Team data loaded, setting hasTeam cookie to true');
-                document.cookie = 'hasTeam=true; path=/; max-age=86400; SameSite=Strict';
-            } else {
-                console.log('Dashboard: No team data, setting hasTeam cookie to false');
-                document.cookie = 'hasTeam=false; path=/; max-age=0';
-            }
-        }
-
-        if (!isLoading && profile && !hasTeam) {
             // Check if we just came from team creation/joining to prevent redirect loop
             const urlParams = new URLSearchParams(window.location.search);
             const fromTeamAction = urlParams.get('created') === 'true' || urlParams.get('joined') === 'true';
             
-            if (!fromTeamAction) {
-                console.log('Dashboard: No team and not from team action, redirecting to /hackathon');
-                router.replace('/hackathon');
+            // Clean up URL params if they exist
+            if (fromTeamAction) {
+                window.history.replaceState({}, '', '/hackathon/dashboard');
+            }
+            
+            // Update the hasTeam cookie based on current team data
+            if (team) {
+                console.log('Dashboard: Team data loaded, setting hasTeam cookie to true');
+                // Set a longer expiration for the cookie to avoid it expiring too quickly
+                document.cookie = 'hasTeam=true; path=/; max-age=86400; SameSite=Strict';
+            } else {
+                console.log('Dashboard: No team data, setting hasTeam cookie to false');
+                // Clear the cookie by setting max-age to 0
+                document.cookie = 'hasTeam=false; path=/; max-age=0; SameSite=Strict';
+                
+                // Only redirect if not coming from team creation/joining
+                if (!fromTeamAction) {
+                    console.log('Dashboard: No team and not from team action, redirecting to /hackathon');
+                    // Use a short timeout to avoid potential race conditions
+                    setTimeout(() => {
+                        router.replace('/hackathon');
+                    }, 100);
+                }
             }
         }
-    }, [profile, hasTeam, isLoading, router, team]);
+    }, [isLoading, router, team]);
 
     // Clean up URL params if they exist
     useEffect(() => {

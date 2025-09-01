@@ -11,19 +11,32 @@ export default function HackathonPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
-
-  // Check authentication only
+  // First check if the user is authenticated
   useEffect(() => {
-    if (!authLoading) {
-      if (!user) {
-        router.push("/signin");
+    if (!authLoading && !user) {
+      router.push("/signin");
+    }
+  }, [user, authLoading, router]);
+
+  // Separate effect to check if user has a team (runs only when auth is confirmed)
+  useEffect(() => {
+    if (!authLoading && user) {
+      // Check if user has a team by reading the cookie
+      const hasTeamCookie = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('hasTeam='))
+        ?.split('=')[1] === 'true';
+      
+      if (hasTeamCookie) {
+        // If user has a team, redirect to dashboard
+        console.log('Hackathon page: User has team, redirecting to dashboard');
+        router.replace("/hackathon/dashboard");
       } else {
+        // Just complete loading
         setIsChecking(false);
       }
     }
   }, [user, authLoading, router]);
-
-  // Note: Team redirect is now handled by middleware server-side
 
   if (isChecking || authLoading) {
     return (

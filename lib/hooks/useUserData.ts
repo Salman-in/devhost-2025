@@ -95,15 +95,15 @@ export function useUserAndTeam() {
     
     const hasTeam = Boolean(team);
     
-    // Sync team status with cookie for middleware
+    // Sync team status with cookie
     useEffect(() => {
         if (!profileLoading) {
             if (hasTeam) {
                 // Set cookie when user has a team
-                document.cookie = 'hasTeam=true; path=/; max-age=86400'; // 24 hours
+                document.cookie = 'hasTeam=true; path=/; max-age=86400; SameSite=Strict'; // 24 hours
             } else {
                 // Clear cookie when user has no team
-                document.cookie = 'hasTeam=false; path=/; max-age=0'; // Expire immediately
+                document.cookie = 'hasTeam=false; path=/; max-age=0; SameSite=Strict'; // Expire immediately
             }
         }
     }, [hasTeam, profileLoading]);

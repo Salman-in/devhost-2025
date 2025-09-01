@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useState, useEffect } from "react";
 
 interface Profile {
   name: string;
@@ -18,6 +19,18 @@ interface Profile {
 export default function ProfileClient({ profile } : { profile: Profile}) {
   const router = useRouter();
   const { signOut } = useAuth();
+  const [hasTeam, setHasTeam] = useState<boolean | null>(null);
+  
+  // Check for hasTeam cookie only on client side
+  useEffect(() => {
+    // Get the cookie value
+    const hasTeamCookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('hasTeam='))
+      ?.split('=')[1] === 'true';
+    
+    setHasTeam(hasTeamCookie);
+  }, []);
 
   const handleLogout = async () => {
     await signOut();
@@ -105,19 +118,23 @@ export default function ProfileClient({ profile } : { profile: Profile}) {
         </Card>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-          {!profile?.team_id ? (
-            <Link href="/hackathon">
-              <Button size="lg" className="bg-black hover:bg-neutral-950 text-white px-8">
-                Join Hackathon
-              </Button>
-            </Link>
-          ) : (
-            <Link href="/hackathon/dashboard">
-              <Button size="lg" className="bg-black hover:bg-neutral-950 text-white px-8">
-                Hackathon Dashboard
-              </Button>
-            </Link>
-          )}
+          <Button 
+            size="lg" 
+            className="bg-black hover:bg-neutral-950 text-white px-8"
+            onClick={() => {
+              // Only navigate when we've determined the team status
+              if (hasTeam !== null) {
+                if (hasTeam) {
+                  router.push('/hackathon/dashboard');
+                } else {
+                  router.push('/hackathon');
+                }
+              }
+            }}
+            disabled={hasTeam === null}
+          >
+            {hasTeam === null ? 'Loading...' : (hasTeam ? 'Hackathon Dashboard' : 'Join Hackathon')}
+          </Button>
           
           <Link href="/">
             <Button variant="outline" size="lg" className="bg-white hover:bg-gray-100 text-black shadow-md px-8">
