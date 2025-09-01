@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import DecryptText from "@/components/animated/TextAnimation";
+import { ClippedCard } from "@/components/ClippedCard";
 
 interface TeamFormData {
   team_name: string;
@@ -121,22 +122,10 @@ export default function HackathonCreateTeam() {
 
       {/* Centered card */}
       <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
-        <div
-          style={{
-            clipPath:
-              "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-            backgroundColor: "var(--color-primary)",
-            padding: "2px",
-          }}
-        >
+        <ClippedCard innerBg="bg-[#101810]">
           <div
             ref={joinCardRef}
             className="relative mx-auto w-full max-w-4xl p-6 sm:p-8"
-            style={{
-              clipPath:
-                "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-              backgroundColor: "#101810",
-            }}
           >
             <form className="flex flex-col justify-center items-center space-y-6 w-full" onSubmit={handleSubmit(onSubmit)} ref={gridRef}>
               <div className="w-full flex flex-col gap-4">
@@ -177,7 +166,7 @@ export default function HackathonCreateTeam() {
               <button
                 ref={joinButtonRef}
                 type="submit"
-                className="w-full flex cursor-pointer items-center justify-center gap-2 bg-[#b4ff39] px-6 py-3 text-xs sm:text-sm font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50"
+                className="w-full h-fit flex cursor-pointer items-center justify-center gap-2 bg-primary px-6 py-3 text-xs sm:text-sm font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50"
                 style={{
                   clipPath:
                     "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
@@ -189,7 +178,7 @@ export default function HackathonCreateTeam() {
               </button>
             </form>
           </div>
-        </div>
+        </ClippedCard>
       </div>
     </div>
   );
