@@ -6,7 +6,6 @@ interface UserProfile {
     uid: string;
     name: string;
     email: string;
-    team_id?: string;
     phone?: string;
     college?: string;
     reg_no?: string;
@@ -18,10 +17,11 @@ interface Team {
     team_id: string;
     team_name: string;
     team_leader: string;
-    peers: Array<{ id: string; name: string; email: string }>;
+    team_leader_email: string;
+    members: Array<{ name: string; email: string; role: string }>;
     drive_link?: string;
     finalized: boolean;
-    created_at: string | Date;
+    createdAt: string | Date;
 }
 
 const fetcher = async (url: string, token: string) => {
@@ -61,11 +61,11 @@ export function useUserProfile() {
     };
 }
 
-export function useTeamData(teamId?: string) {
+export function useTeamData() {
     const { user } = useAuth();
     
     const { data: team, error, isLoading, mutate } = useSWR(
-        user && teamId ? [`/api/v1/team/get?team_id=${teamId}`, user] : null,
+        user ? [`/api/v1/team/get`, user] : null,
         async ([url, user]) => {
             const token = await user.getIdToken();
             return fetcher(url, token);
@@ -86,14 +86,14 @@ export function useTeamData(teamId?: string) {
 
 export function useUserAndTeam() {
     const { profile, profileLoading, profileError, refreshProfile } = useUserProfile();
-    const { team, teamLoading, teamError, refreshTeam } = useTeamData(profile?.team_id);
+    const { team, teamLoading, teamError, refreshTeam } = useTeamData();
     
     const refreshAll = () => {
         refreshProfile();
         refreshTeam();
     };
     
-    const hasTeam = Boolean(profile?.team_id);
+    const hasTeam = Boolean(team);
     
     // Sync team status with cookie for middleware
     useEffect(() => {
@@ -117,6 +117,6 @@ export function useUserAndTeam() {
         teamError,
         refreshAll,
         hasTeam,
-        isLoading: profileLoading || (profile?.team_id && teamLoading)
+        isLoading: profileLoading || teamLoading
     };
 }

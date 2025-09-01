@@ -8,10 +8,11 @@ interface Team {
     team_id: string;
     team_name: string;
     team_leader: string;
-    peers: Array<{ id: string; name: string; email: string }>;
+    team_leader_email: string;
+    members: Array<{ name: string; email: string; role: string }>;
     drive_link?: string;
     finalized: boolean;
-    created_at: string | Date;
+    createdAt: string | Date;
 }
 
 interface TeamMemberViewProps {
@@ -50,14 +51,14 @@ export default function TeamMemberView({ team, refreshAll }: TeamMemberViewProps
                     </div>
 
                     {/* Team Members */}
-                    {team.peers && team.peers.length > 0 ? (
-                        team.peers.map((peer) => {
-                            const isCurrentUser = peer?.id === user?.uid;
+                    {team.members && team.members.filter(m => m.role === 'member').length > 0 ? (
+                        team.members.filter(m => m.role === 'member').map((member) => {
+                            const isCurrentUser = member?.email === user?.email;
                             return (
-                                <div key={peer.id} className={`flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border border-gray-200 ${isCurrentUser ? 'ring-2 ring-blue-400 bg-blue-50' : ''}`}>
+                                <div key={member.email} className={`flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border border-gray-200 ${isCurrentUser ? 'ring-2 ring-blue-400 bg-blue-50' : ''}`}>
                                     <div className="flex items-center gap-3">
                                         {isCurrentUser && <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-bold">YOU</span>}
-                                        <span className="text-gray-800 font-medium">{peer.name}</span>
+                                        <span className="text-gray-800 font-medium">{member.name}</span>
                                     </div>
                                 </div>
                             );

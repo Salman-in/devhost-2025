@@ -113,7 +113,14 @@ export default function HackathonJoinTeam() {
       });
 
       if (res.ok) {
-        window.location.href = "/hackathon/dashboard?joined=true";
+        // Set the hasTeam cookie before redirecting - make sure it's accessible to the server
+        document.cookie = 'hasTeam=true; path=/; max-age=86400; SameSite=Strict'; // 24 hours
+        console.log('Team joined successfully, setting hasTeam cookie to true');
+        
+        // Force a small delay to ensure cookie is set before navigation
+        setTimeout(() => {
+          window.location.href = "/hackathon/dashboard?joined=true";
+        }, 300);
       } else {
         const errorData = await res.json();
         setError("root", {

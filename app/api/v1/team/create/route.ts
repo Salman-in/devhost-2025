@@ -7,35 +7,42 @@ export async function POST(req: NextRequest) {
         const decoded = await verifyToken(req);
         if (!decoded) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
 
-        const { uid, name, email } = decoded;
+        const { name, email } = decoded;
 
         const teamData = await req.json();
         const { team_name } = teamData;
 
-        const teamRef = adminDb.collection('teams').doc(uid);
-        const teamSnap = await teamRef.get();
-
-        if (!teamSnap.exists) {
-            await teamRef.set({
-                team_id: uid,
-                team_name: team_name,
-                team_leader: name,
-                team_leader_email: email,
-                peers: [],
-                drive_link: '',
-                finalized: false,
-                shortlisted: false,
-                createdAt: new Date().toISOString(),
-            });
+        // Generate a unique ID for the team
+        const teamRef = adminDb.collection('teams').doc();
+        const teamId = teamRef.id;
+        
+        // Check if user already has a team
+        const teamsQuery = await adminDb.collection('teams').get();
+        const teams = teamsQuery.docs.map(doc => doc.data());
+        
+        // Check if user is already in a team (either as leader or member)
+        const existingTeam = teams.find(team => 
+            team.team_leader_email === email || 
+            team.members?.some((member: { email: string }) => member.email === email)
+        );
+        
+        if (existingTeam) {
+            return NextResponse.json({ error: 'You are already part of a team' }, { status: 400 });
         }
 
-        const userRef = adminDb.collection('users').doc(uid);
-        await userRef.update({
-            team_id: uid,
-            updatedAt: new Date().toISOString(),
+        await teamRef.set({
+            team_id: teamId,
+            team_name: team_name,
+            team_leader: name,
+            team_leader_email: email,
+            members: [{ name, email, role: 'leader' }],
+            drive_link: '',
+            finalized: false,
+            shortlisted: false,
+            createdAt: new Date().toISOString(),
         });
 
-        return NextResponse.json({ success: true, message: `Team ${uid} created successfully` });
+        return NextResponse.json({ success: true, message: `Team ${teamId} created successfully` });
     } catch (err) {
         console.error('API error:', err);
         return NextResponse.json({ error: 'Server error' }, { status: 500 });

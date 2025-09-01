@@ -8,25 +8,36 @@ export async function POST(req: NextRequest) {
         const decoded = await verifyToken(req);
         if (!decoded) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
 
-        const { uid } = decoded;
+        const { email } = decoded;
 
         const searchData = await req.json();
-        const { peer_id, peer_name } = searchData;
+        const { team_id, member_email, member_name } = searchData;
 
-        const teamRef = adminDb.collection('teams').doc(uid);
+        // Verify the user is the team leader
+        const teamRef = adminDb.collection('teams').doc(team_id);
+        const teamSnap = await teamRef.get();
+        
+        if (!teamSnap.exists) {
+            return NextResponse.json({ error: 'Team not found' }, { status: 404 });
+        }
+        
+        const teamData = teamSnap.data();
+        
+        if (teamData?.team_leader_email !== email) {
+            return NextResponse.json({ 
+                error: 'Only team leaders can remove members' 
+            }, { status: 403 });
+        }
+        
+        // Remove the member from the team
         await teamRef.update({
-            peers: FieldValue.arrayRemove({ id: peer_id, name: peer_name })
-        });
-
-        const userRef = adminDb.collection('users').doc(peer_id);
-        await userRef.update({
-            team_id: '',
-            updatedAt: new Date().toISOString(),
+            members: FieldValue.arrayRemove({ name: member_name, email: member_email, role: 'member' }),
+            updatedAt: new Date().toISOString()
         });
 
         return NextResponse.json({
             success: true,
-            message: `${peer_id} removed from team ${uid} successfully`
+            message: `${member_name} removed from team successfully`
         });
     } catch (err) {
         console.error('API error:', err);

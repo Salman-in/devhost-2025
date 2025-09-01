@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
 import { useErrorModal } from './useErrorModal';
 
 interface LoadingStates {
@@ -19,7 +18,6 @@ interface SuccessStates {
 
 export function useTeamActions(refreshAll: () => void) {
     const { user } = useAuth();
-    const router = useRouter();
     const errorModal = useErrorModal({ defaultTitle: 'Team Action Error' });
     
     const [loadingStates, setLoadingStates] = useState<LoadingStates>({
@@ -38,7 +36,7 @@ export function useTeamActions(refreshAll: () => void) {
     
     const [finalizeError, setFinalizeError] = useState<string | null>(null);
 
-    const handleRemovePeer = async (peer_id: string, peer_name: string) => {
+    const handleRemovePeer = async (teamId: string, memberEmail: string, memberName: string) => {
         if (!user) return;
 
         setLoadingStates(prev => ({ ...prev, removing: true }));
@@ -51,7 +49,11 @@ export function useTeamActions(refreshAll: () => void) {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${idToken}`,
                 },
-                body: JSON.stringify({ peer_id: peer_id, peer_name: peer_name }),
+                body: JSON.stringify({ 
+                    team_id: teamId,
+                    member_email: memberEmail,
+                    member_name: memberName 
+                }),
             });
 
             if (res.ok) {
@@ -158,9 +160,11 @@ export function useTeamActions(refreshAll: () => void) {
 
             if (res.ok) {
                 setSuccessStates(prev => ({ ...prev, left: true }));
+                // Clear the hasTeam cookie
+                document.cookie = 'hasTeam=false; path=/; max-age=0; SameSite=Strict';
                 setTimeout(() => {
-                    window.location.reload();
-                    router.push('/hackathon/dashboard');
+                    // Redirect directly to the hackathon page instead of dashboard
+                    window.location.href = '/hackathon';
                 }, 800);
             } else {
                 const errorData = await res.json();

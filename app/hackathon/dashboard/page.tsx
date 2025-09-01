@@ -25,16 +25,28 @@ export default function HackathonDashboardPage() {
 
     // Redirect if no team - but only if we have loaded the data and confirmed no team
     useEffect(() => {
+        // Set hasTeam cookie based on whether the team data loaded successfully
+        if (!isLoading) {
+            if (team) {
+                console.log('Dashboard: Team data loaded, setting hasTeam cookie to true');
+                document.cookie = 'hasTeam=true; path=/; max-age=86400; SameSite=Strict';
+            } else {
+                console.log('Dashboard: No team data, setting hasTeam cookie to false');
+                document.cookie = 'hasTeam=false; path=/; max-age=0';
+            }
+        }
+
         if (!isLoading && profile && !hasTeam) {
             // Check if we just came from team creation/joining to prevent redirect loop
             const urlParams = new URLSearchParams(window.location.search);
             const fromTeamAction = urlParams.get('created') === 'true' || urlParams.get('joined') === 'true';
             
             if (!fromTeamAction) {
+                console.log('Dashboard: No team and not from team action, redirecting to /hackathon');
                 router.replace('/hackathon');
             }
         }
-    }, [profile, hasTeam, isLoading, router]);
+    }, [profile, hasTeam, isLoading, router, team]);
 
     // Clean up URL params if they exist
     useEffect(() => {
@@ -63,7 +75,7 @@ export default function HackathonDashboardPage() {
         );
     }
 
-    const isTeamLeader = team.team_id === user.uid;
+    const isTeamLeader = team.team_leader_email === user.email;
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 flex flex-col items-center justify-start py-12 px-4">

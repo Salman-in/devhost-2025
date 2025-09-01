@@ -11,17 +11,17 @@ interface Team {
     team_id: string;
     team_name: string;
     team_leader: string;
-    peers: Array<{ id: string; name: string; email: string }>;
+    team_leader_email: string;
+    members: Array<{ name: string; email: string; role: string }>;
     drive_link?: string;
     finalized: boolean;
-    created_at: string | Date;
+    createdAt: string | Date;
 }
 
 interface Profile {
     uid: string;
     name: string;
     email: string;
-    team_id?: string;
     phone?: string;
     college?: string;
     reg_no?: string;
@@ -105,13 +105,13 @@ export default function TeamLeaderView({ team, profile, refreshAll }: TeamLeader
                     </div>
 
                     {/* Team Members */}
-                    {team.peers && team.peers.length > 0 ? (
-                        team.peers.map((peer) => (
-                            <div key={peer.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border border-gray-200">
-                                <span className="text-gray-800 font-medium">{peer.name}</span>
+                    {team.members && team.members.filter(m => m.role === 'member').length > 0 ? (
+                        team.members.filter(m => m.role === 'member').map((member) => (
+                            <div key={member.email} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border border-gray-200">
+                                <span className="text-gray-800 font-medium">{member.name}</span>
                                 {!team.finalized && (
                                     <button
-                                        onClick={() => handleRemovePeer(peer.id, peer.name)}
+                                        onClick={() => handleRemovePeer(team.team_id, member.email, member.name)}
                                         className="bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600 transition-colors"
                                         disabled={loadingStates.removing}
                                     >
@@ -156,7 +156,7 @@ export default function TeamLeaderView({ team, profile, refreshAll }: TeamLeader
                             <button
                                 onClick={() => handleDeleteTeam(team.team_id)}
                                 className="flex-1 bg-red-500 text-white px-4 py-3 rounded-lg hover:bg-red-600 transition-colors font-medium"
-                                disabled={loadingStates.deleting || (team.peers && team.peers.length > 0)}
+                                disabled={loadingStates.deleting || (team.members && team.members.filter(m => m.role === 'member').length > 0)}
                             >
                                 {loadingStates.deleting ? 'Deleting...' : successStates.deleted ? 'Deleted!' : 'Delete Team'}
                             </button>
