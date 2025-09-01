@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import DecryptText from "@/components/animated/TextAnimation";
-import gsap from "gsap";
 
 interface TeamFormData {
   team_name: string;
@@ -43,32 +42,6 @@ export default function HackathonCreateTeam() {
       router.push("/signin");
     }
   }, [user, loading, router]);
-
-  useEffect(() => {
-    if (!mounted) return;
-
-    const tl = gsap.timeline();
-
-    tl.to(titleRef.current, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" })
-      .to(subtitleRef.current, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, "-=0.4")
-      .to(verifyRef.current, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, "-=0.4")
-      .to(gridRef.current, { opacity: 1, scale: 1, duration: 0.8, ease: "power2.out" }, "-=0.4");
-
-    const gridItems = gridRef.current?.children;
-    if (gridItems) {
-      gsap.to(gridItems, { opacity: 1, stagger: 0.1, duration: 0.5, ease: "power2.out" });
-    }
-
-    if (joinCardRef.current && joinButtonRef.current) {
-      gsap.to([joinCardRef.current, joinButtonRef.current], {
-        boxShadow: "0 0 50px 10px rgba(163, 255, 18, 1)",
-        duration: 1.5,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-    }
-  }, [mounted]);
 
   const onSubmit = async (data: TeamFormData) => {
     if (!user) return;
@@ -126,7 +99,7 @@ export default function HackathonCreateTeam() {
           style={{
             clipPath:
               "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-            border: "2px solid #b4ff39",
+            border: "2px solid var(--color-primary)",
           }}
         >
           Back
@@ -134,14 +107,14 @@ export default function HackathonCreateTeam() {
       </div>
 
       {/* Top-right logs */}
-      <div className="absolute top-6 sm:top-10 right-4 sm:right-10 flex flex-col gap-1 text-xs sm:text-sm md:text-base text-[#b4ff39] z-10 max-w-xs sm:max-w-sm md:max-w-md">
-        <div ref={titleRef} style={{ opacity: 0, transform: "translateY(12px)" }}>
+      <div className="absolute top-6 sm:top-10 right-4 sm:right-10 flex flex-col gap-1 text-xs sm:text-sm md:text-base text-primary z-10 max-w-xs sm:max-w-sm md:max-w-md">
+        <div ref={titleRef}>
           <DecryptText text="> OPEN FORM FOR TEAM CREATION" startDelayMs={100} trailSize={4} flickerIntervalMs={30} revealDelayMs={50} />
         </div>
-        <div ref={subtitleRef} style={{ opacity: 0, transform: "translateY(12px)" }}>
+        <div ref={subtitleRef}>
           <DecryptText text="> ENTER TEAM NAME" startDelayMs={300} trailSize={4} flickerIntervalMs={30} revealDelayMs={50} />
         </div>
-        <div ref={verifyRef} style={{ opacity: 0, transform: "translateY(12px)" }}>
+        <div ref={verifyRef}>
           <DecryptText text="> VERIFY DETAILS AND SUBMIT" startDelayMs={500} trailSize={4} flickerIntervalMs={30} revealDelayMs={50} />
         </div>
       </div>
@@ -152,7 +125,7 @@ export default function HackathonCreateTeam() {
           style={{
             clipPath:
               "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-            backgroundColor: "#b4ff39",
+            backgroundColor: "var(--color-primary)",
             padding: "2px",
           }}
         >
@@ -167,11 +140,11 @@ export default function HackathonCreateTeam() {
           >
             <form className="flex flex-col justify-center items-center space-y-6 w-full" onSubmit={handleSubmit(onSubmit)} ref={gridRef}>
               <div className="w-full flex flex-col gap-4">
-                <h2 className="text-[#b4ff39] text-lg sm:text-xl md:text-2xl font-bold uppercase mb-6 tracking-wider text-center">
-          Create Your Hackathon Team
-        </h2>
+                <h2 className="text-white text-lg sm:text-xl md:text-2xl font-bold uppercase mb-6 tracking-wider text-center">
+                  Create Your Hackathon Team
+                </h2>
                 <div className="flex flex-col">
-                  <Label htmlFor="team_name" className="mb-2 text-sm sm:text-base font-bold tracking-wider text-[#b4ff39] uppercase">
+                  <Label htmlFor="team_name" className="mb-2 text-sm sm:text-base font-bold tracking-wider text-primary uppercase">
                     Team Name
                   </Label>
                   <DecryptText
@@ -191,6 +164,7 @@ export default function HackathonCreateTeam() {
                     })}
                     placeholder="Enter a team name"
                     className="w-full text-white placeholder:text-white/50 bg-white/10 border border-black rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black transition-all"
+                    style={{ fontFamily: "sans-serif" }}
                   />
                   {errors.team_name && (
                     <p className="text-red-500 text-xs sm:text-sm mt-2 tracking-wide">{errors.team_name.message}</p>
@@ -207,7 +181,7 @@ export default function HackathonCreateTeam() {
                 style={{
                   clipPath:
                     "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-                  border: "2px solid #b4ff39",
+                  border: "2px solid var(--color-primary)",
                 }}
                 disabled={isSubmitting}
               >
@@ -217,9 +191,6 @@ export default function HackathonCreateTeam() {
           </div>
         </div>
       </div>
-
-      {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 h-12 w-full bg-gradient-to-t from-black/95 via-black/80 to-transparent" />
     </div>
   );
 }
