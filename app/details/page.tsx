@@ -22,7 +22,7 @@ export default async function DetailsPage() {
     phone: '',
     college: '',
     branch: '',
-    year: 1,
+    year: null,
   };
 
   return <DetailsClient profile={initialProfile} />;

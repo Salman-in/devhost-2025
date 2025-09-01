@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import DecryptText from "@/components/animated/TextAnimation";
 import { ClippedCard } from "@/components/ClippedCard";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function HackathonPage() {
   const { user, loading: authLoading } = useAuth();

@@ -6,6 +6,7 @@ import { User } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { exchangeIdTokenForSession } from "@/firebase/auth";
 
 export default function Hero() {
   const router = useRouter();
@@ -13,12 +14,17 @@ export default function Hero() {
 
 const handleGoogleLogin = async () => {
   if (user) {
-    router.push('/profile');
+    try {
+      const idToken = await user.getIdToken();
+      await exchangeIdTokenForSession(idToken);
+      router.push('/profile');
+    } catch (error) {
+      console.error('Session creation failed:', error);
+    }
   } else {
     try {
       await signInWithGoogle();
-      // Wait for auth state to update, then redirect
-        router.push('/profile');
+      router.push('/profile');
     } catch (error) {
       console.error('Sign in failed:', error);
     }

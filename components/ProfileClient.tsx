@@ -6,6 +6,8 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
+import { COLLEGES } from "@/lib/constants";
+import { toast } from "sonner";
 
 interface Profile {
   name: string;
@@ -31,6 +33,16 @@ export default function ProfileClient({ profile } : { profile: Profile}) {
     
     setHasTeam(hasTeamCookie);
   }, []);
+  const [profileState, setProfileState] = useState(profile);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedProfile, setEditedProfile] = useState(profile);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  const isValidPhone = (phone: string) => {
+    const phoneRegex = /^[0-9]{10}$/;
+    return phoneRegex.test(phone.replace(/\s/g, ''));
+  };
 
   const handleLogout = async () => {
     await signOut();

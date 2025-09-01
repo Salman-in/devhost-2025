@@ -4,7 +4,7 @@ import { verifyToken } from "@/lib/verify-token";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { eventid: string } },
+  context: { params: Promise<{ eventid: string }> },
 ) {
   const decoded = await verifyToken(req);
   if (!decoded)
@@ -12,11 +12,11 @@ export async function POST(
 
   const { email } = decoded;
 
-  const eventId = params.eventid;
+  const { eventid } = await context.params;
 
   const teamsRef = adminDb
     .collection("registrations")
-    .doc(eventId)
+    .doc(eventid)
     .collection("teams");
 
   const snap = await teamsRef.where("members", "array-contains", email).get();
