@@ -165,11 +165,18 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
                 }
               >
                 <SelectTrigger className={formFieldClass}>
-                  <SelectValue className="flex-1 h-full flex items-center px-0" placeholder="Select college" />
+                  <SelectValue
+                    className="flex h-full flex-1 items-center px-0"
+                    placeholder="Select college"
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {COLLEGES.map((college, idx) => (
-                    <SelectItem key={idx} value={college} className={formFieldClass}>
+                    <SelectItem
+                      key={idx}
+                      value={college}
+                      className={formFieldClass}
+                    >
                       {college}
                     </SelectItem>
                   ))}
@@ -203,17 +210,31 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
                 <Select
                   value={editedProfile.year.toString()}
                   onValueChange={(value) =>
-                    setEditedProfile({ ...editedProfile, year: parseInt(value) })
+                    setEditedProfile({
+                      ...editedProfile,
+                      year: parseInt(value),
+                    })
                   }
                 >
                   <SelectTrigger className={formFieldClass}>
-                    <SelectValue className="flex-1 h-full flex items-center px-0" placeholder="Select year" />
+                    <SelectValue
+                      className="flex h-full flex-1 items-center px-0"
+                      placeholder="Select year"
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1" className={formFieldClass}>1st Year</SelectItem>
-                    <SelectItem value="2" className={formFieldClass}>2nd Year</SelectItem>
-                    <SelectItem value="3" className={formFieldClass}>3rd Year</SelectItem>
-                    <SelectItem value="4" className={formFieldClass}>4th Year</SelectItem>
+                    <SelectItem value="1" className={formFieldClass}>
+                      1st Year
+                    </SelectItem>
+                    <SelectItem value="2" className={formFieldClass}>
+                      2nd Year
+                    </SelectItem>
+                    <SelectItem value="3" className={formFieldClass}>
+                      3rd Year
+                    </SelectItem>
+                    <SelectItem value="4" className={formFieldClass}>
+                      4th Year
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               ) : (

@@ -32,8 +32,8 @@ function SelectTrigger({
   return (
     <SelectPrimitive.Trigger
       className={cn(
-        "flex w-full h-12 items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm leading-5 text-gray-400 box-border shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all disabled:cursor-not-allowed disabled:opacity-50",
-        className
+        "focus-visible:ring-ring box-border flex h-12 w-full items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm leading-5 text-gray-400 shadow-xs transition-all outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
+        className,
       )}
       {...props}
     >
@@ -44,7 +44,6 @@ function SelectTrigger({
     </SelectPrimitive.Trigger>
   );
 }
-
 
 function SelectContent({
   className,

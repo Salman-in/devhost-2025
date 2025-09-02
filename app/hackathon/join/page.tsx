@@ -10,6 +10,7 @@ import DecryptText from "@/components/animated/TextAnimation";
 import { useTeam } from "@/context/TeamContext";
 import { ClippedCard } from "@/components/ClippedCard";
 import { toast } from "sonner";
+import { ClippedButton } from "@/components/ClippedButton";
 
 interface JoinFormData {
   leader_email: string;
@@ -99,18 +100,15 @@ export default function HackathonJoinTeam() {
 
       {/* Back button */}
       <div className="absolute top-6 left-4 z-10 sm:top-10 sm:left-10">
-        <button
+        <ClippedButton
           onClick={() => router.push("/hackathon")}
-          className="bg-primary flex cursor-pointer items-center justify-center gap-2 px-3 py-2 text-xs font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50 sm:px-4 sm:text-sm"
-          style={{
-            clipPath:
-              "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-            border: "2px solid #b4ff39",
-          }}
+          innerBg="bg-primary"
+          textColor="text-black"
         >
           Back
-        </button>
+        </ClippedButton>
       </div>
+
 
       {/* Top-right logs */}
       <div className="text-primary absolute top-6 right-4 z-10 flex max-w-xs flex-col gap-1 text-xs sm:top-10 sm:right-10 sm:max-w-sm sm:text-sm md:max-w-md md:text-base">
@@ -177,7 +175,6 @@ export default function HackathonJoinTeam() {
                     })}
                     placeholder="Enter team leader's email"
                     className="w-full rounded-md border border-black bg-white/10 px-4 py-3 text-white placeholder:text-white/50 focus:ring-2 focus:ring-black focus:outline-none"
-                    style={{ fontFamily: "sans-serif" }}
                   />
                   {errors.leader_email?.message && (
                     <p className="mt-2 text-xs tracking-wide text-red-500 sm:text-sm">
@@ -194,18 +191,16 @@ export default function HackathonJoinTeam() {
               )}
 
               {/* Join Team Button */}
-              <button
+              <ClippedButton
                 type="submit"
-                className="bg-primary flex h-fit w-full cursor-pointer items-center justify-center gap-2 px-6 py-3 text-xs font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50 sm:text-sm"
-                style={{
-                  clipPath:
-                    "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-                  border: "2px solid var(--color-primary)",
-                }}
+                onClick={undefined} 
                 disabled={isSubmitting}
+                innerBg="bg-primary"
+                textColor="text-black"
               >
                 {isSubmitting ? "Joining..." : "Join Team"}
-              </button>
+              </ClippedButton>
+
             </form>
           </div>
         </ClippedCard>
