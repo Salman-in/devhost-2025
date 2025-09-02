@@ -10,6 +10,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { COLLEGES } from "@/lib/constants";
 import { toast } from "sonner";
@@ -23,6 +24,10 @@ export interface Profile {
   year: number;
   team_id?: string;
 }
+
+// Unified form-field class for inputs and selects
+const formFieldClass =
+  "w-full h-12 px-3 py-2 text-gray-400 text-sm leading-5 box-border rounded-md";
 
 export default function ProfileForm({ profile }: { profile: Profile }) {
   const [profileState, setProfileState] = useState(profile);
@@ -52,7 +57,6 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
       return;
     }
 
-    toast.error("");
     setIsSaving(true);
     try {
       const res = await fetch("/api/v1/user/update", {
@@ -114,7 +118,7 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
         {/* Form */}
         <div className="flex flex-col gap-4">
           {/* Full Name */}
-          <div>
+          <div className="flex flex-col">
             <label className="text-sm text-white">Full Name</label>
             <Input
               value={editedProfile.name}
@@ -122,21 +126,21 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
               onChange={(e) =>
                 setEditedProfile({ ...editedProfile, name: e.target.value })
               }
-              className="mt-1 h-11 w-full text-gray-400 sm:h-12"
+              className={formFieldClass}
             />
           </div>
 
           {/* Email + Phone */}
           <div className="grid grid-cols-1 gap-4 py-2 sm:grid-cols-2 sm:gap-7 sm:py-3">
-            <div>
+            <div className="flex flex-col">
               <label className="text-sm text-white">Email Address</label>
               <Input
                 value={profileState.email}
                 disabled
-                className="mt-1 h-11 w-full text-gray-400 sm:h-12"
+                className={formFieldClass}
               />
             </div>
-            <div>
+            <div className="flex flex-col">
               <label className="text-sm text-white">Phone Number</label>
               <Input
                 value={editedProfile.phone}
@@ -145,13 +149,13 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
                 onChange={(e) =>
                   setEditedProfile({ ...editedProfile, phone: e.target.value })
                 }
-                className="mt-1 h-11 w-full text-gray-400 sm:h-12"
+                className={formFieldClass}
               />
             </div>
           </div>
 
           {/* College */}
-          <div>
+          <div className="flex flex-col">
             <label className="text-sm text-white">College/University</label>
             {isEditing ? (
               <Select
@@ -160,10 +164,12 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
                   setEditedProfile({ ...editedProfile, college: value })
                 }
               >
-                <SelectTrigger className="mt-1 h-11 w-full text-gray-400 sm:h-12" />
+                <SelectTrigger className={formFieldClass}>
+                  <SelectValue className="flex-1 h-full flex items-center px-0" placeholder="Select college" />
+                </SelectTrigger>
                 <SelectContent>
                   {COLLEGES.map((college, idx) => (
-                    <SelectItem key={idx} value={college}>
+                    <SelectItem key={idx} value={college} className={formFieldClass}>
                       {college}
                     </SelectItem>
                   ))}
@@ -173,14 +179,14 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
               <Input
                 value={profileState.college}
                 disabled
-                className="mt-1 h-11 w-full text-gray-400 sm:h-12"
+                className={formFieldClass}
               />
             )}
           </div>
 
           {/* Branch + Year */}
           <div className="grid grid-cols-1 gap-4 py-2 sm:grid-cols-2 sm:gap-7 sm:py-3">
-            <div>
+            <div className="flex flex-col">
               <label className="text-sm text-white">Branch/Major</label>
               <Input
                 value={editedProfile.branch}
@@ -188,34 +194,33 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
                 onChange={(e) =>
                   setEditedProfile({ ...editedProfile, branch: e.target.value })
                 }
-                className="mt-1 h-11 w-full text-gray-400 sm:h-12"
+                className={formFieldClass}
               />
             </div>
-            <div>
+            <div className="flex flex-col">
               <label className="text-sm text-white">Academic Year</label>
               {isEditing ? (
                 <Select
                   value={editedProfile.year.toString()}
                   onValueChange={(value) =>
-                    setEditedProfile({
-                      ...editedProfile,
-                      year: parseInt(value),
-                    })
+                    setEditedProfile({ ...editedProfile, year: parseInt(value) })
                   }
                 >
-                  <SelectTrigger className="mt-1 h-11 w-full text-gray-400 sm:h-12" />
+                  <SelectTrigger className={formFieldClass}>
+                    <SelectValue className="flex-1 h-full flex items-center px-0" placeholder="Select year" />
+                  </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">1st Year</SelectItem>
-                    <SelectItem value="2">2nd Year</SelectItem>
-                    <SelectItem value="3">3rd Year</SelectItem>
-                    <SelectItem value="4">4th Year</SelectItem>
+                    <SelectItem value="1" className={formFieldClass}>1st Year</SelectItem>
+                    <SelectItem value="2" className={formFieldClass}>2nd Year</SelectItem>
+                    <SelectItem value="3" className={formFieldClass}>3rd Year</SelectItem>
+                    <SelectItem value="4" className={formFieldClass}>4th Year</SelectItem>
                   </SelectContent>
                 </Select>
               ) : (
                 <Input
                   value={`${profileState.year} Year`}
                   disabled
-                  className="mt-1 h-11 w-full text-gray-400 sm:h-12"
+                  className={formFieldClass}
                 />
               )}
             </div>
