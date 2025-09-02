@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { COLLEGES } from "@/lib/constants";
 import { toast } from "sonner";
+import { useTeam } from "@/context/TeamContext";
 
 interface Profile {
   name: string;
@@ -21,18 +22,7 @@ interface Profile {
 export default function ProfileClient({ profile } : { profile: Profile}) {
   const router = useRouter();
   const { signOut } = useAuth();
-  const [hasTeam, setHasTeam] = useState<boolean | null>(null);
-  
-  // Check for hasTeam cookie only on client side
-  useEffect(() => {
-    // Get the cookie value
-    const hasTeamCookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('hasTeam='))
-      ?.split('=')[1] === 'true';
-    
-    setHasTeam(hasTeamCookie);
-  }, []);
+  const { hasTeam, loading: teamLoading } = useTeam();
   const [profileState, setProfileState] = useState(profile);
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState(profile);
@@ -134,18 +124,15 @@ export default function ProfileClient({ profile } : { profile: Profile}) {
             size="lg" 
             className="bg-black hover:bg-neutral-950 text-white px-8"
             onClick={() => {
-              // Only navigate when we've determined the team status
-              if (hasTeam !== null) {
-                if (hasTeam) {
-                  router.push('/hackathon/dashboard');
-                } else {
-                  router.push('/hackathon');
-                }
+              if (hasTeam) {
+                router.push('/hackathon/dashboard');
+              } else {
+                router.push('/hackathon');
               }
             }}
-            disabled={hasTeam === null}
+            disabled={teamLoading}
           >
-            {hasTeam === null ? 'Loading...' : (hasTeam ? 'Hackathon Dashboard' : 'Join Hackathon')}
+            {teamLoading ? 'Loading...' : (hasTeam ? 'Hackathon Dashboard' : 'Join Hackathon')}
           </Button>
           
           <Link href="/">

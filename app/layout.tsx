@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import { TeamProvider } from "@/context/TeamContext";
 import ReactLenis from "lenis/react";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -82,8 +83,10 @@ export default function RootLayout({
       >
         <ReactLenis root />
         <AuthProvider>
-          {children}
-          <Toaster position="top-center" />
+          <TeamProvider>
+            {children}
+            <Toaster position="top-center" />
+          </TeamProvider>
         </AuthProvider>
       </body>
     </html>

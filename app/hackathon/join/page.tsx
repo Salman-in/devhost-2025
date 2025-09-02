@@ -10,6 +10,7 @@ import DecryptText from "@/components/animated/TextAnimation";
 import gsap from "gsap";
 import ErrorModal from "@/components/ui/ErrorModal";
 import { useErrorModal } from "@/lib/hooks/useErrorModal";
+import { useTeam } from "@/context/TeamContext";
 
 interface JoinFormData {
   leader_email: string;
@@ -18,6 +19,7 @@ interface JoinFormData {
 export default function HackathonJoinTeam() {
   const router = useRouter();
   const { user, loading } = useAuth();
+  const { setTeam } = useTeam();
   const [mounted, setMounted] = useState(false); // SSR guard
   const errorModal = useErrorModal({ defaultTitle: 'Team Join Error' });
 
@@ -113,11 +115,14 @@ export default function HackathonJoinTeam() {
       });
 
       if (res.ok) {
-        // Set the hasTeam cookie before redirecting - make sure it's accessible to the server
-        document.cookie = 'hasTeam=true; path=/; max-age=86400; SameSite=Strict'; // 24 hours
-        console.log('Team joined successfully, setting hasTeam cookie to true');
+        // Get the team data after joining
+        const teamData = await res.json();
         
-        // Force a small delay to ensure cookie is set before navigation
+        // Update the team context
+        setTeam(teamData);
+        console.log('Team joined successfully, updating team context');
+        
+        // Force a small delay to ensure state updates before navigation
         setTimeout(() => {
           window.location.href = "/hackathon/dashboard?joined=true";
         }, 300);

@@ -7,37 +7,34 @@ import { useRouter } from "next/navigation";
 import DecryptText from "@/components/animated/TextAnimation";
 import { ClippedCard } from "@/components/ClippedCard";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { useTeam } from "@/context/TeamContext";
 
 export default function HackathonPage() {
   const { user, loading: authLoading } = useAuth();
+  const { hasTeam, loading: teamLoading } = useTeam();
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
-  // First check if the user is authenticated
+  
+  // Authentication check
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/signin");
     }
   }, [user, authLoading, router]);
 
-  // Separate effect to check if user has a team (runs only when auth is confirmed)
+  // Team status check
   useEffect(() => {
     if (!authLoading && user) {
-      // Check if user has a team by reading the cookie
-      const hasTeamCookie = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('hasTeam='))
-        ?.split('=')[1] === 'true';
-      
-      if (hasTeamCookie) {
+      if (hasTeam) {
         // If user has a team, redirect to dashboard
         console.log('Hackathon page: User has team, redirecting to dashboard');
         router.replace("/hackathon/dashboard");
-      } else {
-        // Just complete loading
+      } else if (!teamLoading) {
+        // Only finish checking when team status is confirmed
         setIsChecking(false);
       }
     }
-  }, [user, authLoading, router]);
+  }, [user, authLoading, router, hasTeam, teamLoading]);
 
   if (isChecking || authLoading) {
     return (

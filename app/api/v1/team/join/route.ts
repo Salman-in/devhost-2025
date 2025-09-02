@@ -9,7 +9,36 @@ export async function POST(req: NextRequest) {
     if (!decoded)
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
 
-    const { name, email } = decoded;
+    // Get email from decoded token
+    const { uid, email } = decoded;
+    
+    if (!email) {
+      return NextResponse.json(
+        { error: "Email not found in token" },
+        { status: 401 },
+      );
+    }
+    
+    // Fetch latest profile data to get the most current name
+    const profileRef = adminDb.collection("users").doc(uid);
+    const profileSnapshot = await profileRef.get();
+    
+    if (!profileSnapshot.exists) {
+      return NextResponse.json(
+        { error: "User profile not found" },
+        { status: 404 },
+      );
+    }
+    
+    const userProfile = profileSnapshot.data();
+    if (!userProfile || !userProfile.name) {
+      return NextResponse.json(
+        { error: "Invalid user profile data" },
+        { status: 400 },
+      );
+    }
+    
+    const name = userProfile.name; // Get name from profile, not token
 
     const searchData = await req.json();
     const { leader_email } = searchData;

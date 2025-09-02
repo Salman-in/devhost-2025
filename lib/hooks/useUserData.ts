@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { useAuth } from '@/context/AuthContext';
-import { useEffect } from 'react';
+import { useTeam } from '@/context/TeamContext';
 
 interface UserProfile {
     uid: string;
@@ -11,17 +11,6 @@ interface UserProfile {
     reg_no?: string;
     year?: string;
     course?: string;
-}
-
-interface Team {
-    team_id: string;
-    team_name: string;
-    team_leader: string;
-    team_leader_email: string;
-    members: Array<{ name: string; email: string; role: string }>;
-    drive_link?: string;
-    finalized: boolean;
-    createdAt: string | Date;
 }
 
 const fetcher = async (url: string, token: string) => {
@@ -61,52 +50,14 @@ export function useUserProfile() {
     };
 }
 
-export function useTeamData() {
-    const { user } = useAuth();
-    
-    const { data: team, error, isLoading, mutate } = useSWR(
-        user ? [`/api/v1/team/get`, user] : null,
-        async ([url, user]) => {
-            const token = await user.getIdToken();
-            return fetcher(url, token);
-        },
-        {
-            revalidateOnFocus: false,
-            dedupingInterval: 5000,
-        }
-    );
-
-    return {
-        team: team as Team | undefined,
-        teamLoading: isLoading,
-        teamError: error,
-        refreshTeam: mutate
-    };
-}
-
 export function useUserAndTeam() {
     const { profile, profileLoading, profileError, refreshProfile } = useUserProfile();
-    const { team, teamLoading, teamError, refreshTeam } = useTeamData();
+    const { team, loading: teamLoading, error: teamError, refreshTeam, hasTeam } = useTeam();
     
     const refreshAll = () => {
         refreshProfile();
         refreshTeam();
     };
-    
-    const hasTeam = Boolean(team);
-    
-    // Sync team status with cookie
-    useEffect(() => {
-        if (!profileLoading) {
-            if (hasTeam) {
-                // Set cookie when user has a team
-                document.cookie = 'hasTeam=true; path=/; max-age=86400; SameSite=Strict'; // 24 hours
-            } else {
-                // Clear cookie when user has no team
-                document.cookie = 'hasTeam=false; path=/; max-age=0; SameSite=Strict'; // Expire immediately
-            }
-        }
-    }, [hasTeam, profileLoading]);
     
     return {
         profile,

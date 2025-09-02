@@ -7,14 +7,25 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { useUserAndTeam } from "@/lib/hooks/useUserData";
+import { useUserProfile } from "@/lib/hooks/useUserData";
+import { useTeam } from "@/context/TeamContext";
 import TeamLeaderView from "@/components/hackathon/TeamLeaderView";
 import TeamMemberView from "@/components/hackathon/TeamMemberView";
 
 export default function HackathonDashboardPage() {
     const router = useRouter();
     const { user, loading: authLoading } = useAuth();
-    const { profile, team, isLoading, refreshAll } = useUserAndTeam();
+    const { profile, profileLoading, refreshProfile } = useUserProfile();
+    const { team, loading: teamLoading, refreshTeam, hasTeam } = useTeam();
+    
+    // Combined loading state
+    const isLoading = profileLoading || teamLoading;
+    
+    // Function to refresh both profile and team data
+    const refreshAll = () => {
+        refreshProfile();
+        refreshTeam();
+    };
 
     // Redirect if not authenticated
     useEffect(() => {
@@ -35,24 +46,13 @@ export default function HackathonDashboardPage() {
                 window.history.replaceState({}, '', '/hackathon/dashboard');
             }
             
-            // Update the hasTeam cookie based on current team data
-            if (team) {
-                console.log('Dashboard: Team data loaded, setting hasTeam cookie to true');
-                // Set a longer expiration for the cookie to avoid it expiring too quickly
-                document.cookie = 'hasTeam=true; path=/; max-age=86400; SameSite=Strict';
-            } else {
-                console.log('Dashboard: No team data, setting hasTeam cookie to false');
-                // Clear the cookie by setting max-age to 0
-                document.cookie = 'hasTeam=false; path=/; max-age=0; SameSite=Strict';
-                
-                // Only redirect if not coming from team creation/joining
-                if (!fromTeamAction) {
-                    console.log('Dashboard: No team and not from team action, redirecting to /hackathon');
-                    // Use a short timeout to avoid potential race conditions
-                    setTimeout(() => {
-                        router.replace('/hackathon');
-                    }, 100);
-                }
+            // Check if user has a team
+            if (!team && !fromTeamAction) {
+                console.log('Dashboard: No team and not from team action, redirecting to /hackathon');
+                // Use a short timeout to avoid potential race conditions
+                setTimeout(() => {
+                    router.replace('/hackathon');
+                }, 100);
             }
         }
     }, [isLoading, router, team]);
@@ -74,14 +74,7 @@ export default function HackathonDashboardPage() {
     }
 
     if (!profile || !team) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Loading team data...</h1>
-                    <LoadingSpinner />
-                </div>
-            </div>
-        );
+        return <LoadingSpinner />;
     }
 
     const isTeamLeader = team.team_leader_email === user.email;

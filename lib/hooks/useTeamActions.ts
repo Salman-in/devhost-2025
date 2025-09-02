@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useTeam } from '@/context/TeamContext';
 import { useErrorModal } from './useErrorModal';
 
 interface LoadingStates {
@@ -18,6 +19,7 @@ interface SuccessStates {
 
 export function useTeamActions(refreshAll: () => void) {
     const { user } = useAuth();
+    const { setTeam } = useTeam();
     const errorModal = useErrorModal({ defaultTitle: 'Team Action Error' });
     
     const [loadingStates, setLoadingStates] = useState<LoadingStates>({
@@ -90,10 +92,9 @@ export function useTeamActions(refreshAll: () => void) {
 
             if (res.ok) {
                 setSuccessStates(prev => ({ ...prev, deleted: true }));
-                document.cookie = 'hasTeam=false; path=/; max-age=0';
-                setTimeout(() => {
-                    window.location.reload();
-                }, 800);
+                setTeam(null); // Update team status in context
+                // Redirect immediately to prevent showing loading state
+                window.location.href = '/hackathon';
             } else {
                 const errorData = await res.json();
                 errorModal.showError(errorData.error || 'Failed to delete team');
@@ -160,12 +161,10 @@ export function useTeamActions(refreshAll: () => void) {
 
             if (res.ok) {
                 setSuccessStates(prev => ({ ...prev, left: true }));
-                // Clear the hasTeam cookie
-                document.cookie = 'hasTeam=false; path=/; max-age=0; SameSite=Strict';
-                setTimeout(() => {
-                    // Redirect directly to the hackathon page instead of dashboard
-                    window.location.href = '/hackathon';
-                }, 800);
+                // Update team status in context
+                setTeam(null);
+                // Redirect immediately to prevent showing loading state
+                window.location.href = '/hackathon';
             } else {
                 const errorData = await res.json();
                 errorModal.showError(errorData.error || 'Failed to leave team');
