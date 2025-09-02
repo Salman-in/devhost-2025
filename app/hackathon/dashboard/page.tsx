@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { ArrowLeft, CheckIcon, CopyIcon } from "lucide-react";
+import { ArrowLeft, CheckIcon, CopyIcon,Link as LinkIcon} from "lucide-react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useUserAndTeam } from "@/lib/hooks/useUserData";
 import DecryptText from "@/components/animated/TextAnimation";
+import { ClippedCard } from "@/components/ClippedCard";
 
 
 export default function HackathonDashboardPage() {
@@ -297,15 +298,19 @@ export default function HackathonDashboardPage() {
 
         return (
             
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div
-                className="p-6 w-full max-w-md mx-4"
-                style={{
-                    clipPath: "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
-                    backgroundColor: "#101810"
-                }}
-            >
-            <h2 className="text-xl font-orbitron font-bold text-primary mb-4">Add Drive Link</h2>
+           <div
+  className="fixed inset-0 z-50 flex items-center justify-center"
+  style={{
+    background: "rgba(0,0,0,0.98)",
+    backdropFilter: "blur(8px)",
+    WebkitBackdropFilter: "blur(8px)",
+  }}
+   >
+     <div className="w-full max-w-md mx-4 border-black">
+  <div className="bg-black px-6 py-4 sm:py-8 rounded-lg w-full">
+    
+            <h2 className="text-xl font-orbitron font-bold text-primary mb-4 flex items-center gap-2">
+                <LinkIcon className="w-4 h-4"/>Add Drive Link</h2>
 
             <form onSubmit={handleValidateAndSubmit}>
                 <div className="mb-4">
@@ -324,7 +329,7 @@ export default function HackathonDashboardPage() {
                             }));
                         }}
                         placeholder="https://drive.google.com/drive/folders/..."
-                        className="text-black placeholder:text-white border border-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary rounded-none bg-white"
+                        className="text-white placeholder:text-gray-400 border border-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary rounded-none bg-white"
                         required
                     />
                 </div>
@@ -371,7 +376,7 @@ export default function HackathonDashboardPage() {
                                         validationResult: null
                                     }));
                                 }}
-                                className="flex-1 flex cursor-pointer items-center justify-center gap-2 bg-gray-200 px-6 py-3 text-xs sm:text-sm font-orbitron font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50"
+                                className="flex-1 flex cursor-pointer items-center justify-center gap-2 bg-destructive px-6 py-3 text-xs sm:text-sm font-orbitron font-bold tracking-wider text-white uppercase transition-all hover:bg-red-500 hover:text-black disabled:opacity-50"
                                 style={{
                                     clipPath: "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)"
                                 }}
@@ -381,9 +386,10 @@ export default function HackathonDashboardPage() {
 
                             <Button
                                 type="submit"
-                                className="flex-1 flex cursor-pointer items-center justify-center gap-2 bg-primary px-6 py-3 text-xs sm:text-sm font-orbitron font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50"
+                                className="flex-1 flex cursor-pointer items-center justify-center gap-2 bg-primary px-6 py-3 text-xs sm:text-sm font-orbitron font-bold tracking-wider text-white uppercase transition-all hover:brightness-90 hover:text-black disabled:opacity-50"
                                 style={{
-                                    clipPath: "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)"
+                                    clipPath: "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
+                                     color: (driveLinkState.isValidating || driveLinkState.isUpdating) ? 'black' : 'white'
                                 }}
                                 disabled={
                                     driveLinkState.isUpdating ||
@@ -400,6 +406,7 @@ export default function HackathonDashboardPage() {
                         </div>
                     </form>
                 </div>
+                </div>
             </div>
         );
     };
@@ -408,22 +415,30 @@ export default function HackathonDashboardPage() {
         if (!team) return null;
         
         return (
-                <div
-            className="w-full max-w-2xl mx-auto bg-[#101810] border border-primary/40 p-8"
-            style={{
-                clipPath: "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)"
-            }}
-            >
+               <ClippedCard className="w-full max-w-2xl mx-auto border border-primary/40">
+  <div className="bg-[#101810] px-6 py-10 rounded-lg flex flex-col items-center justify-center w-full">
+    {/* Team Name with Copy Email Button */}
 
-                {/* Team Name with Copy Email Button */}
-                <div className="text-center mb-6">
-                    <h2 className="text-3xl font-orbitron text-primary mb-3 tracking-tight">
+                    <h2 className="text-3xl font-orbitron text-black bg-primary rounded-lg shadow-lg mb-3 tracking-tight w-full text-center ">
                         {team.team_name || 'Team Name'}
                         {team.finalized && <span className="ml-2 text-primary text-lg align-middle">✓ Finalized</span>}
                     </h2>
-                    {!team.finalized && (
-                        <div className="flex text-primary justify-center space-x-2 items-center">
-    <div className="text-white">
+                    
+            
+
+                {/* Members List */}
+                <div className="mb-6 w-full">
+                   <h3 className="text-lg font-orbitron text-primary mb-4 tracking-wide">Team Members</h3>
+
+                    <div className="space-y-3 ">
+                        {/* Team Leader */}
+                         <div className="flex items-center justify-between bg-white rounded-lg px-4 py-3 border border-primary/40 ">
+                             <div className="flex items-center gap-3">
+                                <span className="bg-primary text-black px-3 py-1 rounded-full text-xs font-bold">LEADER</span>
+                                {/* <span className="text-black font-medium px-2">{team.team_leader}</span> */}
+                                {!team.finalized && (
+                        <div className="flex text-primary justify-end space-x-2 items-center">
+    <div className="text-gray-500">
 
                                 Email: {profile?.email}
                             </div>
@@ -433,21 +448,9 @@ export default function HackathonDashboardPage() {
                             >
                                 {copied ? <div><CheckIcon className="h-4 w-4" /></div> : <div><CopyIcon className="h-4 w-4" /></div>}
                             </button>
-                        </div>
-                    )}
-                </div>
-
-                {/* Members List */}
-                <div className="mb-6">
-                   <h3 className="text-lg font-orbitron text-primary mb-4 tracking-wide">Team Members</h3>
-
-                    <div className="space-y-3">
-                        {/* Team Leader */}
-                         <div className="flex items-center justify-between bg-white rounded-lg px-4 py-3 border border-primary/40">
-                             <div className="flex items-center gap-3">
-                                <span className="bg-primary text-black px-2 py-1 rounded-full text-xs font-bold">LEADER</span>
-                                <span className="text-black font-medium">{team.team_leader}</span>
                             </div>
+                            )}
+                           </div>
                         </div>
 
 
@@ -459,7 +462,7 @@ export default function HackathonDashboardPage() {
                                     {!team.finalized && (
                                         <button
                                             onClick={() => handleRemovePeer(peer.id, peer.name)}
-                                            className="bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600 transition-colors"
+                                            className="bg-destructive text-white px-3 py-1 rounded-md h-fit text-sm hover:bg-red-600 hover:text-black transition-colors"
                                             disabled={loadingStates.removing}
                                         >
                                             {loadingStates.removing ? 'Removing...' : 'Remove'}
@@ -476,7 +479,7 @@ export default function HackathonDashboardPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex flex-col gap-3 mt-6">
+                <div className="flex flex-col gap-3 mt-6 w-full">
                     {team.finalized && team.drive_link ? (
                         /* Show drive link if finalized and link exists */
                         <a
@@ -504,6 +507,7 @@ export default function HackathonDashboardPage() {
                                   clipPath: "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)"
                                     }}
                                     >
+                                        <LinkIcon className="h-4 w-4 inline-flex items-center" />
                               Add Drive Link
                         </button>
 
@@ -517,7 +521,7 @@ export default function HackathonDashboardPage() {
                                      style={{
                                   clipPath: "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)"
                                     }}
-                                    className="flex-1 flex cursor-pointer items-center justify-center gap-2 bg-destructive px-6 py-3 text-xs sm:text-sm font-orbitron font-bold tracking-wider text-black uppercase transition-all hover:brightness-80 disabled:opacity-50"
+                                    className="flex-1 flex cursor-pointer items-center justify-center gap-2 bg-destructive px-6 py-3 text-xs sm:text-sm font-orbitron font-bold tracking-wider text-white uppercase transition-all hover:bg-red-500 hover:text-black disabled:opacity-50 h-fit"
                                     disabled={loadingStates.deleting || (team.peers && team.peers.length > 0)}
                                 >
                                     {loadingStates.deleting ? 'Deleting...' : successStates.deleted ? 'Deleted!' : 'Delete Team'}
@@ -526,7 +530,7 @@ export default function HackathonDashboardPage() {
                                     style={{
                                   clipPath: "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)"
                                     }}
-                                    className="flex-1 flex cursor-pointer items-center justify-center gap-2 bg-primary px-6 py-3 text-xs sm:text-sm font-orbitron font-bold tracking-wider text-black uppercase transition-all hover:brightness-80 disabled:opacity-50"
+                                    className="flex-1 flex cursor-pointer items-center justify-center gap-2 bg-primary px-6 py-3 text-xs sm:text-sm font-orbitron font-bold tracking-wider text-white uppercase transition-all hover:bg-brightness-90 hover:text-black disabled:opacity-50 h-fit"
                                     onClick={handleFinalizeTeam}
                                     disabled={loadingStates.finalizing}
                                 >
@@ -543,6 +547,7 @@ export default function HackathonDashboardPage() {
                 {/* Drive Link Modal - Only show if not finalized */}
                 {!team.finalized && renderDriveLinkModal()}
             </div>
+            </ClippedCard>
         );
     }
 
@@ -550,21 +555,22 @@ export default function HackathonDashboardPage() {
         if (!team) return null;
         
         return (
-            <div className="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8">
-                {/* Team Name */}
-                <h2 className="text-3xl font-bold text-blue-900 mb-6 text-center tracking-tight">
+           <ClippedCard className="w-full max-w-2xl mx-auto border border-primary/40">
+  <div className="bg-[#101810] px-8 py-10 rounded-lg w-full ">
+    {/* Team Name */}
+                <h2 className="text-3xl font-orbitron text-black mb-6 text-center tracking-tight bg-primary rounded-lg shadow-lg">
                     {team.team_name || 'Team Name'}
                     {team.finalized && <span className="ml-2 text-green-600 text-lg align-middle">✓ Finalized</span>}
                 </h2>
 
                 {/* Members List */}
-                <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-gray-700 mb-4">Team Members</h3>
+                <div className="mb-6 ">
+                    <h3 className="text-lg font-orbitron text-primary mb-4">Team Members</h3>
                     <div className="space-y-3">
                         {/* Team Leader */}
-                        <div className="flex items-center justify-between bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg px-4 py-3 border border-yellow-200">
+                        <div className="flex-col items-center justify-between bg-gradient-to-r from-lime-50 to-green-50 rounded-lg px-4 py-3 border border-lime-400">
                             <div className="flex items-center gap-3">
-                                <span className="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-bold">LEADER</span>
+                                <span className="bg-lime-700 text-white px-2 py-1 rounded-full text-xs font-bold">LEADER</span>
                                 <span className="text-gray-800 font-medium">{team.team_leader}</span>
                             </div>
                         </div>
@@ -574,9 +580,9 @@ export default function HackathonDashboardPage() {
                             team.peers.map((peer) => {
                                 const isCurrentUser = peer?.id === user?.uid;
                                 return (
-                                    <div key={peer.id} className={`flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border border-gray-200 ${isCurrentUser ? 'ring-2 ring-blue-400 bg-blue-50' : ''}`}>
+                                    <div key={peer.id} className={`flex-col items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border border-gray-200 ${isCurrentUser ? 'ring-2 ring-primary bg-blue-50' : ''}`}>
                                         <div className="flex items-center gap-3">
-                                            {isCurrentUser && <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-bold">YOU</span>}
+                                            {isCurrentUser && <span className="bg-lime-400 text-white px-2 py-1 rounded-full text-xs font-bold">YOU</span>}
                                             <span className="text-gray-800 font-medium">{peer.name}</span>
                                         </div>
                                     </div>
@@ -609,8 +615,11 @@ export default function HackathonDashboardPage() {
                     <div className="mt-6">
                         <button
                             onClick={handleLeaveTeam}
-                            className="w-full bg-red-500 text-white px-4 py-3 rounded-lg hover:bg-red-600 transition-colors font-medium"
+                            className="w-full bg-destructive text-white px-4 py-3 hover:bg-red-500 hover:text-black transition-colors font-medium h-fit"
                             disabled={loadingStates.leaving}
+                            style={{
+                                  clipPath: "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)"
+                                    }}
                         >
                             {loadingStates.leaving ? 'Leaving...' : successStates.left ? 'Left!' : 'Leave Team'}
                         </button>
@@ -618,10 +627,11 @@ export default function HackathonDashboardPage() {
                 )}
 
                 {/* Team Info */}
-                <div className="mt-6 text-xs text-gray-500 text-center">
+                {/* <div className="mt-6 text-xs text-gray-500 text-center">
                     Team ID: {team.team_id}
+                </div> */}
                 </div>
-            </div>
+            </ClippedCard>
         );
     }
 
@@ -663,9 +673,9 @@ export default function HackathonDashboardPage() {
 
     if (!profile || !team) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="min-h-screen flex items-center justify-center bg-black">
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Loading team data...</h1>
+                    <h1 className="text-2xl font-bold text-primary mb-4">Loading team data...</h1>
                     <LoadingSpinner />
                 </div>
             </div>
@@ -674,6 +684,18 @@ export default function HackathonDashboardPage() {
 
     return (
         <div className="min-h-screen relative bg-black flex flex-col items-center justify-start py-12 px-4 z-10">
+            <div className="fixed top-6 left-6 z-30">
+                <Button
+                    className="flex cursor-pointer items-center justify-center gap-2 bg-primary rounded-none px-6 py-3 text-xs sm:text-sm font-orbitron font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50"
+                    style={{
+                    clipPath: "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)"
+                    }}
+                >
+                    <Link href="/profile" className="flex items-center gap-2">
+                    <ArrowLeft className="h-4 w-4 inline-flex items-center" /> Go to Profile
+                    </Link>
+                </Button>
+                </div>
 
         {/* GRID BACKGROUND */}
         <div
@@ -688,7 +710,7 @@ export default function HackathonDashboardPage() {
         }}
         />
 
-            <div className="relative z-10 w-full max-w-3xl mb-10 text-center">
+            <div className="relative z-10 w-full max-w-3xl mb-10 text-center pt-10 sm:pt-0">
                 <h1 className="text-primary font-orbitron text-lg sm:text-2xl md:text-4xl font-bold uppercase mb-3 tracking-wider text-center">
                     Hackathon Dashboard
                 </h1>
@@ -701,19 +723,7 @@ export default function HackathonDashboardPage() {
                     className="mb-2 font-orbitron text-xs sm:text-sm text-white/70"
                 />
 
-                <div className="flex flex-wrap justify-center gap-4">
-                <Button
-                    className="flex cursor-pointer items-center justify-center gap-2 bg-primary rounded-none px-6 py-3 text-xs sm:text-sm font-orbitron font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50"
-                    style={{
-                    clipPath: "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)"
-                    }}
-                >
-                    <Link href="/profile" className="flex items-center gap-2">
-                    <ArrowLeft className="h-4 w-4 inline-flex items-center" /> Go to Profile
-                    </Link>
-                </Button>
-                </div>
-
+                
     </div>
     <div className="relative z-10 w-full max-w-4xl">
         {team && (
