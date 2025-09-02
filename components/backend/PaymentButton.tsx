@@ -1,5 +1,6 @@
 "use client";
 import Script from "next/script";
+import { useState } from "react";
 
 interface SuccessResponse {
   razorpay_signature: string;
@@ -34,8 +35,26 @@ declare global {
   }
 }
 
-export default function PaymentButton({ amount = 100 }: { amount?: number }) {
+type PaymentButtonProps = {
+  amount: number;
+  disabled?: boolean;
+  onPaymentSuccess: (response: SuccessResponse) => void;
+  eventName: string;
+};
+
+export default function PaymentButton({
+  amount,
+  disabled = false,
+  onPaymentSuccess,
+  eventName,
+}: PaymentButtonProps) {
+  const [loading, setLoading] = useState(false);
+
   const startPayment = async () => {
+    if (disabled || loading) return;
+
+    setLoading(true);
+
     // Create order on server
     const createRes = await fetch("/api/create-order", {
       method: "POST",
@@ -43,32 +62,22 @@ export default function PaymentButton({ amount = 100 }: { amount?: number }) {
       body: JSON.stringify({ amount }),
     });
     const order = await createRes.json();
-    if (!order || order.error) return alert("Order creation failed: " + (order?.error || "unknown"));
+    if (!order || order.error) {
+      alert("Order creation failed: " + (order?.error || "unknown"));
+      setLoading(false);
+      return;
+    }
 
-    const options = {
+    const options: CheckoutOptions = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
       amount: order.amount,
-      currency: order.currency,
-      name: "Hackathon Project",
+      currency: order.currency || "INR",
+      name: eventName, // Dynamic event name
       description: "Ticket",
-      order_id: order.id,
-      handler: async function (response: SuccessResponse) {
-        // Verify on server
-        const verifyRes = await fetch("/api/verify-payment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...response,
-            amount: order.amount, // send amount too
-          }),
-        });
-
-        const verify = await verifyRes.json();
-        if (verify.ok) {
-          alert("Payment verified and stored in Firestore. Payment ID: " + response.razorpay_payment_id);
-        } else {
-          alert("Verification failed: " + (verify.error || "unknown"));
-        }
+      order_id: order.orderId || order.id,
+      handler: function (response: SuccessResponse) {
+        onPaymentSuccess(response);
+        setLoading(false);
       },
       prefill: {
         name: "Test User",
@@ -85,7 +94,13 @@ export default function PaymentButton({ amount = 100 }: { amount?: number }) {
   return (
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-      <button onClick={startPayment}>Pay ₹{(amount / 100).toFixed(2)}</button>
+      <button
+        onClick={startPayment}
+        disabled={disabled || loading}
+        className="bg-primary w-full rounded px-5 py-2 text-xs font-bold tracking-widest text-black uppercase"
+      >
+        {loading ? "Processing..." : `Pay ₹${(amount / 100).toFixed(2)}`}
+      </button>
     </>
   );
 }

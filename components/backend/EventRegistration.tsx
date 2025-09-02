@@ -1,5 +1,4 @@
 "use client";
-
 import {
   useState,
   useEffect,
@@ -10,9 +9,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import clsx from "clsx";
-import { events } from "@/assets/data/events";
-import { Button } from "../ui/button";
-import LoadingSpinner from "../LoadingSpinner";
+import { events, groupEventMaxMembers } from "@/assets/data/events";
+import { LoaderCircle } from "lucide-react";
+import PaymentButton from "@/components/backend/PaymentButton";
 
 type Props = { eventId: string };
 
@@ -33,6 +32,7 @@ export default function EventRegistration({ eventId }: Props) {
   const [team, setTeam] = useState<TeamType | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const [showPaymentValidation, setShowPaymentValidation] = useState(false);
 
   // Utility function to get ID token
   const getIdToken = useCallback(async () => {
@@ -42,6 +42,7 @@ export default function EventRegistration({ eventId }: Props) {
 
   useEffect(() => {
     if (userLoading) return;
+
     const fetchTeam = async () => {
       if (!userEmail) {
         setInitialized(true);
@@ -75,10 +76,11 @@ export default function EventRegistration({ eventId }: Props) {
         setInitialized(true);
       }
     };
+
     fetchTeam();
   }, [eventId, userEmail, userLoading, getIdToken]);
 
-  // Generic api handler with alerts
+  // Generic API handler with alerts
   const handleApiAction = useCallback(
     async (
       url: string,
@@ -147,13 +149,46 @@ export default function EventRegistration({ eventId }: Props) {
     );
   };
 
-  const handlePayment = () => {
+  type RazorpayResponse = {
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    razorpay_signature: string;
+  };
+
+  const event = events.find((event) => event.id === parseInt(eventId));
+  const eventPrice = 5000;
+  const maxMembers = groupEventMaxMembers[parseInt(eventId)];
+  const membersCount = team?.members.length ?? 0;
+  const canPay =
+    team &&
+    team.leaderEmail === userEmail &&
+    !team.paymentDone &&
+    membersCount === maxMembers;
+
+  const handlePaymentSuccess = async (response: RazorpayResponse) => {
     if (!team) return;
-    handleApiAction(
+    await handleApiAction(
       `/api/v1/events/${eventId}/teams/${team.id}/pay`,
-      { method: "POST" },
-      () => setTeam({ ...team, paymentDone: true, registered: true }),
+      {
+        method: "POST",
+        body: JSON.stringify({
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature,
+          amount: eventPrice,
+        }),
+      },
+      (data) => {
+        if (data.team) {
+          setTeam(data.team);
+        } else {
+          setTeam((prev) =>
+            prev ? { ...prev, paymentDone: true, registered: true } : prev,
+          );
+        }
+      },
     );
+    setShowPaymentValidation(false);
   };
 
   const handleDisband = () => {
@@ -186,12 +221,26 @@ export default function EventRegistration({ eventId }: Props) {
     return <LoadingSpinner />;
   }
 
-  const event = events.find((event) => event.id === parseInt(eventId));
-
-  const polygonClip =
-    "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)";
-
   return (
+    <div
+      className="group bg-primary relative mx-auto h-fit w-full max-w-2xl p-[1px]"
+      style={{
+        clipPath:
+          "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
+      }}
+    >
+      <div
+        className="font-orbitron flex h-full flex-col gap-2 bg-[#101810] p-4 py-6"
+        style={{
+          clipPath:
+            "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
+        }}
+      >
+        <p className="text-primary text-center text-3xl font-bold uppercase">
+          Event Registration
+        </p>
+        <p className="text-center text-lg">&gt; {event?.title}</p>
+        <div className="p-4">
     <div className="max-w-full px-2 sm:px-4">
       {/* Header */}
       <div className="mb-8 space-y-2 text-center">
@@ -276,6 +325,111 @@ export default function EventRegistration({ eventId }: Props) {
           {/* Step 2 – Team Dashboard */}
           {userEmail && step === 2 && team && (
             <div>
+              {/* Team Dashboard */}
+              <div>
+                <h3 className="mb-2 text-sm font-semibold tracking-wide text-white uppercase">
+                  Team Dashboard
+                </h3>
+                <div className="border-primary/50 space-y-4 rounded-md border bg-white/5 p-4">
+                  {/* Leader */}
+                  <div className="text-sm">
+                    <p>
+                      <b>&gt; Leader:</b>
+                    </p>
+                    <p className="text-primary">{team.leaderEmail}</p>
+                  </div>
+                  {/* Members */}
+                  <div>
+                    <p className="mb-2 text-sm font-medium text-white">
+                      <b>&gt; Members:</b>
+                    </p>
+                    <ul className="space-y-2">
+                      {team.members.map((m) => (
+                        <li
+                          key={m}
+                          className="text-primary flex h-6 items-center justify-between rounded-md text-sm"
+                        >
+                          <p>{m}</p>
+                          {team.leaderEmail === userEmail &&
+                            m !== userEmail &&
+                            !team.registered && (
+                              <ClippedCard
+                                innerBg="bg-red-600"
+                                outerBg="bg-transparent"
+                                className="h-fit"
+                              >
+                                <button
+                                  className="px-4 py-1 text-xs font-bold text-white"
+                                  disabled={actionLoading}
+                                  onClick={() => handleRemoveMember(m)}
+                                >
+                                  Remove
+                                </button>
+                              </ClippedCard>
+                            )}
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="text-sm text-white">
+                      {`(Members: ${team.members.length} / ${maxMembers})`}
+                    </p>
+                  </div>
+                  <div className="border-primary/50 border border-b" />
+                  {/* Status + Payment */}
+                  <div className="flex justify-between">
+                    <p className="text-sm font-medium text-white">
+                      <b>&gt; Status: </b>
+                      <span className="text-primary">
+                        {team.registered ? "Registered" : "Pending"}
+                      </span>
+                    </p>
+                    <p className="text-sm font-medium text-white">
+                      <b>&gt; Payment: </b>
+                      <span className="text-primary">
+                        {team.paymentDone ? "Done" : "Not Done"}
+                      </span>
+                    </p>
+                  </div>
+                  {/* Leader Actions */}
+                  {team.leaderEmail === userEmail && !team.paymentDone && (
+                    <>
+                      <div className="flex gap-3 pt-2">
+                        <ClippedCard className="flex-1" innerBg="bg-primary">
+                          {canPay ? (
+                            <PaymentButton
+                              amount={eventPrice}
+                              disabled={actionLoading}
+                              onPaymentSuccess={handlePaymentSuccess}
+                              eventName={event?.title ?? "Event"}
+                            />
+                          ) : (
+                            <button
+                              className="bg-primary w-full rounded px-5 py-2 text-xs font-bold tracking-widest text-black uppercase"
+                              disabled={actionLoading}
+                              onClick={() => setShowPaymentValidation(true)}
+                            >
+                              Pay Now
+                            </button>
+                          )}
+                        </ClippedCard>
+                        <ClippedCard className="flex-1" innerBg="bg-black">
+                          <button
+                            onClick={handleDisband}
+                            disabled={actionLoading}
+                            className="w-full px-5 py-2 text-xs font-bold tracking-widest text-white uppercase"
+                          >
+                            {actionLoading ? "Disbanding..." : "Disband Team"}
+                          </button>
+                        </ClippedCard>
+                      </div>
+                      {showPaymentValidation && (
+                        <div className="mt-2 text-center font-bold text-red-500">
+                          {`Add ${maxMembers - membersCount} more member(s) to proceed to payment.`}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
               <h3 className="mb-3 text-xs font-semibold tracking-wide text-white uppercase sm:text-sm">
                 Team Dashboard
               </h3>
