@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifySessionCookie } from "@/firebase/admin";
-import DetailsClient from "@/components/DetailsClient";
+import DetailsClient from "@/components/backend/DetailsClient";
 
 export default async function DetailsPage() {
   const cookieStore = await cookies();

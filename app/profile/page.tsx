@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { adminDb, verifySessionCookie } from "@/firebase/admin";
-import ProfileClient from "@/components/ProfileClient";
+import ProfileClient from "@/components/backend/ProfileClient";
 
 interface Profile {
   name: string;

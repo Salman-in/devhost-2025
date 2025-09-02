@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ClippedButton } from "@/components/ClippedButton";
 import { ClippedCard } from "@/components/ClippedCard";
-import ProfileForm from "@/components/ProfileForm";
+import ProfileForm from "@/components/backend/ProfileForm";
 import { useAuth } from "@/context/AuthContext";
 
 interface Profile {

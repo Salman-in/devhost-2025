@@ -9,8 +9,8 @@ import { ArrowLeft } from "lucide-react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useUserProfile } from "@/lib/hooks/useUserData";
 import { useTeam } from "@/context/TeamContext";
-import TeamLeaderView from "@/components/hackathon/TeamLeaderView";
-import TeamMemberView from "@/components/hackathon/TeamMemberView";
+import TeamLeaderView from "@/components/backend/hackathon/TeamLeaderView";
+import TeamMemberView from "@/components/backend/hackathon/TeamMemberView";
 
 export default function HackathonDashboardPage() {
   const router = useRouter();
