@@ -12,6 +12,7 @@ import { useAuth } from "@/context/AuthContext";
 import clsx from "clsx";
 import { events } from "@/assets/data/events";
 import { LoaderCircle } from "lucide-react";
+import LoadingSpinner from "../LoadingSpinner";
 
 type Props = { eventId: string };
 
@@ -182,11 +183,7 @@ export default function EventRegistration({ eventId }: Props) {
   };
 
   if (userLoading || !initialized) {
-    return (
-      <div>
-        <LoaderCircle className="text-primary h-12 w-12 animate-spin" />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   const event = events.find((event) => event.id === parseInt(eventId));
