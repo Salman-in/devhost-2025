@@ -8,6 +8,7 @@ export function ClippedButton({
   outerBg = "bg-transparent",
   textColor = "text-black",
   type = "button",
+  className = "",
 }: {
   children: React.ReactNode;
   onClick?: () => void;
@@ -16,6 +17,7 @@ export function ClippedButton({
   outerBg?: string;
   textColor?: string;
   type?: "button" | "submit";
+  className?: string;
 }) {
   return (
     <ClippedCard
@@ -27,7 +29,7 @@ export function ClippedButton({
         type={type}
         onClick={onClick}
         disabled={disabled}
-        className={`w-full px-5 py-2 text-xs font-bold tracking-widest uppercase ${textColor} flex cursor-pointer items-center justify-center gap-2 disabled:opacity-50`}
+        className={`w-full px-5 py-2 text-xs font-bold tracking-widest uppercase ${textColor} flex cursor-pointer items-center justify-center gap-2 disabled:opacity-50 ${className}`}
       >
         {children}
       </button>
