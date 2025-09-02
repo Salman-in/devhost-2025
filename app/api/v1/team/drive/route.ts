@@ -7,12 +7,27 @@ export async function POST(req: NextRequest) {
     const decoded = await verifyToken(req);
     if (!decoded) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
 
-    const { uid } = decoded;
+    const { email } = decoded;
 
     const searchData = await req.json();
-    const { drive_link } = searchData;
+    const { drive_link, team_id } = searchData;
 
-    const teamRef = adminDb.collection('teams').doc(uid);
+    // Verify the user is the team leader
+    const teamRef = adminDb.collection('teams').doc(team_id);
+    const teamSnap = await teamRef.get();
+    
+    if (!teamSnap.exists) {
+      return NextResponse.json({ error: 'Team not found' }, { status: 404 });
+    }
+    
+    const teamData = teamSnap.data();
+    
+    if (teamData?.team_leader_email !== email) {
+      return NextResponse.json({ 
+        error: 'Only team leaders can update drive links' 
+      }, { status: 403 });
+    }
+    
     await teamRef.update({
       drive_link: drive_link,
       updatedAt: new Date().toISOString(),
@@ -20,7 +35,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ 
       success: true, 
-      message: `Drive link updated for team ${uid} successfully`
+      message: `Drive link updated for team successfully`
     });
   } catch (err) {
     console.error('API error:', err);

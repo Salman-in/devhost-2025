@@ -5,37 +5,47 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { useUserProfile } from "@/lib/hooks/useUserData";
 import DecryptText from "@/components/animated/TextAnimation";
 import { ClippedCard } from "@/components/ClippedCard";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { useTeam } from "@/context/TeamContext";
 
 export default function HackathonPage() {
   const { user, loading: authLoading } = useAuth();
-  const { profile, profileLoading } = useUserProfile();
+  const { hasTeam, loading: teamLoading } = useTeam();
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
-
-  // Check authentication and profile only once
+  
+  // Authentication check
   useEffect(() => {
-    if (!authLoading) {
-      if (!user) {
-        router.push("/signin");
-      } else {
-        setIsChecking(false);
-      }
+    if (!authLoading && !user) {
+      router.push("/signin");
     }
   }, [user, authLoading, router]);
 
-  // Check if user already has a team
+  // Team status check
   useEffect(() => {
-    if (!profileLoading && profile?.team_id) {
-      router.replace("/hackathon/dashboard");
+    if (!authLoading && user) {
+      if (hasTeam) {
+        // If user has a team, redirect to dashboard
+        console.log('Hackathon page: User has team, redirecting to dashboard');
+        router.replace("/hackathon/dashboard");
+      } else if (!teamLoading) {
+        // Only finish checking when team status is confirmed
+        setIsChecking(false);
+      }
     }
-  }, [profile, profileLoading, router]);
+  }, [user, authLoading, router, hasTeam, teamLoading]);
 
-  if (isChecking || authLoading || profileLoading) {
-    return <LoadingSpinner />;
+  if (isChecking || authLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-black">
+        <div className="text-center">
+          <div className="border-primary mx-auto h-12 w-12 animate-spin rounded-full border-b-2"></div>
+          <p className="font-orbitron text-primary mt-4">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

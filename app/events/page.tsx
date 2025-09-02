@@ -16,9 +16,5 @@ export default async function EventsPage() {
     redirect("/");
   }
 
-  return (
-    <div className="container mx-auto py-10">
-      <Events />
-    </div>
-  );
+  return <Events />;
 }

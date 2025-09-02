@@ -1,19 +1,47 @@
-"use client";
-
+'use client';
+import { BookOpen, Calendar, GraduationCap, Mail, Phone, User } from "lucide-react";
 import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { useRouter } from "next/navigation";
 import { ClippedButton } from "@/components/ClippedButton";
 import { ClippedCard } from "@/components/ClippedCard";
 import ProfileForm, { Profile } from "@/components/ProfileForm";
 import { useAuth } from "@/context/AuthContext";
+import { useState } from "react";
+import { COLLEGES } from "@/lib/constants";
+import { toast } from "sonner";
+import { useTeam } from "@/context/TeamContext";
 
-export default function ProfileClient({ profile }: { profile: Profile }) {
+interface Profile {
+  name: string;
+  email: string;
+  phone: string;
+  college: string;
+  branch: string;
+  year: number;
+  team_id?: string;
+}
+export default function ProfileClient({ profile } : { profile: Profile}) {
   const router = useRouter();
   const { signOut } = useAuth();
+  const { hasTeam, loading: teamLoading } = useTeam();
+  const [profileState, setProfileState] = useState(profile);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedProfile, setEditedProfile] = useState(profile);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  const isValidPhone = (phone: string) => {
+    const phoneRegex = /^[0-9]{10}$/;
+    return phoneRegex.test(phone.replace(/\s/g, ''));
+  };
 
   const handleLogout = async () => {
     await signOut();
-    router.push("/");
+    router.push('/');
   };
 
   return (
