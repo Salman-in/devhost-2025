@@ -1,15 +1,22 @@
-'use client';
-import { BookOpen, Calendar, GraduationCap, Mail, Phone, User, Edit, Save, X } from "lucide-react";
+"use client";
+
+import { BookOpen, Calendar, Phone, User, Edit, Save, X } from "lucide-react";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { COLLEGES } from "@/lib/constants";
 import { toast } from "sonner";
+import { ClippedCard } from "@/components/ClippedCard";
 
 interface Profile {
   name: string;
@@ -20,45 +27,48 @@ interface Profile {
   year: number;
   team_id?: string;
 }
-export default function ProfileClient({ profile } : { profile: Profile}) {
+
+export default function ProfileClient({ profile }: { profile: Profile }) {
   const router = useRouter();
   const { signOut } = useAuth();
   const [profileState, setProfileState] = useState(profile);
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState(profile);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
-  const isValidPhone = (phone: string) => {
-    const phoneRegex = /^[0-9]{10}$/;
-    return phoneRegex.test(phone.replace(/\s/g, ''));
-  };
+  const isValidPhone = (phone: string) =>
+    /^[0-9]{10}$/.test(phone.replace(/\s/g, ""));
 
   const handleLogout = async () => {
     await signOut();
-    router.push('/');
+    router.push("/");
   };
 
   const handleSave = async () => {
-    if (!editedProfile.name || !editedProfile.phone || !editedProfile.college || !editedProfile.branch || !editedProfile.year) {
-      setError('All fields are required.');
+    if (
+      !editedProfile.name ||
+      !editedProfile.phone ||
+      !editedProfile.college ||
+      !editedProfile.branch ||
+      !editedProfile.year
+    ) {
+      setError("All fields are required.");
       return;
     }
 
     if (!isValidPhone(editedProfile.phone)) {
-      setError('Please enter a valid phone number.');
+      setError("Please enter a valid phone number.");
       return;
     }
 
-    setError('');
+    setError("");
     setIsSaving(true);
 
     try {
-      const res = await fetch('/api/v1/user/update', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const res = await fetch("/api/v1/user/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editedProfile),
       });
 
@@ -67,12 +77,12 @@ export default function ProfileClient({ profile } : { profile: Profile}) {
         setIsEditing(false);
         toast("Profile updated successfully!");
       } else {
-        setError('Failed to save profile. Please try again.');
-        toast.error('Failed to save profile. Please try again.');
+        setError("Failed to save profile. Please try again.");
+        toast.error("Failed to save profile. Please try again.");
       }
-    } catch (error) {
-      setError('An error occurred while saving. Please try again.');
-      toast.error('An error occurred while saving. Please try again.');
+    } catch {
+      setError("An error occurred while saving. Please try again.");
+      toast.error("An error occurred while saving. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -83,207 +93,306 @@ export default function ProfileClient({ profile } : { profile: Profile}) {
     setIsEditing(false);
   };
 
-  const hasChanges = JSON.stringify(editedProfile) !== JSON.stringify(profileState);
+  const hasChanges =
+    JSON.stringify(editedProfile) !== JSON.stringify(profileState);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-            <p className="text-gray-600 mt-1">{isEditing ? 'Edit your account information' : 'View your account information'}</p>
+    <section className="font-orbitron relative flex min-h-screen items-center justify-center overflow-hidden bg-black text-white">
+      {/* Background grid */}
+      <div className="absolute inset-0 opacity-15">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#a3ff12_1px,transparent_1px),linear-gradient(to_bottom,#a3ff12_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,#000_70%,transparent_100%)] bg-[size:4rem_4rem]"></div>
+      </div>
+
+      {/* Back Button */}
+      <div className="absolute top-6 left-3 z-50 sm:top-10 sm:left-10">
+        <button
+          type="button"
+          onClick={() => router.push("/")}
+          className="bg-primary font-orbitron flex cursor-pointer items-center justify-center gap-2 px-3 py-2 text-xs font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50 sm:px-4 sm:text-sm"
+          style={{
+            clipPath:
+              "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
+            border: "2px solid var(--color-primary)",
+          }}
+        >
+          Back
+        </button>
+      </div>
+
+      {/* Logout Button */}
+      <div className="absolute top-6 right-3 z-50 sm:top-10 sm:right-10">
+        <Button
+          onClick={handleLogout}
+          className="font-orbitron relative flex cursor-pointer items-center gap-2 rounded-none bg-[red] hover:bg-red-600 px-4 py-2 text-xs font-bold tracking-widest text-white uppercase sm:px-5 sm:text-sm"
+          style={{
+            clipPath:
+              "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
+          }}
+        >
+          Logout
+        </Button>
+      </div>
+
+      <div className="relative z-10 mx-auto w-full max-w-3xl px-5 py-5 sm:px-15 sm:py-16">
+        {/* Header */}
+        <div className="relative mt-20 mb-8 text-center sm:mt-0 sm:mb-8">
+          <h1 className="text-3xl font-bold tracking-wider text-[#a3ff12] uppercase sm:text-4xl md:text-5xl">
+            Profile
+          </h1>
+        </div>
+        {/* Profile Card */}
+        <ClippedCard innerBg="bg-[#101810]" className="mx-auto mb-10">
+          <div className="flex flex-col border p-6 sm:p-8 md:p-8">
+            {/* Title + Actions */}
+            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="flex items-center gap-2 text-xl font-bold text-white sm:text-2xl">
+                <User className="h-5 w-5 text-[#a3ff12] sm:h-6 sm:w-6" />{" "}
+                Personal Information
+              </h2>
+
+              <div className="flex flex-wrap gap-2">
+                {isEditing ? (
+                  <>
+                    <Button
+                      onClick={handleSave}
+                      disabled={isSaving || !hasChanges}
+                      className="font-orbitron relative flex cursor-pointer items-center gap-2 rounded-none bg-[#a3ff12] px-4 py-2 text-xs font-bold tracking-widest text-black uppercase sm:px-5 sm:text-sm"
+                      style={{
+                        clipPath:
+                          "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
+                      }}
+                    >
+                      <Save className="h-4 w-4" />{" "}
+                      {isSaving ? "Saving..." : "Save"}
+                    </Button>
+
+                    <Button
+                      onClick={handleCancel}
+                      className="font-orbitron relative flex cursor-pointer items-center gap-2 rounded-none bg-[#a3ff12] px-4 py-2 text-xs font-bold tracking-widest text-black uppercase sm:px-5 sm:text-sm"
+                      style={{
+                        clipPath:
+                          "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
+                      }}
+                    >
+                      <X className="h-4 w-4" /> Cancel
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    onClick={() => setIsEditing(true)}
+                    className="font-orbitron relative flex cursor-pointer items-center gap-2 rounded-none bg-[#a3ff12] px-4 py-2 text-xs font-bold tracking-widest text-black uppercase sm:px-5 sm:text-sm"
+                    style={{
+                      clipPath:
+                        "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
+                    }}
+                  >
+                    <Edit className="h-4 w-4" /> Edit
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Form */}
+            <div className="flex flex-col gap-4">
+              {/* Full Name */}
+              <div>
+                <label className="w-full text-sm text-white">Full Name</label>
+                {isEditing ? (
+                  <Input
+                    value={editedProfile.name}
+                    onChange={(e) =>
+                      setEditedProfile({
+                        ...editedProfile,
+                        name: e.target.value,
+                      })
+                    }
+                    className="mt-1 h-11 w-full rounded-none text-gray-400 sm:h-12"
+                  />
+                ) : (
+                  <div className="mt-1 flex h-11 items-center border border-gray-700 bg-black/40 px-3 text-gray-400 sm:h-12">
+                    {profileState.name}
+                  </div>
+                )}
+              </div>
+
+              {/* Email + Phone */}
+              <div className="grid grid-cols-1 gap-4 py-2 sm:grid-cols-2 sm:gap-7 sm:py-3">
+                <div>
+                  <label className="text-sm text-white">Email Address</label>
+                  <div className="mt-1 flex h-11 items-center gap-2 border border-gray-700 bg-black/40 px-3 font-sans text-gray-400 sm:h-12">
+                    <span className="truncate">{profileState.email}</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm text-white">Phone Number</label>
+                  {isEditing ? (
+                    <Input
+                      value={editedProfile.phone}
+                      onChange={(e) =>
+                        setEditedProfile({
+                          ...editedProfile,
+                          phone: e.target.value,
+                        })
+                      }
+                      className="mt-1 h-11 w-full rounded-none text-gray-400 sm:h-12"
+                      maxLength={10}
+                    />
+                  ) : (
+                    <div className="mt-1 flex h-11 items-center gap-2 border border-gray-700 bg-black/40 px-3 text-gray-400 sm:h-12">
+                      <Phone className="h-4 w-4 text-[#a3ff12]" />
+                      {profileState.phone}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* College */}
+              <div>
+                <label className="text-sm text-white">College/University</label>
+                {isEditing ? (
+                  <Select
+                    value={editedProfile.college}
+                    onValueChange={(value) =>
+                      setEditedProfile({ ...editedProfile, college: value })
+                    }
+                  >
+                    <SelectTrigger className="mt-1 w-full rounded-none text-gray-400">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {COLLEGES.map((college, idx) => (
+                        <SelectItem key={idx} value={college}>
+                          {college}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="mt-1 border border-gray-700 bg-black/40 p-3 text-gray-400">
+                    {profileState.college}
+                  </div>
+                )}
+              </div>
+
+              {/* Branch + Year */}
+              <div className="grid grid-cols-1 gap-4 py-2 sm:grid-cols-2 sm:gap-7 sm:py-3">
+                <div>
+                  <label className="text-sm text-white">Branch/Major</label>
+                  {isEditing ? (
+                    <Input
+                      value={editedProfile.branch}
+                      onChange={(e) =>
+                        setEditedProfile({
+                          ...editedProfile,
+                          branch: e.target.value,
+                        })
+                      }
+                      className="mt-1 h-11 rounded-none text-gray-400 sm:h-12"
+                    />
+                  ) : (
+                    <div className="mt-1 flex h-11 items-center gap-2 border border-gray-700 bg-black/40 px-3 text-gray-400 sm:h-12">
+                      <BookOpen className="h-4 w-4 text-[#a3ff12]" />
+                      {profileState.branch}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <label className="w-full text-sm text-white">
+                    Academic Year
+                  </label>
+                  {isEditing ? (
+                    <Select
+                      value={editedProfile.year.toString()}
+                      onValueChange={(value) =>
+                        setEditedProfile({
+                          ...editedProfile,
+                          year: parseInt(value),
+                        })
+                      }
+                    >
+                      <SelectTrigger className="mt-1 h-11 rounded-none text-gray-400 sm:h-12">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">1st Year</SelectItem>
+                        <SelectItem value="2">2nd Year</SelectItem>
+                        <SelectItem value="3">3rd Year</SelectItem>
+                        <SelectItem value="4">4th Year</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <div className="mt-1 flex h-11 items-center gap-2 border border-gray-700 bg-black/40 px-3 text-gray-400 sm:h-12">
+                      <Calendar className="h-4 w-4 text-[#a3ff12]" />
+                      {profileState.year} Year
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="flex gap-2">
-            {isEditing ? (
-              <>
-                <Button onClick={handleSave} disabled={isSaving || !hasChanges} className="px-4 bg-green-600 hover:bg-green-700 text-white">
-                  <Save className="w-4 h-4 mr-2" /> {isSaving ? 'Saving...' : 'Save'}
+        </ClippedCard>
+
+        {/* Hackathon + Events */}
+        <div className="mx-auto mt-8 grid w-full max-w-3xl grid-cols-1 gap-6 sm:mt-10 sm:grid-cols-2 sm:gap-8">
+          {/* Hackathon */}
+          <ClippedCard innerBg="bg-[#101810]" className="w-full">
+            <div className="mx-auto flex flex-col items-center p-6 sm:p-12">
+              <h3 className="mb-4 text-lg font-bold text-white sm:text-xl">
+                Hackathon
+              </h3>
+              {!profileState?.team_id ? (
+                <Button
+                  className="bg-primary font-orbitron relative flex cursor-pointer items-center gap-2 rounded-none px-4 py-2 text-xs font-bold tracking-widest text-black uppercase sm:px-5 sm:text-sm"
+                  style={{
+                    clipPath:
+                      "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
+                  }}
+                  asChild
+                >
+                  <Link href="/hackathon">Join Hackathon</Link>
                 </Button>
-                <Button onClick={handleCancel} variant="outline" className="px-4 text-black">
-                  <X className="w-4 h-4 mr-2" /> Cancel
+              ) : (
+                <Button
+                  className="bg-primary font-orbitron relative flex cursor-pointer items-center gap-2 rounded-none px-4 py-2 text-xs font-bold tracking-widest text-black uppercase sm:px-5 sm:text-sm"
+                  style={{
+                    clipPath:
+                      "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
+                  }}
+                  asChild
+                >
+                  <Link href="/hackathon/dashboard">Hackathon Dashboard</Link>
                 </Button>
-              </>
-            ) : (
-              <Button onClick={() => setIsEditing(true)} className="px-4 bg-blue-600 hover:bg-blue-700 text-white">
-                <Edit className="w-4 h-4 mr-2" /> Edit
+              )}
+            </div>
+          </ClippedCard>
+
+          {/* Events */}
+          <ClippedCard innerBg="bg-[#101810]" className="w-full">
+            <div className="mx-auto flex flex-col items-center p-6 sm:p-12">
+              <h3 className="mb-4 text-lg font-bold text-white sm:text-xl">
+                Events
+              </h3>
+              <Button
+                className="bg-primary font-orbitron relative flex cursor-pointer items-center gap-2 rounded-none px-4 py-2 text-xs font-bold tracking-widest text-black uppercase sm:px-5 sm:text-sm"
+                style={{
+                  clipPath:
+                    "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
+                }}
+                asChild
+              >
+                <Link href="/events">Explore Events</Link>
               </Button>
-            )}
-            <Button
-              onClick={handleLogout}
-              className="px-6 bg-red-700 hover:bg-red-800 text-white"
-            >
-              Logout
-            </Button>
-          </div>
+            </div>
+          </ClippedCard>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="w-5 h-5" /> Personal Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="text-sm font-medium text-gray-600">Full Name</label>
-              {isEditing ? (
-                <Input
-                  value={editedProfile.name}
-                  onChange={(e) => setEditedProfile({...editedProfile, name: e.target.value})}
-                  className="mt-1"
-                />
-              ) : (
-                <div className="p-3 bg-gray-50 rounded-md border">{profileState.name}</div>
-              )}
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-600">Email Address</label>
-              {isEditing ? (
-                <Input
-                  value={editedProfile.email}
-                  onChange={(e) => setEditedProfile({...editedProfile, email: e.target.value})}
-                  className="mt-1"
-                  disabled
-                />
-              ) : (
-                <div className="p-3 bg-gray-50 rounded-md border flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-gray-500" />
-                  {profileState.email}
-                </div>
-              )}
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-600">Phone Number</label>
-              {isEditing ? (
-                <Input
-                  value={editedProfile.phone}
-                  onChange={(e) => setEditedProfile({...editedProfile, phone: e.target.value})}
-                  className="mt-1"
-                  maxLength={10}
-                />
-              ) : (
-                <div className="p-3 bg-gray-50 rounded-md border flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-gray-500" />
-                  {profileState.phone}
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <GraduationCap className="w-5 h-5" /> Academic Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="text-sm font-medium text-gray-600">College/University</label>
-              {isEditing ? (
-                <Select value={editedProfile.college} onValueChange={(value) => setEditedProfile({...editedProfile, college: value})}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {COLLEGES.map((college, idx) => (
-                      <SelectItem key={idx} value={college}>
-                        {college}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <div className="p-3 bg-gray-50 rounded-md border">{profileState.college}</div>
-              )}
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-600">Branch/Major</label>
-              {isEditing ? (
-                <Input
-                  value={editedProfile.branch}
-                  onChange={(e) => setEditedProfile({...editedProfile, branch: e.target.value})}
-                  className="mt-1"
-                />
-              ) : (
-                <div className="p-3 bg-gray-50 rounded-md border flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-gray-500" />
-                  {profileState.branch}
-                </div>
-              )}
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-600">Academic Year</label>
-              {isEditing ? (
-                <Select value={editedProfile.year.toString()} onValueChange={(value) => setEditedProfile({...editedProfile, year: parseInt(value)})}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1st Year</SelectItem>
-                    <SelectItem value="2">2nd Year</SelectItem>
-                    <SelectItem value="3">3rd Year</SelectItem>
-                    <SelectItem value="4">4th Year</SelectItem>
-                  </SelectContent>
-                </Select>
-              ) : (
-                <div className="p-3 bg-gray-50 rounded-md border flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-gray-500" />
-                  {profileState.year === 1
-                    ? '1st Year'
-                    : profileState.year === 2
-                    ? '2nd Year'
-                    : profileState.year === 3
-                    ? '3rd Year'
-                    : profileState.year === 4
-                    ? '4th Year'
-                    : `${profileState.year}th Year`}
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
+        {/* Error */}
         {error && (
-          <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-md">
-            <div className="flex items-start gap-3">
-              <div className="text-red-600">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-red-800 font-semibold">Error</h3>
-                <p className="text-red-700 text-sm">{error}</p>
-              </div>
-            </div>
+          <div className="mt-6 rounded-md border border-red-700 bg-red-500/30 p-4 text-center font-bold text-red-100">
+            {error}
           </div>
         )}
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-          {!profileState?.team_id ? (
-            <Link href="/hackathon">
-              <Button size="lg" className="bg-black hover:bg-neutral-950 text-white px-8">
-                Join Hackathon
-              </Button>
-            </Link>
-          ) : (
-            <Link href="/hackathon/dashboard">
-              <Button size="lg" className="bg-black hover:bg-neutral-950 text-white px-8">
-                Hackathon Dashboard
-              </Button>
-            </Link>
-          )}
-          
-          <Link href="/">
-            <Button variant="outline" size="lg" className="bg-white hover:bg-gray-100 text-black shadow-md px-8">
-              Back to Home
-            </Button>
-          </Link>
-        </div>
-
       </div>
-    </div>
+    </section>
   );
-   
 }
