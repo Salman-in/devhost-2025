@@ -12,7 +12,7 @@ import { useAuth } from "@/context/AuthContext";
 import clsx from "clsx";
 import { events } from "@/assets/data/events";
 import LoadingSpinner from "../LoadingSpinner";
-import { Button } from "../ui/button";
+import { ClippedButton } from "../ClippedButton";
 
 type Props = { eventId: string };
 
@@ -231,13 +231,14 @@ export default function EventRegistration({ eventId }: Props) {
                   innerBg="bg-primary"
                   className="hover:brightness-95"
                 >
-                  <Button
+                  <ClippedButton
                     onClick={handleCreateTeam}
                     disabled={actionLoading}
-                    className="h-fit w-full cursor-pointer rounded-none px-4 py-2 text-xs font-bold tracking-widest text-black uppercase"
+                    className="h-fit w-full px-4 py-2 text-xs font-bold tracking-widest text-black uppercase"
                   >
                     Create Team
-                  </Button>
+                  </ClippedButton>
+
                 </ClippedCard>
               </div>
 
@@ -260,13 +261,14 @@ export default function EventRegistration({ eventId }: Props) {
                     innerBg="bg-primary"
                     className="hover:brightness-95"
                   >
-                    <Button
+                    <ClippedButton
                       onClick={handleJoinTeam}
                       disabled={actionLoading}
-                      className="h-fit w-full cursor-pointer rounded-none px-4 py-2 text-xs font-bold tracking-widest text-black uppercase"
+                      className="h-fit w-full px-4 py-2 text-xs font-bold tracking-widest text-black uppercase"
                     >
                       Join
-                    </Button>
+                    </ClippedButton>
+
                   </ClippedCard>
                 </div>
               </div>
@@ -308,13 +310,15 @@ export default function EventRegistration({ eventId }: Props) {
                               innerBg="bg-red-600"
                               outerBg="bg-transparent"
                             >
-                              <button
-                                onClick={() => handleRemoveMember(m)}
-                                disabled={actionLoading}
-                                className="px-3 py-1 text-xs font-bold text-white"
-                              >
-                                Remove
-                              </button>
+                              <ClippedButton
+                                  onClick={() => handleRemoveMember(m)}
+                                  disabled={actionLoading}
+                                  innerBg="bg-red-600"
+                                  textColor="text-white"
+                                >
+                                  Remove
+                              </ClippedButton>
+
                             </ClippedCard>
                           )}
                       </li>
@@ -347,25 +351,29 @@ export default function EventRegistration({ eventId }: Props) {
                       innerBg="bg-primary"
                       className="flex-1 hover:brightness-95"
                     >
-                      <Button
+                      <ClippedButton
                         onClick={handlePayment}
                         disabled={actionLoading}
-                        className="h-fit w-full cursor-pointer rounded-none px-4 py-2 text-xs font-bold tracking-widest text-black uppercase"
+                        innerBg="bg-primary"
+                        textColor="text-black"
                       >
                         Pay Now
-                      </Button>
+                      </ClippedButton>
+
                     </ClippedCard>
                     <ClippedCard
                       innerBg="bg-black"
                       className="flex-1 hover:brightness-95"
                     >
-                      <Button
-                        onClick={handleDisband}
-                        disabled={actionLoading}
-                        className="h-fit w-full cursor-pointer rounded-none bg-black px-4 py-2 text-xs font-bold tracking-widest text-white uppercase hover:bg-black"
-                      >
-                        Disband Team
-                      </Button>
+                     <ClippedButton
+                      onClick={handleDisband}
+                      disabled={actionLoading}
+                      innerBg="bg-black"
+                      textColor="text-white"
+                    >
+                      Disband Team
+                    </ClippedButton>
+
                     </ClippedCard>
                   </div>
                 )}

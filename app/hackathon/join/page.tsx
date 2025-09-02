@@ -109,7 +109,6 @@ export default function HackathonJoinTeam() {
         </ClippedButton>
       </div>
 
-
       {/* Top-right logs */}
       <div className="text-primary absolute top-6 right-4 z-10 flex max-w-xs flex-col gap-1 text-xs sm:top-10 sm:right-10 sm:max-w-sm sm:text-sm md:max-w-md md:text-base">
         <DecryptText
@@ -193,14 +192,13 @@ export default function HackathonJoinTeam() {
               {/* Join Team Button */}
               <ClippedButton
                 type="submit"
-                onClick={undefined} 
+                onClick={undefined}
                 disabled={isSubmitting}
                 innerBg="bg-primary"
                 textColor="text-black"
               >
                 {isSubmitting ? "Joining..." : "Join Team"}
               </ClippedButton>
-
             </form>
           </div>
         </ClippedCard>

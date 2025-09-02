@@ -116,7 +116,6 @@ export default function HackathonCreateTeam() {
         </ClippedButton>
       </div>
 
-
       {/* Top-right logs */}
       <div className="text-primary absolute top-6 right-4 z-10 flex max-w-xs flex-col gap-1 text-xs sm:top-10 sm:right-10 sm:max-w-sm sm:text-sm md:max-w-md md:text-base">
         <div ref={titleRef}>
@@ -191,7 +190,6 @@ export default function HackathonCreateTeam() {
                     })}
                     placeholder="Enter a team name"
                     className="w-full rounded-md border border-black bg-white/10 px-4 py-3 text-white transition-all placeholder:text-white/50 focus:ring-2 focus:ring-black focus:outline-none"
-                    
                   />
                   {errors.team_name && (
                     <p className="mt-2 text-xs tracking-wide text-red-500 sm:text-sm">
@@ -209,14 +207,13 @@ export default function HackathonCreateTeam() {
 
               <ClippedButton
                 type="submit"
-                onClick={undefined} 
+                onClick={undefined}
                 disabled={isSubmitting}
                 innerBg="bg-primary"
                 textColor="text-black"
               >
                 {isSubmitting ? "Creating..." : "Create Team"}
               </ClippedButton>
-
             </form>
           </div>
         </ClippedCard>

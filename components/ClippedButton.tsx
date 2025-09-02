@@ -8,6 +8,7 @@ export function ClippedButton({
   outerBg = "bg-transparent",
   textColor = "text-black",
   type = "button",
+  className = "", // allow extra classes
 }: {
   children: React.ReactNode;
   onClick?: () => void;
@@ -16,10 +17,11 @@ export function ClippedButton({
   outerBg?: string;
   textColor?: string;
   type?: "button" | "submit";
+  className?: string; // added
 }) {
   return (
     <ClippedCard
-      className="flex-1 hover:brightness-95"
+      className={`flex-1 hover:brightness-95 ${className}`} // merge external className
       innerBg={innerBg}
       outerBg={outerBg}
     >
