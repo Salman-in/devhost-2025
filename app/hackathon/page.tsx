@@ -14,7 +14,7 @@ export default function HackathonPage() {
   const { hasTeam, loading: teamLoading } = useTeam();
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
-  
+
   // Authentication check
   useEffect(() => {
     if (!authLoading && !user) {
@@ -27,7 +27,7 @@ export default function HackathonPage() {
     if (!authLoading && user) {
       if (hasTeam) {
         // If user has a team, redirect to dashboard
-        console.log('Hackathon page: User has team, redirecting to dashboard');
+        console.log("Hackathon page: User has team, redirecting to dashboard");
         router.replace("/hackathon/dashboard");
       } else if (!teamLoading) {
         // Only finish checking when team status is confirmed
@@ -49,13 +49,12 @@ export default function HackathonPage() {
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-black text-white">
-
       {/* Back button */}
       <div className="absolute top-6 left-4 z-50 sm:top-10 sm:left-10">
         <button
           type="button"
           onClick={() => router.push("/profile")}
-          className="flex cursor-pointer items-center justify-center gap-2 bg-primary px-3 py-2 text-xs font-orbitron font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50 sm:px-4 sm:text-sm"
+          className="bg-primary font-orbitron flex cursor-pointer items-center justify-center gap-2 px-3 py-2 text-xs font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50 sm:px-4 sm:text-sm"
           style={{
             clipPath:
               "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
@@ -67,7 +66,7 @@ export default function HackathonPage() {
       </div>
 
       {/* Animated grid background */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      <div className="pointer-events-none fixed inset-0 z-0">
         <div
           className="absolute inset-0"
           style={{
@@ -80,7 +79,7 @@ export default function HackathonPage() {
           }}
         />
       </div>
-      
+
       <div className="relative z-10 container mx-auto flex min-h-screen flex-col items-center justify-center px-6 py-16">
         <div className="mb-8 text-center">
           <h1 className="font-orbitron text-primary mb-4 text-5xl font-bold tracking-wider uppercase md:text-7xl">

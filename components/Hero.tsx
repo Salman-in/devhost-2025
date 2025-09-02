@@ -12,25 +12,25 @@ export default function Hero() {
   const router = useRouter();
   const { user, signInWithGoogle } = useAuth();
 
-const handleGoogleLogin = async () => {
-  if (user) {
-    try {
-      const idToken = await user.getIdToken();
-      await exchangeIdTokenForSession(idToken);
-      router.push('/profile');
-    } catch (error) {
-      console.error('Session creation failed:', error);
+  const handleGoogleLogin = async () => {
+    if (user) {
+      try {
+        const idToken = await user.getIdToken();
+        await exchangeIdTokenForSession(idToken);
+        router.push("/profile");
+      } catch (error) {
+        console.error("Session creation failed:", error);
+      }
+    } else {
+      try {
+        await signInWithGoogle();
+        router.push("/profile");
+      } catch (error) {
+        console.error("Sign in failed:", error);
+      }
     }
-  } else {
-    try {
-      await signInWithGoogle();
-      router.push('/profile');
-    } catch (error) {
-      console.error('Sign in failed:', error);
-    }
-  }
-};
-    
+  };
+
   return (
     <Fragment>
       <div className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden text-zinc-300">
@@ -93,16 +93,16 @@ const handleGoogleLogin = async () => {
 
         {/* Floating Dock (Top Right) */}
         <div className="font-orbitron absolute top-10 right-10 z-20 flex gap-4">
-            <button
-              className="bg-primary relative flex cursor-pointer items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest text-black uppercase transition"
-              style={{
-                clipPath:
-                  "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
-              }}
-              onClick={handleGoogleLogin}
-            >
-              <User size={14} /> Profile
-            </button>
+          <button
+            className="bg-primary relative flex cursor-pointer items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest text-black uppercase transition"
+            style={{
+              clipPath:
+                "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
+            }}
+            onClick={handleGoogleLogin}
+          >
+            <User size={14} /> Profile
+          </button>
         </div>
 
         {/* Scroll Hint */}
