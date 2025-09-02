@@ -1,5 +1,11 @@
 import clsx from "clsx";
-import { CSSProperties, ReactNode } from "react";
+import {
+  CSSProperties,
+  ReactNode,
+  ReactElement,
+  isValidElement,
+  cloneElement,
+} from "react";
 
 type ClippedCardProps = {
   className?: string;
@@ -10,6 +16,7 @@ type ClippedCardProps = {
   height?: string;
   style?: CSSProperties;
   children: ReactNode;
+  asChild?: boolean;
 };
 
 export function ClippedCard({
@@ -21,7 +28,18 @@ export function ClippedCard({
   height = "",
   style = {},
   children,
+  asChild = false,
 }: ClippedCardProps) {
+  if (asChild && isValidElement(children)) {
+    const child = children as ReactElement<Record<string, unknown>>;
+    return cloneElement(child, {
+      className: clsx(
+        child.props.className as string | undefined,
+        "flex h-full w-full items-center justify-center",
+      ),
+    });
+  }
+
   return (
     <div
       className={clsx("relative p-[1px]", outerBg, width, height, className)}

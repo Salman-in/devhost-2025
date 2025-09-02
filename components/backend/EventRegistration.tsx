@@ -238,7 +238,6 @@ export default function EventRegistration({ eventId }: Props) {
                   >
                     Create Team
                   </ClippedButton>
-
                 </ClippedCard>
               </div>
 
@@ -268,7 +267,6 @@ export default function EventRegistration({ eventId }: Props) {
                     >
                       Join
                     </ClippedButton>
-
                   </ClippedCard>
                 </div>
               </div>
@@ -311,14 +309,13 @@ export default function EventRegistration({ eventId }: Props) {
                               outerBg="bg-transparent"
                             >
                               <ClippedButton
-                                  onClick={() => handleRemoveMember(m)}
-                                  disabled={actionLoading}
-                                  innerBg="bg-red-600"
-                                  textColor="text-white"
-                                >
-                                  Remove
+                                onClick={() => handleRemoveMember(m)}
+                                disabled={actionLoading}
+                                innerBg="bg-red-600"
+                                textColor="text-white"
+                              >
+                                Remove
                               </ClippedButton>
-
                             </ClippedCard>
                           )}
                       </li>
@@ -359,21 +356,19 @@ export default function EventRegistration({ eventId }: Props) {
                       >
                         Pay Now
                       </ClippedButton>
-
                     </ClippedCard>
                     <ClippedCard
                       innerBg="bg-black"
                       className="flex-1 hover:brightness-95"
                     >
-                     <ClippedButton
-                      onClick={handleDisband}
-                      disabled={actionLoading}
-                      innerBg="bg-black"
-                      textColor="text-white"
-                    >
-                      Disband Team
-                    </ClippedButton>
-
+                      <ClippedButton
+                        onClick={handleDisband}
+                        disabled={actionLoading}
+                        innerBg="bg-black"
+                        textColor="text-white"
+                      >
+                        Disband Team
+                      </ClippedButton>
                     </ClippedCard>
                   </div>
                 )}

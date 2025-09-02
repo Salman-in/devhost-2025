@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import DecryptText from "@/components/animated/TextAnimation";
 import { ClippedCard } from "@/components/ClippedCard";
 
@@ -175,7 +174,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
         <ClippedCard innerBg="bg-[#101810]" className="w-full">
           <div className="flex h-full flex-col p-2 sm:p-4 md:p-6 lg:p-8 xl:p-10">
             <div className="mb-6">
-              <h1 className="mb-2 text-3xl font-bold tracking-wider text-primary uppercase">
+              <h1 className="text-primary mb-2 text-3xl font-bold tracking-wider uppercase">
                 Complete Your Profile
               </h1>
               <DecryptText
@@ -222,7 +221,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                   >
                     <User size={14} className="inline-block" /> Full Name *
                     {form.name && (
-                      <CheckCircle2 size={14} className="ml-1 text-primary" />
+                      <CheckCircle2 size={14} className="text-primary ml-1" />
                     )}
                   </Label>
                   <Input
@@ -263,7 +262,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                   >
                     <Phone size={14} className="inline-block" /> Phone Number *
                     {form.phone && isValidPhone(form.phone) && (
-                      <CheckCircle2 size={14} className="ml-1 text-primary" />
+                      <CheckCircle2 size={14} className="text-primary ml-1" />
                     )}
                   </Label>
                   <Input
@@ -287,7 +286,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                     <School size={14} className="inline-block" />{" "}
                     College/University *
                     {form.college && (
-                      <CheckCircle2 size={14} className="ml-1 text-primary" />
+                      <CheckCircle2 size={14} className="text-primary ml-1" />
                     )}
                   </Label>
                   <Select
@@ -325,7 +324,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                           <SelectItem
                             key={idx}
                             value={college}
-                            className="rounded-none font-medium text-gray-300 data-[highlighted]:bg-primary data-[highlighted]:text-black"
+                            className="data-[highlighted]:bg-primary rounded-none font-medium text-gray-300 data-[highlighted]:text-black"
                           >
                             {college}
                           </SelectItem>
@@ -355,7 +354,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                     <BookOpen size={14} className="inline-block" /> Branch/Major
                     *
                     {form.branch && (
-                      <CheckCircle2 size={14} className="ml-1 text-primary" />
+                      <CheckCircle2 size={14} className="text-primary ml-1" />
                     )}
                   </Label>
                   <Input
@@ -379,7 +378,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                     <Calendar size={14} className="inline-block" /> Academic
                     Year *
                     {form.year && (
-                      <CheckCircle2 size={14} className="ml-1 text-primary" />
+                      <CheckCircle2 size={14} className="text-primary ml-1" />
                     )}
                   </Label>
                   <Select
@@ -399,7 +398,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                         <SelectItem
                           key={year}
                           value={String(year)}
-                          className="rounded-none font-medium text-gray-300 data-[highlighted]:bg-primary data-[highlighted]:text-black"
+                          className="data-[highlighted]:bg-primary rounded-none font-medium text-gray-300 data-[highlighted]:text-black"
                         >
                           {year} {["st", "nd", "rd", "th"][year - 1]} Year
                         </SelectItem>
@@ -411,27 +410,28 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
 
               {/* Submit Button */}
               <div className="flex justify-center pt-4">
-                 <ClippedButton
-                    type="submit"
-                    disabled={isSaving || saved || completionPercentage < 100}
-                    className="font-orbitron flex w-auto min-w-[180px] items-center justify-center gap-2 text-center text-xs font-bold tracking-wider uppercase sm:min-w-[200px] md:min-w-[220px]"
-                  >
-                    {isSaving ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" /> Saving Profile...
-                      </>
-                    ) : saved ? (
-                      <>
-                        <CheckCircle2 className="h-4 w-4" /> Redirecting...
-                      </>
-                    ) : completionPercentage < 100 ? (
-                      <>Complete All Fields</>
-                    ) : (
-                      <>
-                        Complete Profile <ArrowRight className="h-4 w-4" />
-                      </>
-                    )}
-                  </ClippedButton>
+                <ClippedButton
+                  type="submit"
+                  disabled={isSaving || saved || completionPercentage < 100}
+                  className="font-orbitron flex w-auto min-w-[180px] items-center justify-center gap-2 text-center text-xs font-bold tracking-wider uppercase sm:min-w-[200px] md:min-w-[220px]"
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" /> Saving
+                      Profile...
+                    </>
+                  ) : saved ? (
+                    <>
+                      <CheckCircle2 className="h-4 w-4" /> Redirecting...
+                    </>
+                  ) : completionPercentage < 100 ? (
+                    <>Complete All Fields</>
+                  ) : (
+                    <>
+                      Complete Profile <ArrowRight className="h-4 w-4" />
+                    </>
+                  )}
+                </ClippedButton>
               </div>
             </form>
           </div>

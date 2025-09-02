@@ -201,19 +201,25 @@ export default function AboutDevhost() {
             className="font-orbitron flex flex-wrap justify-center gap-4"
           >
             <a href="/brochure/Event Rulebook - Devhost.pdf" download>
-              <ClippedButton innerBg="bg-black" textColor="text-white" className="flex items-center gap-3 px-6 py-3 font-bold tracking-wider uppercase border-2 border-black">
+              <ClippedButton
+                innerBg="bg-black"
+                textColor="text-white"
+                className="flex items-center gap-3 border-2 border-black px-6 py-3 font-bold tracking-wider uppercase"
+              >
                 <Download size={20} />
                 <span className="font-default text-xs">Event Rulebook</span>
               </ClippedButton>
-
             </a>
 
             <a href="/brochure/devhost_2025.pdf" download>
-              <ClippedButton innerBg="bg-black" textColor="text-white" className="flex items-center gap-3 px-6 py-3 font-bold tracking-wider uppercase border-2 border-black">
+              <ClippedButton
+                innerBg="bg-black"
+                textColor="text-white"
+                className="flex items-center gap-3 border-2 border-black px-6 py-3 font-bold tracking-wider uppercase"
+              >
                 <Download size={20} />
                 <span className="font-default text-xs">DevHost Brochure</span>
               </ClippedButton>
-
             </a>
           </div>
         </div>

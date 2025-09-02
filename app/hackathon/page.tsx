@@ -33,7 +33,7 @@ export default function HackathonPage() {
 
   if (isChecking || authLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-black font-orbitron">
+      <div className="font-orbitron flex min-h-screen items-center justify-center bg-black">
         <div className="text-center">
           <div className="border-primary mx-auto h-12 w-12 animate-spin rounded-full border-b-2"></div>
           <p className="text-primary mt-4">Loading...</p>
@@ -43,7 +43,7 @@ export default function HackathonPage() {
   }
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-black text-white font-orbitron">
+    <section className="font-orbitron relative min-h-screen overflow-hidden bg-black text-white">
       {/* Back button */}
       <div className="absolute top-6 left-4 z-50 sm:top-10 sm:left-10">
         <ClippedButton
@@ -99,10 +99,14 @@ export default function HackathonPage() {
                 Collaborate with like-minded developers to bring your ideas to
                 life.
               </p>
-              <ClippedButton innerBg="bg-primary" textColor="text-black" asChild>
+              <ClippedButton
+                innerBg="bg-primary"
+                textColor="text-black"
+                asChild
+              >
                 <Link
                   href="/hackathon/join"
-                  className="font-orbitron inline-flex w-full justify-center items-center py-3 min-h-[48px]"
+                  className="font-orbitron inline-flex min-h-[48px] w-full items-center justify-center py-3"
                 >
                   Join a Team
                 </Link>
@@ -119,10 +123,14 @@ export default function HackathonPage() {
                 Start your own team and invite others to join your vision. Be
                 the leader and guide your team to victory in the hackathon.
               </p>
-              <ClippedButton innerBg="bg-primary" textColor="text-black" asChild>
+              <ClippedButton
+                innerBg="bg-primary"
+                textColor="text-black"
+                asChild
+              >
                 <Link
                   href="/hackathon/create"
-                  className="font-orbitron inline-flex w-full justify-center items-center py-3 min-h-[48px]"
+                  className="font-orbitron inline-flex min-h-[48px] w-full items-center justify-center py-3"
                 >
                   Create a Team
                 </Link>
@@ -133,10 +141,10 @@ export default function HackathonPage() {
       </div>
 
       {/* Footer text */}
-      <div className="absolute bottom-6 left-6 text-sm text-primary opacity-80">
+      <div className="text-primary absolute bottom-6 left-6 text-sm opacity-80">
         {"// DEVHOST 2025"}
       </div>
-      <div className="absolute right-6 bottom-6 text-sm text-primary opacity-80">
+      <div className="text-primary absolute right-6 bottom-6 text-sm opacity-80">
         {"TEAM SELECTION"}
       </div>
     </section>

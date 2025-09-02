@@ -102,7 +102,6 @@ export default function Hero() {
           >
             <User size={14} /> Profile
           </ClippedButton>
-
         </div>
 
         {/* Scroll Hint */}

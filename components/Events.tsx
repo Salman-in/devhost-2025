@@ -333,7 +333,6 @@ export default function Events() {
                       >
                         <Link href="/register">Register</Link>
                       </ClippedButton>
-
                     </div>
                   )}
                 </div>
