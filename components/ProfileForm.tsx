@@ -29,7 +29,6 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
   const [editedProfile, setEditedProfile] = useState(profile);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState("");
 
   const hasChanges =
     JSON.stringify(editedProfile) !== JSON.stringify(profileState);
@@ -45,15 +44,15 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
       !editedProfile.branch ||
       !editedProfile.year
     ) {
-      setError("All fields are required.");
+      toast.error("All fields are required.");
       return;
     }
     if (!isValidPhone(editedProfile.phone)) {
-      setError("Please enter a valid phone number.");
+      toast.error("Please enter a valid phone number.");
       return;
     }
 
-    setError("");
+    toast.error("");
     setIsSaving(true);
     try {
       const res = await fetch("/api/v1/user/update", {
@@ -66,11 +65,9 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
         setIsEditing(false);
         toast("Profile updated successfully!");
       } else {
-        setError("Failed to save profile. Please try again.");
         toast.error("Failed to save profile. Please try again.");
       }
     } catch {
-      setError("An error occurred while saving. Please try again.");
       toast.error("An error occurred while saving. Please try again.");
     } finally {
       setIsSaving(false);
@@ -224,12 +221,6 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
             </div>
           </div>
         </div>
-
-        {error && (
-          <div className="mt-6 rounded-md border border-red-700 bg-red-500/30 p-4 text-center font-bold text-red-100">
-            {error}
-          </div>
-        )}
       </div>
     </ClippedCard>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Download } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -145,7 +145,7 @@ export default function AboutDevhost() {
 
     return () => ctx.revert();
   }, []);
-  
+
   return (
     <section
       ref={sectionRef}

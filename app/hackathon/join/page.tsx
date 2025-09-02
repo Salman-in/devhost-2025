@@ -7,10 +7,9 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import DecryptText from "@/components/animated/TextAnimation";
-import ErrorModal from "@/components/ui/ErrorModal";
-import { useErrorModal } from "@/lib/hooks/useErrorModal";
 import { useTeam } from "@/context/TeamContext";
 import { ClippedCard } from "@/components/ClippedCard";
+import { toast } from "sonner";
 
 interface JoinFormData {
   leader_email: string;
@@ -21,13 +20,11 @@ export default function HackathonJoinTeam() {
   const { user, loading } = useAuth();
   const { setTeam } = useTeam();
   const [mounted, setMounted] = useState(false); // SSR guard
-  const errorModal = useErrorModal({ defaultTitle: 'Team Join Error' });
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    setError,
     clearErrors,
   } = useForm<JoinFormData>();
 
@@ -59,30 +56,22 @@ export default function HackathonJoinTeam() {
       });
 
       if (res.ok) {
-        // Get the team data after joining
         const teamData = await res.json();
-        
-        // Update the team context
         setTeam(teamData);
-        console.log('Team joined successfully, updating team context');
-        
-        // Force a small delay to ensure state updates before navigation
+        console.log("Team joined successfully, updating team context");
+
         setTimeout(() => {
           window.location.href = "/hackathon/dashboard?joined=true";
         }, 300);
       } else {
         const errorData = await res.json();
-        setError("root", {
-          message:
-            errorData.error ||
+        toast.error(
+          errorData.error ||
             "Team leader not found or team is already finalized. Please check the email and try again.",
-        });
+        );
       }
     } catch {
-      errorModal.showError("An error occurred while joining the team.", "Team Join Error");
-      setError("root", {
-        message: "An error occurred while joining the team.",
-      });
+      toast.error("An error occurred while joining the team.");
     }
   };
 
@@ -112,7 +101,7 @@ export default function HackathonJoinTeam() {
       <div className="absolute top-6 left-4 z-10 sm:top-10 sm:left-10">
         <button
           onClick={() => router.push("/hackathon")}
-          className="flex cursor-pointer items-center justify-center gap-2 bg-primary px-3 py-2 text-xs font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50 sm:px-4 sm:text-sm"
+          className="bg-primary flex cursor-pointer items-center justify-center gap-2 px-3 py-2 text-xs font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50 sm:px-4 sm:text-sm"
           style={{
             clipPath:
               "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
@@ -124,7 +113,7 @@ export default function HackathonJoinTeam() {
       </div>
 
       {/* Top-right logs */}
-      <div className="absolute top-6 right-4 z-10 flex max-w-xs flex-col gap-1 text-xs text-primary sm:top-10 sm:right-10 sm:max-w-sm sm:text-sm md:max-w-md md:text-base">
+      <div className="text-primary absolute top-6 right-4 z-10 flex max-w-xs flex-col gap-1 text-xs sm:top-10 sm:right-10 sm:max-w-sm sm:text-sm md:max-w-md md:text-base">
         <DecryptText
           text="> OPEN FORM FOR TEAM JOINING"
           startDelayMs={100}
@@ -164,7 +153,7 @@ export default function HackathonJoinTeam() {
                 <div className="flex flex-col">
                   <Label
                     htmlFor="leader_email"
-                    className="mb-2 text-sm font-bold tracking-wider text-primary uppercase sm:text-base"
+                    className="text-primary mb-2 text-sm font-bold tracking-wider uppercase sm:text-base"
                   >
                     Team Leader Email
                   </Label>
@@ -207,7 +196,7 @@ export default function HackathonJoinTeam() {
               {/* Join Team Button */}
               <button
                 type="submit"
-                className="flex w-full cursor-pointer items-center justify-center gap-2 bg-primary px-6 py-3 text-xs font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50 sm:text-sm h-fit"
+                className="bg-primary flex h-fit w-full cursor-pointer items-center justify-center gap-2 px-6 py-3 text-xs font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50 sm:text-sm"
                 style={{
                   clipPath:
                     "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
@@ -224,15 +213,6 @@ export default function HackathonJoinTeam() {
 
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 h-12 w-full bg-gradient-to-t from-black/95 via-black/80 to-transparent" />
-      
-      {/* Error Modal */}
-      <ErrorModal
-        isOpen={errorModal.isOpen}
-        onClose={errorModal.hideError}
-        title={errorModal.title}
-        message={errorModal.message}
-        type={errorModal.type}
-      />
     </div>
   );
 }

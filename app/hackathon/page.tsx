@@ -7,7 +7,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import DecryptText from "@/components/animated/TextAnimation";
 import { ClippedCard } from "@/components/ClippedCard";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import { useTeam } from "@/context/TeamContext";
 
 export default function HackathonPage() {

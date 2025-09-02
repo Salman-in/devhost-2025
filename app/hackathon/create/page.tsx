@@ -8,9 +8,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import DecryptText from "@/components/animated/TextAnimation";
 import { ClippedCard } from "@/components/ClippedCard";
-import ErrorModal from "@/components/ui/ErrorModal";
-import { useErrorModal } from "@/lib/hooks/useErrorModal";
 import { useTeam } from "@/context/TeamContext";
+import { toast } from "sonner";
 
 interface TeamFormData {
   team_name: string;
@@ -21,14 +20,12 @@ export default function HackathonCreateTeam() {
   const { user, loading } = useAuth();
   const { setTeam } = useTeam();
   const [mounted, setMounted] = useState(false); // SSR guard
-  const errorModal = useErrorModal({ defaultTitle: 'Team Creation Error' });
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    setError,
-    clearErrors
+    clearErrors,
   } = useForm<TeamFormData>();
 
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -56,11 +53,11 @@ export default function HackathonCreateTeam() {
 
     try {
       const idToken = await user.getIdToken(true);
-      const res = await fetch('/api/v1/team/create', {
-        method: 'POST',
+      const res = await fetch("/api/v1/team/create", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
         },
         body: JSON.stringify(data),
       });
@@ -68,31 +65,33 @@ export default function HackathonCreateTeam() {
       if (res.ok) {
         // Get the created team data
         const teamData = await res.json();
-        
+
         // Update the team in context
         setTeam(teamData);
-        console.log('Team created successfully, updating team context');
-        
+        console.log("Team created successfully, updating team context");
+
         // Force a small delay to ensure state updates before navigation
         setTimeout(() => {
-          window.location.href = '/hackathon/dashboard?created=true';
+          window.location.href = "/hackathon/dashboard?created=true";
         }, 300);
       } else {
         const errorData = await res.json();
-        setError('root', { message: errorData.error || 'Failed to create team' });
+        toast.error(errorData.error || "Failed to create team");
       }
     } catch {
-      errorModal.showError('An error occurred while creating the team', 'Team Creation Error');
-      setError('root', { message: 'An error occurred while creating the team' });
+      toast.error("An error occurred while creating the team");
     }
   };
 
   if (!mounted) return null;
 
   return (
-    <div ref={sectionRef} className="relative min-h-screen w-full bg-black font-orbitron text-white overflow-hidden">
+    <div
+      ref={sectionRef}
+      className="font-orbitron relative min-h-screen w-full overflow-hidden bg-black text-white"
+    >
       {/* Grid background */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      <div className="pointer-events-none fixed inset-0 z-0">
         <div
           className="absolute inset-0"
           style={{
@@ -107,10 +106,10 @@ export default function HackathonCreateTeam() {
       </div>
 
       {/* Back button */}
-      <div className="absolute top-6 sm:top-10 left-4 sm:left-10 z-10">
+      <div className="absolute top-6 left-4 z-10 sm:top-10 sm:left-10">
         <button
-          onClick={() => router.push('/hackathon')}
-          className="flex cursor-pointer items-center justify-center gap-2 bg-[#b4ff39] px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50"
+          onClick={() => router.push("/hackathon")}
+          className="flex cursor-pointer items-center justify-center gap-2 bg-[#b4ff39] px-3 py-2 text-xs font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50 sm:px-4 sm:text-sm"
           style={{
             clipPath:
               "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
@@ -122,32 +121,57 @@ export default function HackathonCreateTeam() {
       </div>
 
       {/* Top-right logs */}
-      <div className="absolute top-6 sm:top-10 right-4 sm:right-10 flex flex-col gap-1 text-xs sm:text-sm md:text-base text-primary z-10 max-w-xs sm:max-w-sm md:max-w-md">
+      <div className="text-primary absolute top-6 right-4 z-10 flex max-w-xs flex-col gap-1 text-xs sm:top-10 sm:right-10 sm:max-w-sm sm:text-sm md:max-w-md md:text-base">
         <div ref={titleRef}>
-          <DecryptText text="> OPEN FORM FOR TEAM CREATION" startDelayMs={100} trailSize={4} flickerIntervalMs={30} revealDelayMs={50} />
+          <DecryptText
+            text="> OPEN FORM FOR TEAM CREATION"
+            startDelayMs={100}
+            trailSize={4}
+            flickerIntervalMs={30}
+            revealDelayMs={50}
+          />
         </div>
         <div ref={subtitleRef}>
-          <DecryptText text="> ENTER TEAM NAME" startDelayMs={300} trailSize={4} flickerIntervalMs={30} revealDelayMs={50} />
+          <DecryptText
+            text="> ENTER TEAM NAME"
+            startDelayMs={300}
+            trailSize={4}
+            flickerIntervalMs={30}
+            revealDelayMs={50}
+          />
         </div>
         <div ref={verifyRef}>
-          <DecryptText text="> VERIFY DETAILS AND SUBMIT" startDelayMs={500} trailSize={4} flickerIntervalMs={30} revealDelayMs={50} />
+          <DecryptText
+            text="> VERIFY DETAILS AND SUBMIT"
+            startDelayMs={500}
+            trailSize={4}
+            flickerIntervalMs={30}
+            revealDelayMs={50}
+          />
         </div>
       </div>
 
       {/* Centered card */}
-      <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
+      <div className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6">
         <ClippedCard innerBg="bg-[#101810]">
           <div
             ref={joinCardRef}
             className="relative mx-auto w-full max-w-4xl p-6 sm:p-8"
           >
-            <form className="flex flex-col justify-center items-center space-y-6 w-full" onSubmit={handleSubmit(onSubmit)} ref={gridRef}>
-              <div className="w-full flex flex-col gap-4">
-                <h2 className="text-white text-lg sm:text-xl md:text-2xl font-bold uppercase mb-6 tracking-wider text-center">
+            <form
+              className="flex w-full flex-col items-center justify-center space-y-6"
+              onSubmit={handleSubmit(onSubmit)}
+              ref={gridRef}
+            >
+              <div className="flex w-full flex-col gap-4">
+                <h2 className="mb-6 text-center text-lg font-bold tracking-wider text-white uppercase sm:text-xl md:text-2xl">
                   Create Your Hackathon Team
                 </h2>
                 <div className="flex flex-col">
-                  <Label htmlFor="team_name" className="mb-2 text-sm sm:text-base font-bold tracking-wider text-primary uppercase">
+                  <Label
+                    htmlFor="team_name"
+                    className="text-primary mb-2 text-sm font-bold tracking-wider uppercase sm:text-base"
+                  >
                     Team Name
                   </Label>
                   <DecryptText
@@ -156,31 +180,40 @@ export default function HackathonCreateTeam() {
                     trailSize={5}
                     flickerIntervalMs={50}
                     revealDelayMs={100}
-                    className="mb-2 text-xs sm:text-sm text-white/70"
+                    className="mb-2 text-xs text-white/70 sm:text-sm"
                   />
                   <Input
                     id="team_name"
                     type="text"
-                    {...register("team_name", { 
+                    {...register("team_name", {
                       required: "Team name is required",
-                      minLength: { value: 2, message: "Team name must be at least 2 characters" }
+                      minLength: {
+                        value: 2,
+                        message: "Team name must be at least 2 characters",
+                      },
                     })}
                     placeholder="Enter a team name"
-                    className="w-full text-white placeholder:text-white/50 bg-white/10 border border-black rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black transition-all"
+                    className="w-full rounded-md border border-black bg-white/10 px-4 py-3 text-white transition-all placeholder:text-white/50 focus:ring-2 focus:ring-black focus:outline-none"
                     style={{ fontFamily: "sans-serif" }}
                   />
                   {errors.team_name && (
-                    <p className="text-red-500 text-xs sm:text-sm mt-2 tracking-wide">{errors.team_name.message}</p>
+                    <p className="mt-2 text-xs tracking-wide text-red-500 sm:text-sm">
+                      {errors.team_name.message}
+                    </p>
                   )}
                 </div>
               </div>
 
-              {errors.root && <p className="text-pink-500 text-sm sm:text-base tracking-wide">{errors.root.message}</p>}
+              {errors.root && (
+                <p className="text-sm tracking-wide text-pink-500 sm:text-base">
+                  {errors.root.message}
+                </p>
+              )}
 
               <button
                 ref={joinButtonRef}
                 type="submit"
-                className="w-full h-fit flex cursor-pointer items-center justify-center gap-2 bg-primary px-6 py-3 text-xs sm:text-sm font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50"
+                className="bg-primary flex h-fit w-full cursor-pointer items-center justify-center gap-2 px-6 py-3 text-xs font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50 sm:text-sm"
                 style={{
                   clipPath:
                     "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
@@ -197,15 +230,6 @@ export default function HackathonCreateTeam() {
 
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 h-12 w-full bg-gradient-to-t from-black/95 via-black/80 to-transparent" />
-      
-      {/* Error Modal */}
-      <ErrorModal
-        isOpen={errorModal.isOpen}
-        onClose={errorModal.hideError}
-        title={errorModal.title}
-        message={errorModal.message}
-        type={errorModal.type}
-      />
     </div>
   );
 }

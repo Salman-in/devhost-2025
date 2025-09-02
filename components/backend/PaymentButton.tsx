@@ -25,7 +25,7 @@ interface CheckoutOptions {
   theme?: {
     color: string;
   };
-  notes?: Record<string, any>;
+  notes?: Record<string, string | number | boolean>;
 }
 
 declare global {
@@ -42,10 +42,18 @@ export default function PaymentButton({ amount = 100 }: { amount?: number }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount }),
     });
-    const order = await createRes.json();
-    if (!order || order.error) return alert("Order creation failed: " + (order?.error || "unknown"));
+    const order: {
+      id: string;
+      amount: number;
+      currency: string;
+      error?: string;
+    } = await createRes.json();
 
-    const options = {
+    if (!order || order.error) {
+      return alert("Order creation failed: " + (order?.error || "unknown"));
+    }
+
+    const options: CheckoutOptions = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
       amount: order.amount,
       currency: order.currency,
@@ -63,9 +71,12 @@ export default function PaymentButton({ amount = 100 }: { amount?: number }) {
           }),
         });
 
-        const verify = await verifyRes.json();
+        const verify: { ok: boolean; error?: string } = await verifyRes.json();
         if (verify.ok) {
-          alert("Payment verified and stored in Firestore. Payment ID: " + response.razorpay_payment_id);
+          alert(
+            "Payment verified and stored in Firestore. Payment ID: " +
+              response.razorpay_payment_id,
+          );
         } else {
           alert("Verification failed: " + (verify.error || "unknown"));
         }

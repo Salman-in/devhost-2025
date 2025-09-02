@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useAuth } from "@/context/AuthContext";
 import { useEffect } from "react";
@@ -13,106 +13,111 @@ import TeamLeaderView from "@/components/hackathon/TeamLeaderView";
 import TeamMemberView from "@/components/hackathon/TeamMemberView";
 
 export default function HackathonDashboardPage() {
-    const router = useRouter();
-    const { user, loading: authLoading } = useAuth();
-    const { profile, profileLoading, refreshProfile } = useUserProfile();
-    const { team, loading: teamLoading, refreshTeam, hasTeam } = useTeam();
-    
-    // Combined loading state
-    const isLoading = profileLoading || teamLoading;
-    
-    // Function to refresh both profile and team data
-    const refreshAll = () => {
-        refreshProfile();
-        refreshTeam();
-    };
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+  const { profile, profileLoading, refreshProfile } = useUserProfile();
+  const { team, loading: teamLoading, refreshTeam } = useTeam();
 
-    // Redirect if not authenticated
-    useEffect(() => {
-        if (!authLoading && !user) {
-            router.push('/signin');
-        }
-    }, [user, authLoading, router]);
+  // Combined loading state
+  const isLoading = profileLoading || teamLoading;
 
-    // Handle team status and redirects
-    useEffect(() => {
-        if (!isLoading) {
-            // Check if we just came from team creation/joining to prevent redirect loop
-            const urlParams = new URLSearchParams(window.location.search);
-            const fromTeamAction = urlParams.get('created') === 'true' || urlParams.get('joined') === 'true';
-            
-            // Clean up URL params if they exist
-            if (fromTeamAction) {
-                window.history.replaceState({}, '', '/hackathon/dashboard');
-            }
-            
-            // Check if user has a team
-            if (!team && !fromTeamAction) {
-                console.log('Dashboard: No team and not from team action, redirecting to /hackathon');
-                // Use a short timeout to avoid potential race conditions
-                setTimeout(() => {
-                    router.replace('/hackathon');
-                }, 100);
-            }
-        }
-    }, [isLoading, router, team]);
+  // Function to refresh both profile and team data
+  const refreshAll = () => {
+    refreshProfile();
+    refreshTeam();
+  };
 
-    // Clean up URL params if they exist
-    useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('created') || urlParams.get('joined')) {
-            window.history.replaceState({}, '', '/hackathon/dashboard');
-        }
-    }, []);
-
-    if (authLoading || isLoading) {
-        return <LoadingSpinner />;
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/signin");
     }
+  }, [user, authLoading, router]);
 
-    if (!user) {
-        return null;
+  // Handle team status and redirects
+  useEffect(() => {
+    if (!isLoading) {
+      // Check if we just came from team creation/joining to prevent redirect loop
+      const urlParams = new URLSearchParams(window.location.search);
+      const fromTeamAction =
+        urlParams.get("created") === "true" ||
+        urlParams.get("joined") === "true";
+
+      // Clean up URL params if they exist
+      if (fromTeamAction) {
+        window.history.replaceState({}, "", "/hackathon/dashboard");
+      }
+
+      // Check if user has a team
+      if (!team && !fromTeamAction) {
+        console.log(
+          "Dashboard: No team and not from team action, redirecting to /hackathon",
+        );
+        // Use a short timeout to avoid potential race conditions
+        setTimeout(() => {
+          router.replace("/hackathon");
+        }, 100);
+      }
     }
+  }, [isLoading, router, team]);
 
-    if (!profile || !team) {
-        return <LoadingSpinner />;
+  // Clean up URL params if they exist
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("created") || urlParams.get("joined")) {
+      window.history.replaceState({}, "", "/hackathon/dashboard");
     }
+  }, []);
 
-    const isTeamLeader = team.team_leader_email === user.email;
+  if (authLoading || isLoading) {
+    return <LoadingSpinner />;
+  }
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 flex flex-col items-center justify-start py-12 px-4">
-            <div className="w-full max-w-3xl mb-10 text-center">
-                <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-3 tracking-tight drop-shadow-lg">
-                    Hackathon Dashboard
-                </h1>
-                <p className="text-lg md:text-xl text-gray-600 mb-6">
-                    Manage your team, collaborate, and track your hackathon progress here.
-                </p>
-                <div className="flex flex-wrap justify-center gap-4">
-                    <Button variant="outline" className="bg-white hover:text-black text-black border shadow" asChild>
-                        <Link href="/profile">
-                            <ArrowLeft className="h-4 w-4" /> Go to Profile
-                        </Link>
-                    </Button>
-                </div>
-            </div>
-            
-            <div className="w-full max-w-4xl">
-                <div className="animate-fade-in-up">
-                    {isTeamLeader ? (
-                        <TeamLeaderView 
-                            team={team} 
-                            profile={profile}
-                            refreshAll={refreshAll}
-                        />
-                    ) : (
-                        <TeamMemberView 
-                            team={team} 
-                            refreshAll={refreshAll}
-                        />
-                    )}
-                </div>
-            </div>
+  if (!user) {
+    return null;
+  }
+
+  if (!profile || !team) {
+    return <LoadingSpinner />;
+  }
+
+  const isTeamLeader = team.team_leader_email === user.email;
+
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-start bg-gradient-to-br from-blue-50 to-purple-100 px-4 py-12">
+      <div className="mb-10 w-full max-w-3xl text-center">
+        <h1 className="mb-3 text-4xl font-extrabold tracking-tight text-gray-900 drop-shadow-lg md:text-5xl">
+          Hackathon Dashboard
+        </h1>
+        <p className="mb-6 text-lg text-gray-600 md:text-xl">
+          Manage your team, collaborate, and track your hackathon progress here.
+        </p>
+        <div className="flex flex-wrap justify-center gap-4">
+          <Button
+            variant="outline"
+            className="border bg-white text-black shadow hover:text-black"
+            asChild
+          >
+            <Link href="/profile">
+              <ArrowLeft className="h-4 w-4" /> Go to Profile
+            </Link>
+          </Button>
         </div>
-    );
+      </div>
+
+      <div className="w-full max-w-4xl">
+        <div className="animate-fade-in-up">
+          {isTeamLeader ? (
+            <TeamLeaderView
+              team={team}
+              profile={profile}
+              refreshAll={refreshAll}
+            />
+          ) : (
+            <TeamMemberView team={team} refreshAll={refreshAll} />
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
