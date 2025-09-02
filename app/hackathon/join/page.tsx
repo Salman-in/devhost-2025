@@ -8,6 +8,9 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import DecryptText from "@/components/animated/TextAnimation";
 import gsap from "gsap";
+import ErrorModal from "@/components/ui/ErrorModal";
+import { useErrorModal } from "@/lib/hooks/useErrorModal";
+import { useTeam } from "@/context/TeamContext";
 
 interface JoinFormData {
   leader_email: string;
@@ -16,7 +19,9 @@ interface JoinFormData {
 export default function HackathonJoinTeam() {
   const router = useRouter();
   const { user, loading } = useAuth();
+  const { setTeam } = useTeam();
   const [mounted, setMounted] = useState(false); // SSR guard
+  const errorModal = useErrorModal({ defaultTitle: 'Team Join Error' });
 
   const {
     register,
@@ -110,8 +115,17 @@ export default function HackathonJoinTeam() {
       });
 
       if (res.ok) {
-        sessionStorage.setItem("teamJustJoined", "true");
-        window.location.href = "/hackathon/dashboard?joined=true";
+        // Get the team data after joining
+        const teamData = await res.json();
+        
+        // Update the team context
+        setTeam(teamData);
+        console.log('Team joined successfully, updating team context');
+        
+        // Force a small delay to ensure state updates before navigation
+        setTimeout(() => {
+          window.location.href = "/hackathon/dashboard?joined=true";
+        }, 300);
       } else {
         const errorData = await res.json();
         setError("root", {
@@ -120,8 +134,8 @@ export default function HackathonJoinTeam() {
             "Team leader not found or team is already finalized. Please check the email and try again.",
         });
       }
-    } catch (error) {
-      console.error("Error joining team:", error);
+    } catch {
+      errorModal.showError("An error occurred while joining the team.", "Team Join Error");
       setError("root", {
         message: "An error occurred while joining the team.",
       });
@@ -296,6 +310,15 @@ export default function HackathonJoinTeam() {
 
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 h-12 w-full bg-gradient-to-t from-black/95 via-black/80 to-transparent" />
+      
+      {/* Error Modal */}
+      <ErrorModal
+        isOpen={errorModal.isOpen}
+        onClose={errorModal.hideError}
+        title={errorModal.title}
+        message={errorModal.message}
+        type={errorModal.type}
+      />
     </div>
   );
 }
