@@ -11,6 +11,8 @@ import { useUserProfile } from "@/lib/hooks/useUserData";
 import { useTeam } from "@/context/TeamContext";
 import TeamLeaderView from "@/components/backend/hackathon/TeamLeaderView";
 import TeamMemberView from "@/components/backend/hackathon/TeamMemberView";
+import { ClippedButton } from "@/components/ClippedButton";
+import DecryptText from "@/components/animated/TextAnimation";
 
 export default function HackathonDashboardPage() {
   const router = useRouter();
@@ -84,25 +86,39 @@ export default function HackathonDashboardPage() {
   const isTeamLeader = team.team_leader_email === user.email;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-start bg-gradient-to-br from-blue-50 to-purple-100 px-4 py-12">
-      <div className="mb-10 w-full max-w-3xl text-center">
-        <h1 className="mb-3 text-4xl font-extrabold tracking-tight text-gray-900 drop-shadow-lg md:text-5xl">
+    <div className="flex min-h-screen flex-col items-center justify-start bg-black px-4 py-12">
+      <div className="fixed top-4 left-4 z-30">
+        <ClippedButton>
+          <Link href="/profile" className="flex items-center gap-2">
+            <ArrowLeft className="h-4 w-4" /> Go to Profile
+          </Link>
+        </ClippedButton>
+      </div>
+      {/* GRID BACKGROUND */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, #a3ff12 1px, transparent 1px),
+            linear-gradient(to bottom, #a3ff12 1px, transparent 1px)
+            `,
+          backgroundSize: "80px 80px",
+          opacity: 0.13,
+        }}
+      />
+
+      <div className="relative z-10 mb-10 w-full max-w-3xl pt-10 text-center sm:pt-0">
+        <h1 className="text-primary font-orbitron mb-3 text-center text-lg font-bold tracking-wider uppercase sm:text-2xl md:text-4xl">
           Hackathon Dashboard
         </h1>
-        <p className="mb-6 text-lg text-gray-600 md:text-xl">
-          Manage your team, collaborate, and track your hackathon progress here.
-        </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          <Button
-            variant="outline"
-            className="border bg-white text-black shadow hover:text-black"
-            asChild
-          >
-            <Link href="/profile">
-              <ArrowLeft className="h-4 w-4" /> Go to Profile
-            </Link>
-          </Button>
-        </div>
+        <DecryptText
+          text="> Manage your team, collaborate, and track your hackathon progress here."
+          startDelayMs={300}
+          trailSize={5}
+          flickerIntervalMs={50}
+          revealDelayMs={100}
+          className="font-orbitron mb-2 text-xs text-white/70 sm:text-sm"
+        />
       </div>
 
       <div className="w-full max-w-4xl">
