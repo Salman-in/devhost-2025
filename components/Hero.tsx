@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { exchangeIdTokenForSession } from "@/firebase/auth";
+import { ClippedButton } from "./ClippedButton";
 
 export default function Hero() {
   const router = useRouter();
@@ -93,16 +94,14 @@ export default function Hero() {
 
         {/* Floating Dock (Top Right) */}
         <div className="font-orbitron absolute top-10 right-10 z-20 flex gap-4">
-          <button
-            className="bg-primary relative flex cursor-pointer items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest text-black uppercase transition"
-            style={{
-              clipPath:
-                "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
-            }}
+          <ClippedButton
+            innerBg="bg-primary"
+            textColor="text-black"
+            className="relative flex items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest uppercase"
             onClick={handleGoogleLogin}
           >
             <User size={14} /> Profile
-          </button>
+          </ClippedButton>
         </div>
 
         {/* Scroll Hint */}

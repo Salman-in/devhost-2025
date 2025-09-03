@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import DecryptText from "@/components/animated/TextAnimation";
 import { ClippedCard } from "@/components/ClippedCard";
 
@@ -27,6 +26,7 @@ import {
 } from "lucide-react";
 import { COLLEGES } from "@/lib/constants";
 import { toast } from "sonner";
+import { ClippedButton } from "../ClippedButton";
 
 interface Profile {
   name: string;
@@ -161,24 +161,20 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
       </div>
 
       <div className="absolute top-2 right-2 left-2 z-10 flex flex-col items-end sm:top-10 sm:right-auto sm:left-10">
-        <button
+        <ClippedButton
           onClick={() => router.push("/")}
-          className="bg-primary flex cursor-pointer items-center justify-center gap-2 rounded-none px-3 py-2 text-xs font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50 sm:px-4 sm:text-sm"
-          style={{
-            clipPath:
-              "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-            border: "2px solid var(--color-primary)",
-          }}
+          innerBg="bg-primary"
+          textColor="text-black"
         >
           Back
-        </button>
+        </ClippedButton>
       </div>
 
       <div className="mx-auto mt-20 flex w-full max-w-sm items-center justify-center px-4 sm:mt-16 sm:max-w-md sm:px-6 md:mt-24 md:max-w-lg md:px-8 lg:mt-32 lg:max-w-xl lg:px-10 xl:max-w-2xl xl:px-12">
         <ClippedCard innerBg="bg-[#101810]" className="w-full">
           <div className="flex h-full flex-col p-2 sm:p-4 md:p-6 lg:p-8 xl:p-10">
             <div className="mb-6">
-              <h1 className="mb-2 text-3xl font-bold tracking-wider text-[#a3ff12] uppercase">
+              <h1 className="text-primary mb-2 text-3xl font-bold tracking-wider uppercase">
                 Complete Your Profile
               </h1>
               <DecryptText
@@ -225,7 +221,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                   >
                     <User size={14} className="inline-block" /> Full Name *
                     {form.name && (
-                      <CheckCircle2 size={14} className="ml-1 text-[#a3ff12]" />
+                      <CheckCircle2 size={14} className="text-primary ml-1" />
                     )}
                   </Label>
                   <Input
@@ -266,7 +262,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                   >
                     <Phone size={14} className="inline-block" /> Phone Number *
                     {form.phone && isValidPhone(form.phone) && (
-                      <CheckCircle2 size={14} className="ml-1 text-[#a3ff12]" />
+                      <CheckCircle2 size={14} className="text-primary ml-1" />
                     )}
                   </Label>
                   <Input
@@ -290,7 +286,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                     <School size={14} className="inline-block" />{" "}
                     College/University *
                     {form.college && (
-                      <CheckCircle2 size={14} className="ml-1 text-[#a3ff12]" />
+                      <CheckCircle2 size={14} className="text-primary ml-1" />
                     )}
                   </Label>
                   <Select
@@ -328,7 +324,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                           <SelectItem
                             key={idx}
                             value={college}
-                            className="rounded-none font-medium text-gray-300 data-[highlighted]:bg-[#a3ff12] data-[highlighted]:text-black"
+                            className="data-[highlighted]:bg-primary rounded-none font-medium text-gray-300 data-[highlighted]:text-black"
                           >
                             {college}
                           </SelectItem>
@@ -358,7 +354,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                     <BookOpen size={14} className="inline-block" /> Branch/Major
                     *
                     {form.branch && (
-                      <CheckCircle2 size={14} className="ml-1 text-[#a3ff12]" />
+                      <CheckCircle2 size={14} className="text-primary ml-1" />
                     )}
                   </Label>
                   <Input
@@ -382,7 +378,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                     <Calendar size={14} className="inline-block" /> Academic
                     Year *
                     {form.year && (
-                      <CheckCircle2 size={14} className="ml-1 text-[#a3ff12]" />
+                      <CheckCircle2 size={14} className="text-primary ml-1" />
                     )}
                   </Label>
                   <Select
@@ -402,7 +398,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                         <SelectItem
                           key={year}
                           value={String(year)}
-                          className="rounded-none font-medium text-gray-300 data-[highlighted]:bg-[#a3ff12] data-[highlighted]:text-black"
+                          className="data-[highlighted]:bg-primary rounded-none font-medium text-gray-300 data-[highlighted]:text-black"
                         >
                           {year} {["st", "nd", "rd", "th"][year - 1]} Year
                         </SelectItem>
@@ -414,34 +410,28 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
 
               {/* Submit Button */}
               <div className="flex justify-center pt-4">
-                <Button
+                <ClippedButton
                   type="submit"
-                  className="font-orbitron flex w-auto min-w-[180px] cursor-pointer items-center justify-center gap-2 rounded-none px-8 py-3 text-center text-xs font-bold tracking-wider uppercase transition-all duration-200 hover:scale-[1.02] focus:ring-2 focus:outline-none active:scale-[1.02] disabled:bg-gray-700 disabled:text-gray-400 disabled:opacity-50 disabled:shadow-none sm:min-w-[200px] md:min-w-[220px]"
-                  style={{
-                    clipPath:
-                      "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-                  }}
                   disabled={isSaving || saved || completionPercentage < 100}
+                  className="font-orbitron flex w-auto min-w-[180px] items-center justify-center gap-2 text-center text-xs font-bold tracking-wider uppercase sm:min-w-[200px] md:min-w-[220px]"
                 >
                   {isSaving ? (
                     <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Saving Profile...
+                      <Loader2 className="h-4 w-4 animate-spin" /> Saving
+                      Profile...
                     </>
                   ) : saved ? (
                     <>
-                      <CheckCircle2 className="h-4 w-4" />
-                      Redirecting...
+                      <CheckCircle2 className="h-4 w-4" /> Redirecting...
                     </>
                   ) : completionPercentage < 100 ? (
                     <>Complete All Fields</>
                   ) : (
                     <>
-                      Complete Profile
-                      <ArrowRight className="h-4 w-4" />
+                      Complete Profile <ArrowRight className="h-4 w-4" />
                     </>
                   )}
-                </Button>
+                </ClippedButton>
               </div>
             </form>
           </div>

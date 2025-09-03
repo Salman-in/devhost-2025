@@ -10,6 +10,7 @@ import DecryptText from "@/components/animated/TextAnimation";
 import { ClippedCard } from "@/components/ClippedCard";
 import { useTeam } from "@/context/TeamContext";
 import { toast } from "sonner";
+import { ClippedButton } from "@/components/ClippedButton";
 
 interface TeamFormData {
   team_name: string;
@@ -34,7 +35,6 @@ export default function HackathonCreateTeam() {
   const verifyRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLFormElement>(null);
   const joinCardRef = useRef<HTMLDivElement>(null);
-  const joinButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -107,17 +107,13 @@ export default function HackathonCreateTeam() {
 
       {/* Back button */}
       <div className="absolute top-6 left-4 z-10 sm:top-10 sm:left-10">
-        <button
+        <ClippedButton
           onClick={() => router.push("/hackathon")}
-          className="flex cursor-pointer items-center justify-center gap-2 bg-[#b4ff39] px-3 py-2 text-xs font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50 sm:px-4 sm:text-sm"
-          style={{
-            clipPath:
-              "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-            border: "2px solid var(--color-primary)",
-          }}
+          innerBg="bg-primary"
+          textColor="text-black"
         >
           Back
-        </button>
+        </ClippedButton>
       </div>
 
       {/* Top-right logs */}
@@ -194,7 +190,6 @@ export default function HackathonCreateTeam() {
                     })}
                     placeholder="Enter a team name"
                     className="w-full rounded-md border border-black bg-white/10 px-4 py-3 text-white transition-all placeholder:text-white/50 focus:ring-2 focus:ring-black focus:outline-none"
-                    style={{ fontFamily: "sans-serif" }}
                   />
                   {errors.team_name && (
                     <p className="mt-2 text-xs tracking-wide text-red-500 sm:text-sm">
@@ -210,19 +205,15 @@ export default function HackathonCreateTeam() {
                 </p>
               )}
 
-              <button
-                ref={joinButtonRef}
+              <ClippedButton
                 type="submit"
-                className="bg-primary flex h-fit w-full cursor-pointer items-center justify-center gap-2 px-6 py-3 text-xs font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50 sm:text-sm"
-                style={{
-                  clipPath:
-                    "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-                  border: "2px solid var(--color-primary)",
-                }}
+                onClick={undefined}
                 disabled={isSubmitting}
+                innerBg="bg-primary"
+                textColor="text-black"
               >
                 {isSubmitting ? "Creating..." : "Create Team"}
-              </button>
+              </ClippedButton>
             </form>
           </div>
         </ClippedCard>

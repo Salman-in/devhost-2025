@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { Download } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ClippedButton } from "./ClippedButton";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -200,29 +201,27 @@ export default function AboutDevhost() {
             className="font-orbitron flex flex-wrap justify-center gap-4"
           >
             <a href="/brochure/Event Rulebook - Devhost.pdf" download>
-              <button
-                className="flex cursor-pointer items-center gap-3 border-2 border-black bg-black px-6 py-3 font-bold tracking-wider uppercase"
-                style={{
-                  clipPath:
-                    "polygon(15px 0%, 100% 0%, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0% 100%, 0% 15px)",
-                }}
+              <ClippedButton
+                innerBg="bg-black"
+                outerBg="bg-black"
+                textColor="text-white"
+                className="flex items-center gap-3 border-2 border-black px-6 py-3 font-bold tracking-wider uppercase"
               >
                 <Download size={20} />
                 <span className="font-default text-xs">Event Rulebook</span>
-              </button>
+              </ClippedButton>
             </a>
 
             <a href="/brochure/devhost_2025.pdf" download>
-              <button
-                className="flex cursor-pointer items-center gap-3 border-2 border-black bg-black px-6 py-3 font-bold tracking-wider uppercase"
-                style={{
-                  clipPath:
-                    "polygon(15px 0%, 100% 0%, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0% 100%, 0% 15px)",
-                }}
+              <ClippedButton
+                innerBg="bg-black"
+                outerBg="bg-black"
+                textColor="text-white"
+                className="flex items-center gap-3 border-2 border-black px-6 py-3 font-bold tracking-wider uppercase"
               >
                 <Download size={20} />
                 <span className="font-default text-xs">DevHost Brochure</span>
-              </button>
+              </ClippedButton>
             </a>
           </div>
         </div>

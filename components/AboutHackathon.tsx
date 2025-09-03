@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import Link from "next/link";
+import { ClippedButton } from "./ClippedButton";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -328,15 +329,13 @@ export default function Home() {
           </div>
 
           <div className="font-orbitron flex gap-4">
-            <button
-              className="bg-primary relative flex cursor-pointer items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest text-black uppercase transition"
-              style={{
-                clipPath:
-                  "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
-              }}
+            <ClippedButton
+              innerBg="bg-primary"
+              textColor="text-black"
+              className="relative flex cursor-pointer items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest uppercase transition"
             >
-              <Link href={"/register"}>Know More</Link>
-            </button>
+              <Link href="/register">Know More</Link>
+            </ClippedButton>
           </div>
         </div>
 

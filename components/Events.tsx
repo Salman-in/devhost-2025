@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import DecryptText from "./animated/TextAnimation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ClippedButton } from "./ClippedButton";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -325,15 +326,13 @@ export default function Events() {
 
                   {!noRegister && (
                     <div className="mt-6 flex justify-start">
-                      <button
-                        className="font-orbitron flex w-full cursor-pointer items-center justify-center gap-2 bg-[#b4ff39] px-6 py-2 text-center text-xs font-bold tracking-wider text-black uppercase"
-                        style={{
-                          clipPath:
-                            "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-                        }}
+                      <ClippedButton
+                        innerBg="bg-primary"
+                        textColor="text-black"
+                        className="font-orbitron flex w-full items-center justify-center gap-2 px-6 py-2 text-center text-xs font-bold tracking-wider uppercase"
                       >
-                        <Link href={"/register"}>Register</Link>
-                      </button>
+                        <Link href="/register">Register</Link>
+                      </ClippedButton>
                     </div>
                   )}
                 </div>
