@@ -12,7 +12,7 @@ import clsx from "clsx";
 import { events, groupEventMaxMembers } from "@/assets/data/events";
 import { Button } from "../ui/button";
 import LoadingSpinner from "../LoadingSpinner";
-import PaymentButton from "@/components/backend/PaymentButton"; // Make sure this is updated as previously provided
+import PaymentButton from "@/components/backend/PaymentButton";
 
 type Props = { eventId: string };
 
@@ -148,7 +148,7 @@ export default function EventRegistration({ eventId }: Props) {
 
   const event = events.find((event) => event.id === parseInt(eventId));
   const eventPrice = 5000;
-  const maxMembers = groupEventMaxMembers[parseInt(eventId)];
+  const maxMembers = groupEventMaxMembers[parseInt(eventId)] ?? 1;
   const membersCount = team?.members.length ?? 0;
   const canPay =
     team &&
@@ -166,7 +166,6 @@ export default function EventRegistration({ eventId }: Props) {
           razorpay_order_id: response.razorpay_order_id,
           razorpay_payment_id: response.razorpay_payment_id,
           razorpay_signature: response.razorpay_signature,
-          amount: eventPrice,
         }),
       },
       (data) => {

@@ -27,6 +27,9 @@ interface CheckoutOptions {
     color: string;
   };
   notes?: Record<string, any>;
+  modal?: {
+    ondismiss?: () => void;
+  };
 }
 
 declare global {
@@ -52,43 +55,63 @@ export default function PaymentButton({
 
   const startPayment = async () => {
     if (disabled || loading) return;
-
     setLoading(true);
-
-    // Create order on server
-    const createRes = await fetch("/api/create-order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount }),
-    });
-    const order = await createRes.json();
-    if (!order || order.error) {
-      alert("Order creation failed: " + (order?.error || "unknown"));
-      setLoading(false);
-      return;
-    }
-
-    const options: CheckoutOptions = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-      amount: order.amount,
-      currency: order.currency || "INR",
-      name: eventName, // Dynamic event name
-      description: "Ticket",
-      order_id: order.orderId || order.id,
-      handler: function (response: SuccessResponse) {
-        onPaymentSuccess(response);
+    try {
+      if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
+        alert("Payment configuration missing.");
         setLoading(false);
-      },
-      prefill: {
-        name: "Test User",
-        email: "test@example.com",
-        contact: "9999999999",
-      },
-      theme: { color: "#3399cc" },
-    };
+        return;
+      }
+      if (typeof window === "undefined" || !window.Razorpay) {
+        alert("Payment SDK not loaded yet. Please retry in a moment.");
+        setLoading(false);
+        return;
+      }
 
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+      // Create order on server
+      const createRes = await fetch("/api/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount }),
+      });
+      if (!createRes.ok) {
+        const err = await createRes.json().catch(() => ({}));
+        alert("Order creation failed: " + (err?.error || createRes.status));
+        setLoading(false);
+        return;
+      }
+      const order = await createRes.json();
+      if (!order || order.error) {
+        alert("Order creation failed: " + (order?.error || "unknown"));
+        setLoading(false);
+        return;
+      }
+      // continue with options...
+      const options: CheckoutOptions = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+        amount: order.amount,
+        currency: order.currency || "INR",
+        name: eventName, // Dynamic event name
+        description: "Ticket",
+        order_id: order.orderId || order.id,
+        handler: function (response: SuccessResponse) {
+          onPaymentSuccess(response);
+          setLoading(false);
+        },
+        prefill: {
+          name: "Test User",
+          email: "test@example.com",
+          contact: "9999999999",
+        },
+        theme: { color: "#3399cc" },
+        modal: { ondismiss: () => setLoading(false) },
+      };
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch {
+      alert("Could not start payment. Please try again.");
+      setLoading(false);
+    }
   };
 
   return (
