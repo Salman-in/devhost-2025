@@ -1,8 +1,10 @@
 "use client";
 
+import { ClippedButton } from "@/components/ClippedButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LinkIcon } from "lucide-react";
 
 interface DriveLinkModalProps {
   isOpen: boolean;
@@ -52,9 +54,19 @@ export default function DriveLinkModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6">
-        <h2 className="mb-4 text-xl font-bold text-gray-800">Add Drive Link</h2>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      style={{
+        background: "rgba(0,0,0,0.98)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+      }}
+    >
+      <div className="mx-4 w-full max-w-md rounded-lg bg-black p-6">
+        <h2 className="text-primary text-orbitron mb-4 flex items-center gap-2 text-xl font-bold">
+          <LinkIcon className="h-4 w-4" />
+          Add Drive Link
+        </h2>
 
         <form onSubmit={handleValidateAndSubmit}>
           <div className="mb-4">
@@ -67,7 +79,7 @@ export default function DriveLinkModal({
               value={link}
               onChange={(e) => onLinkChange(e.target.value)}
               placeholder="https://drive.google.com/drive/folders/..."
-              className="rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="focus:ring-primary rounded-md border border-white px-3 py-2 text-white placeholder:text-gray-400 focus:ring-2 focus:outline-none"
               required
             />
           </div>
@@ -84,8 +96,8 @@ export default function DriveLinkModal({
               <p
                 className={`text-sm ${
                   validationResult.accessible
-                    ? "text-green-700"
-                    : "text-red-700"
+                    ? "text-green-500"
+                    : "text-red-500"
                 }`}
               >
                 {validationResult.accessible ? "✓ " : "✗ "}
@@ -98,7 +110,7 @@ export default function DriveLinkModal({
           )}
 
           <div className="mb-6">
-            <p className="text-sm text-gray-600">
+            <p className="text-primary/60 text-sm">
               Please make sure your drive folder is set to &quot;Anyone with the
               link can view&quot; permissions.
             </p>
@@ -109,16 +121,18 @@ export default function DriveLinkModal({
           )}
 
           <div className="flex gap-3">
-            <Button
+            <ClippedButton
+              innerBg="bg-destructive hover:bg-red-500"
               type="button"
               onClick={onClose}
-              className="flex-1 bg-gray-200 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-300"
+              className="bg-destructive flex-1 px-4 py-2 text-white transition-colors hover:bg-red-500 hover:text-black"
             >
               Cancel
-            </Button>
-            <Button
+            </ClippedButton>
+            <ClippedButton
+              innerBg="bg-primary hover:bg-brightness-90"
               type="submit"
-              className="flex-1 bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
+              className="bg-primary hover:bg-brightness-90 flex-1 px-4 py-2 text-white transition-colors disabled:opacity-50"
               disabled={isUpdating || updated || !isDirty || isValidating}
             >
               {isValidating
@@ -128,7 +142,7 @@ export default function DriveLinkModal({
                   : updated
                     ? "Saved!"
                     : "Save Link"}
-            </Button>
+            </ClippedButton>
           </div>
         </form>
       </div>
