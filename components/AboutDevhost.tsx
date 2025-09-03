@@ -203,6 +203,7 @@ export default function AboutDevhost() {
             <a href="/brochure/Event Rulebook - Devhost.pdf" download>
               <ClippedButton
                 innerBg="bg-black"
+                outerBg="bg-black"
                 textColor="text-white"
                 className="flex items-center gap-3 border-2 border-black px-6 py-3 font-bold tracking-wider uppercase"
               >
@@ -214,6 +215,7 @@ export default function AboutDevhost() {
             <a href="/brochure/devhost_2025.pdf" download>
               <ClippedButton
                 innerBg="bg-black"
+                outerBg="bg-black"
                 textColor="text-white"
                 className="flex items-center gap-3 border-2 border-black px-6 py-3 font-bold tracking-wider uppercase"
               >
