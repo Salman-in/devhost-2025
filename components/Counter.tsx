@@ -129,35 +129,21 @@ export default function Counter() {
     prevTimeLeft.current = initialTime;
 
     const timer = setInterval(() => {
-      prevTimeLeft.current = { ...timeLeft };
+      prevTimeLeft.current = getTimeLeft();
       setTimeLeft(getTimeLeft());
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeLeft]);
+  }, []); 
 
   const isComplete = Object.values(timeLeft).every((v) => v === 0);
 
   if (!mounted)
-    return (
-      <div className="h-[40vh] bg-black">
-        {/* <div className="absolute top-5 left-5 h-10 w-10 border-t-2 border-l-2 border-[#c3ff49]/50" />
-        <div className="absolute top-5 right-5 h-10 w-10 border-t-2 border-r-2 border-[#c3ff49]/50" />
-        <div className="absolute bottom-5 left-5 z-10 h-10 w-10 border-b-2 border-l-2 border-[#c3ff49]/50" />
-        <div className="absolute right-5 bottom-5 z-10 h-10 w-10 border-r-2 border-b-2 border-[#c3ff49]/50" /> */}
-      </div>
-    );
+    return <div className="h-[40vh] bg-black">{/* Loading state */}</div>;
 
   if (isComplete && mounted) {
     return (
       <div className="text-primary flex h-[50vh] flex-col items-center justify-center bg-black">
-        {/* <div className="absolute top-5 left-5 h-10 w-10 border-t-2 border-l-2 border-[#c3ff49]/50" />
-        <div className="absolute top-5 right-5 h-10 w-10 border-t-2 border-r-2 border-[#c3ff49]/50" />
-        <div className="absolute bottom-5 left-5 z-10 h-10 w-10 border-b-2 border-l-2 border-[#c3ff49]/50" />
-        <div className="absolute right-5 bottom-5 z-10 h-10 w-10 border-r-2 border-b-2 border-[#c3ff49]/50" /> */}
-        {/* <div className="absolute top-0 h-24 w-full bg-gradient-to-b from-black/95 via-black/80 to-transparent" />
-        <div className="absolute bottom-0 h-24 w-full bg-gradient-to-t from-black/95 via-black/80 to-transparent" /> */}
-
         <motion.div
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -172,14 +158,6 @@ export default function Counter() {
 
   return (
     <div className="relative flex h-[40vh] flex-col items-center justify-center overflow-hidden bg-black px-2 py-14">
-      {/* <div className="absolute top-5 left-5 z-10 h-10 w-10 border-t-2 border-l-2 border-[#c3ff49]/50" />
-      <div className="absolute top-5 right-5 z-10 h-10 w-10 border-t-2 border-r-2 border-[#c3ff49]/50" />
-      <div className="absolute bottom-5 left-5 z-10 h-10 w-10 border-b-2 border-l-2 border-[#c3ff49]/50" />
-      <div className="absolute right-5 bottom-5 z-10 h-10 w-10 border-r-2 border-b-2 border-[#c3ff49]/50" /> */}
-
-      {/* <div className="absolute top-0 h-12 w-full bg-gradient-to-b from-black/95 via-black/80 to-transparent" />
-      <div className="absolute bottom-0 h-12 w-full bg-gradient-to-t from-black/95 via-black/80 to-transparent" /> */}
-
       <motion.div
         className="z-10 flex w-full flex-col items-center px-4"
         initial={{ opacity: 0 }}
