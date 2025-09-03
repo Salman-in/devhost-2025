@@ -78,7 +78,7 @@ export default function TeamLeaderView({
         {/* Team Name with Copy Email Button */}
 
         <div className="mb-6 w-full text-center">
-          <h2 className="font-orbitron bg-primary mb-3 rounded-lg text-center text-3xl tracking-tight text-black p-2">
+          <h2 className="font-orbitron bg-primary mb-3 rounded-lg p-2 text-center text-3xl tracking-tight text-black">
             {team.team_name || "Team Name"}
             {team.finalized && (
               <span className="text-primary ml-2 align-middle text-lg">
