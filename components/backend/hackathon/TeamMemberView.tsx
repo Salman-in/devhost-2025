@@ -34,7 +34,7 @@ export default function TeamMemberView({
     <ClippedCard className="border-primary/40 mx-auto w-full max-w-2xl border">
       <div className="w-full rounded-lg bg-[#101810] px-8 py-10">
         {/* Team Name */}
-        <h2 className="font-orbitron bg-primary mb-6 rounded-lg text-center text-3xl tracking-tight text-black shadow-lg">
+        <h2 className="font-orbitron bg-primary mb-6 rounded-lg text-center text-3xl tracking-tight text-black shadow-lg p-2">
           {team.team_name || "Team Name"}
           {team.finalized && (
             <span className="ml-2 align-middle text-lg text-green-600">
