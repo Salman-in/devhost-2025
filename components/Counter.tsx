@@ -134,7 +134,7 @@ export default function Counter() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []); 
+  }, []);
 
   const isComplete = Object.values(timeLeft).every((v) => v === 0);
 
