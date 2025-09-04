@@ -33,11 +33,16 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#a3ff12_1px,transparent_1px),linear-gradient(to_bottom,#a3ff12_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,#000_70%,transparent_100%)] bg-[size:4rem_4rem]" />
       </div>
 
+      <div className="absolute top-5 left-5 h-10 w-10 border-t-2 border-l-2 border-[#c3ff49]/50" />
+      <div className="absolute top-5 right-5 h-10 w-10 border-t-2 border-r-2 border-[#c3ff49]/50" />
+      <div className="absolute bottom-5 left-5 z-10 h-10 w-10 border-b-2 border-l-2 border-[#c3ff49]/50" />
+      <div className="absolute right-5 bottom-5 z-10 h-10 w-10 border-r-2 border-b-2 border-[#c3ff49]/50" />
+
       {/* Back + Logout */}
-      <div className="absolute top-6 left-8 z-50 sm:top-10 sm:left-14">
+      <div className="font-orbitron absolute top-10 left-10 z-20 flex gap-4">
         <ClippedButton onClick={() => router.push("/")}>Back</ClippedButton>
       </div>
-      <div className="absolute top-6 right-8 z-50 sm:top-10 sm:right-14">
+      <div className="font-orbitron absolute top-10 right-10 z-20 flex gap-4">
         <ClippedButton
           onClick={handleLogout}
           innerBg="bg-red-500"
@@ -97,7 +102,7 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
           </ClippedCard>
 
           {/* Events Card */}
-          <ClippedCard innerBg="bg-[#101810]">
+          <ClippedCard innerBg="bg-[#101810]" innerHeight="h-full">
             <div className="absolute inset-0 z-20 flex items-center justify-center bg-black">
               <span className="font-orbitron text-primary text-xl font-bold uppercase">
                 Opening Soon

@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import DecryptText from "@/components/animated/TextAnimation";
 import { useTeam } from "@/context/TeamContext";
 import { ClippedCard } from "@/components/ClippedCard";
 import { toast } from "sonner";
@@ -201,6 +200,13 @@ export default function HackathonJoinTeam() {
 
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 h-12 w-full bg-gradient-to-t from-black/95 via-black/80 to-transparent" />
+
+      <div className="text-primary absolute bottom-6 left-6 text-sm opacity-80">
+        {"// DEVHOST 2025"}
+      </div>
+      <div className="text-primary absolute right-6 bottom-6 text-sm opacity-80">
+        {"TEAM SELECTION"}
+      </div>
     </div>
   );
 }

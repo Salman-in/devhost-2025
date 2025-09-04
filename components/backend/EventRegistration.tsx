@@ -234,7 +234,6 @@ export default function EventRegistration({ eventId }: Props) {
                   <ClippedButton
                     onClick={handleCreateTeam}
                     disabled={actionLoading}
-                    className="h-fit w-full px-4 py-2 text-xs font-bold tracking-widest text-black uppercase"
                   >
                     Create Team
                   </ClippedButton>
@@ -263,7 +262,6 @@ export default function EventRegistration({ eventId }: Props) {
                     <ClippedButton
                       onClick={handleJoinTeam}
                       disabled={actionLoading}
-                      className="h-fit w-full px-4 py-2 text-xs font-bold tracking-widest text-black uppercase"
                     >
                       Join
                     </ClippedButton>

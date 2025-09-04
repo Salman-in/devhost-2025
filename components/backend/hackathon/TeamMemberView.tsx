@@ -27,8 +27,7 @@ export default function TeamMemberView({
 }: TeamMemberViewProps) {
   const { user } = useAuth();
 
-  const { loadingStates, successStates, handleLeaveTeam } =
-    useTeamActions(refreshAll);
+  const { loadingStates, handleLeaveTeam } = useTeamActions(refreshAll);
 
   return (
     <ClippedCard className="mx-auto w-full max-w-2xl">

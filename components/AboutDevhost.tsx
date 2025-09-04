@@ -205,7 +205,6 @@ export default function AboutDevhost() {
                 innerBg="bg-black"
                 outerBg="bg-black"
                 textColor="text-white"
-                className="flex items-center gap-3 border-2 border-black px-6 py-3 font-bold tracking-wider uppercase"
               >
                 <Download size={20} />
                 <span className="font-default text-xs">Event Rulebook</span>
@@ -217,7 +216,6 @@ export default function AboutDevhost() {
                 innerBg="bg-black"
                 outerBg="bg-black"
                 textColor="text-white"
-                className="flex items-center gap-3 border-2 border-black px-6 py-3 font-bold tracking-wider uppercase"
               >
                 <Download size={20} />
                 <span className="font-default text-xs">DevHost Brochure</span>

@@ -14,6 +14,7 @@ type ClippedCardProps = {
   textColor?: string;
   width?: string;
   height?: string;
+  innerHeight?: string;
   style?: CSSProperties;
   children: ReactNode;
   asChild?: boolean;
@@ -26,6 +27,7 @@ export function ClippedCard({
   textColor = "text-black",
   width = "w-full",
   height = "",
+  innerHeight = "h-fit",
   style = {},
   children,
   asChild = false,
@@ -52,8 +54,9 @@ export function ClippedCard({
       <div
         className={clsx(
           textColor,
-          "flex h-fit w-full items-center gap-2",
+          "flex w-full items-center gap-2",
           innerBg,
+          innerHeight,
         )}
         style={{
           clipPath:

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import DecryptText from "@/components/animated/TextAnimation";
 import { ClippedCard } from "@/components/ClippedCard";
 import { useTeam } from "@/context/TeamContext";
 import { ClippedButton } from "@/components/ClippedButton";
@@ -43,7 +42,7 @@ export default function HackathonPage() {
   }
 
   return (
-    <section className="font-orbitron relative min-h-screen overflow-hidden bg-black text-white">
+    <section className="font-orbitron relative min-h-screen overflow-hidden bg-black py-12 text-white sm:py-0">
       {/* Back button */}
       <div className="absolute top-6 left-4 z-50 sm:top-10 sm:left-10">
         <ClippedButton
@@ -85,7 +84,7 @@ export default function HackathonPage() {
         {/* Options grid */}
         <div className="mb-16 grid w-full max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
           {/* Join Team Card */}
-          <ClippedCard innerBg="bg-[#101810]">
+          <ClippedCard innerBg="bg-[#101810]" innerHeight="h-full">
             <div className="flex h-full flex-col border p-8">
               <div className="text-primary font-amiga mb-4 text-3xl">01</div>
               <h3 className="mb-4 text-2xl text-white">Join a Team</h3>
@@ -107,7 +106,11 @@ export default function HackathonPage() {
           </ClippedCard>
 
           {/* Create Team Card */}
-          <ClippedCard innerBg="bg-[#101810]" className="relative">
+          <ClippedCard
+            innerBg="bg-[#101810]"
+            className="relative"
+            innerHeight="h-full"
+          >
             <div className="flex h-full flex-col border p-8">
               <div className="text-primary font-amiga mb-4 text-3xl">02</div>
               <h3 className="mb-4 text-2xl text-white">Create a Team</h3>

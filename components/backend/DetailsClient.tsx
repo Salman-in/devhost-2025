@@ -34,7 +34,6 @@ import {
   CommandItem,
   CommandList,
 } from "../ui/command";
-import { cn } from "@/lib/utils";
 
 interface Profile {
   name: string;
@@ -126,7 +125,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-black py-8 text-white">
-      <div className="w-full max-w-3xl px-4">
+      <div className="font-orbitron w-full max-w-3xl px-4">
         <ClippedCard innerBg="bg-[#101810]">
           <div className="flex w-full flex-col p-6 text-white sm:p-8">
             {/* Header */}

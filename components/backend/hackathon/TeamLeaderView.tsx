@@ -54,8 +54,6 @@ export default function TeamLeaderView({
 
   const {
     loadingStates,
-    successStates,
-    finalizeError,
     handleRemovePeer,
     handleDeleteTeam,
     handleFinalizeTeam,

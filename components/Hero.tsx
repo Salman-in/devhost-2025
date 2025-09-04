@@ -100,7 +100,7 @@ export default function Hero() {
             className="relative flex items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest uppercase"
             onClick={handleGoogleLogin}
           >
-            <User size={14} /> Profile
+            <User size={14} /> <span className="hidden sm:block">Profile</span>
           </ClippedButton>
         </div>
 

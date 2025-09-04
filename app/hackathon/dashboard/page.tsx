@@ -3,16 +3,13 @@
 import { useAuth } from "@/context/AuthContext";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useUserProfile } from "@/lib/hooks/useUserData";
 import { useTeam } from "@/context/TeamContext";
 import TeamLeaderView from "@/components/backend/hackathon/TeamLeaderView";
 import TeamMemberView from "@/components/backend/hackathon/TeamMemberView";
 import { ClippedButton } from "@/components/ClippedButton";
-import DecryptText from "@/components/animated/TextAnimation";
 
 export default function HackathonDashboardPage() {
   const router = useRouter();
@@ -86,11 +83,11 @@ export default function HackathonDashboardPage() {
   const isTeamLeader = team.team_leader_email === user.email;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-start bg-black px-4 pt-24">
-      <div className="fixed top-4 left-4 z-30">
+    <div className="flex min-h-screen flex-col items-center justify-start bg-black px-4 py-24">
+      <div className="absolute top-6 left-4 z-10 sm:top-10 sm:left-10">
         <ClippedButton>
           <Link href="/profile" className="flex items-center gap-2">
-            <ArrowLeft className="h-4 w-4" /> Go to Profile
+            Back
           </Link>
         </ClippedButton>
       </div>

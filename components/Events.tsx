@@ -245,7 +245,7 @@ export default function Events() {
       </div>
 
       {/* Event cards */}
-      <div className="relative z-10 grid w-full max-w-[1200px] grid-cols-1 gap-8 px-4 md:grid-cols-2">
+      <div className="relative z-10 grid w-full max-w-[1200px] grid-cols-1 gap-8 px-4 lg:grid-cols-2">
         {events.map((event, idx) => {
           const noRegister = [6, 7, 8].includes(event.id);
           return (
