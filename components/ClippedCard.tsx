@@ -50,7 +50,11 @@ export function ClippedCard({
       }}
     >
       <div
-        className={clsx(textColor, "flex h-fit items-center gap-2", innerBg)}
+        className={clsx(
+          textColor,
+          "flex h-fit w-full items-center gap-2",
+          innerBg,
+        )}
         style={{
           clipPath:
             "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
