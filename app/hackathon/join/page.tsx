@@ -83,7 +83,7 @@ export default function HackathonJoinTeam() {
       className="font-orbitron relative min-h-screen w-full overflow-hidden bg-black text-white"
     >
       {/* Background grid */}
-      <div className="pointer-events-none fixed absolute inset-0 opacity-10">
+      <div className="pointer-events-none absolute fixed inset-0 opacity-10">
         <div
           className="absolute inset-0"
           style={{

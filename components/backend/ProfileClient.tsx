@@ -29,7 +29,7 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
   return (
     <section className="font-orbitron relative flex min-h-screen items-center justify-center overflow-hidden bg-black py-12 text-white">
       {/* Background grid */}
-      <div className="pointer-events-none fixed absolute inset-0 opacity-10">
+      <div className="pointer-events-none absolute fixed inset-0 opacity-10">
         <div
           className="absolute inset-0"
           style={{

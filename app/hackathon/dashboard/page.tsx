@@ -84,7 +84,7 @@ export default function HackathonDashboardPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-start bg-black px-4 py-24">
-      <div className="absolute top-6 left-4 z-10 sm:top-10 sm:left-10 font-orbitron">
+      <div className="font-orbitron absolute top-6 left-4 z-10 sm:top-10 sm:left-10">
         <ClippedButton>
           <Link href="/profile" className="flex items-center gap-2">
             Back
@@ -92,7 +92,7 @@ export default function HackathonDashboardPage() {
         </ClippedButton>
       </div>
       {/* Background grid */}
-      <div className="pointer-events-none fixed absolute inset-0 opacity-10">
+      <div className="pointer-events-none absolute fixed inset-0 opacity-10">
         <div
           className="absolute inset-0"
           style={{
