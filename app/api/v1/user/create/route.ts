@@ -38,7 +38,6 @@ export async function POST(req: NextRequest) {
         college,
         phone,
         year,
-        team_id: "",
       });
     }
 

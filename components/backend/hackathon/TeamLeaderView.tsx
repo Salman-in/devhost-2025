@@ -73,7 +73,7 @@ export default function TeamLeaderView({
   return (
     <Fragment>
       <ClippedCard className="mx-auto w-full max-w-2xl">
-        <div className="flex w-full flex-col rounded-lg bg-[#101810] px-6 py-8">
+        <div className="flex w-full flex-col bg-[#101810] px-6 py-8">
           {/* ==== Team Info ==== */}
           <div className="border-primary/40 mb-6 border-b pb-4 text-center">
             <h2 className="font-orbitron text-primary mb-2 text-sm tracking-wide uppercase">
@@ -91,20 +91,20 @@ export default function TeamLeaderView({
           </div>
 
           {/* ==== Members Section ==== */}
-          <div className="mb-4">
+          <div className="border-primary/40 mb-6 border-b pb-4">
             <h3 className="font-orbitron text-primary mb-3 text-lg">
               Team Members
             </h3>
 
             {/* Leader */}
-            <div className="border-primary/40 mb-4 rounded-md border">
+            <div className="border-primary/40 mb-4 border">
               <div className="flex items-center justify-between px-4 py-3">
-                <span className="border-primary text-primary rounded border px-2 py-0.5 text-xs font-bold">
+                <span className="border-primary text-primary border px-2 py-0.5 text-xs font-bold">
                   LEADER
                 </span>
                 <div className="ml-3 flex w-full items-center justify-between">
                   <span className="text-foreground font-medium">
-                    {team.team_leader}
+                    {team.team_leader_email}
                   </span>
                   <button
                     onClick={copyTeamLeaderEmail}
@@ -129,10 +129,10 @@ export default function TeamLeaderView({
                   .map((member) => (
                     <div
                       key={member.email}
-                      className="border-primary/30 flex items-center justify-between rounded-md border px-4 py-2"
+                      className="border-primary/30 flex items-center justify-between border px-4 py-2"
                     >
                       <span className="text-foreground font-medium">
-                        {member.name}
+                        {member.email}
                       </span>
                       {!team.finalized && (
                         <button
@@ -143,7 +143,7 @@ export default function TeamLeaderView({
                               member.name,
                             )
                           }
-                          className="border-destructive text-destructive rounded border px-3 py-1 text-xs hover:opacity-90 disabled:opacity-50"
+                          className="border-destructive text-destructive border px-3 py-1 text-xs hover:opacity-90 disabled:opacity-50"
                           disabled={loadingStates.removing}
                         >
                           REMOVE
@@ -164,14 +164,19 @@ export default function TeamLeaderView({
             <h3 className="font-orbitron text-primary mb-3 text-lg">Actions</h3>
             <div className="space-y-3">
               {team.finalized && team.drive_link ? (
-                <a
-                  href={team.drive_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-primary hover:bg-primary/90 block w-full rounded-lg px-4 py-3 text-center font-medium text-black transition-colors"
+                <ClippedButton
+                  outerBg="bg-primary"
+                  innerBg="bg-black"
+                  textColor="text-primary"
                 >
-                  Open Drive Link
-                </a>
+                  <a
+                    href={team.drive_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Open Team Drive Link
+                  </a>
+                </ClippedButton>
               ) : !team.finalized ? (
                 <ClippedButton
                   onClick={() => openModal(team.drive_link)}
