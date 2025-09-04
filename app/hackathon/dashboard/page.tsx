@@ -84,25 +84,27 @@ export default function HackathonDashboardPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-start bg-black px-4 py-24">
-      <div className="absolute top-6 left-4 z-10 sm:top-10 sm:left-10">
+      <div className="font-orbitron absolute top-6 left-4 z-10 sm:top-10 sm:left-10">
         <ClippedButton>
           <Link href="/profile" className="flex items-center gap-2">
             Back
           </Link>
         </ClippedButton>
       </div>
-      {/* GRID BACKGROUND */}
-      <div
-        className="pointer-events-none fixed inset-0 z-0"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, #a3ff12 1px, transparent 1px),
-            linear-gradient(to bottom, #a3ff12 1px, transparent 1px)
+      {/* Background grid */}
+      <div className="pointer-events-none absolute fixed inset-0 opacity-10">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(#a3ff12 2px, transparent 1px),
+              linear-gradient(90deg, #a3ff12 2px, transparent 1px)
             `,
-          backgroundSize: "80px 80px",
-          opacity: 0.13,
-        }}
-      />
+            backgroundSize: "80px 80px",
+            backgroundPosition: "center",
+          }}
+        ></div>
+      </div>
 
       <div className="relative z-10 mb-10 w-full max-w-3xl pt-10 text-center sm:pt-0">
         <h1 className="text-primary font-orbitron mb-3 text-center text-lg font-bold tracking-wider uppercase sm:text-2xl md:text-4xl">

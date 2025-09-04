@@ -29,10 +29,19 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
   return (
     <section className="font-orbitron relative flex min-h-screen items-center justify-center overflow-hidden bg-black py-12 text-white">
       {/* Background grid */}
-      <div className="absolute inset-0 opacity-15">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#a3ff12_1px,transparent_1px),linear-gradient(to_bottom,#a3ff12_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,#000_70%,transparent_100%)] bg-[size:4rem_4rem]" />
+      <div className="pointer-events-none absolute fixed inset-0 opacity-10">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(#a3ff12 2px, transparent 1px),
+              linear-gradient(90deg, #a3ff12 2px, transparent 1px)
+            `,
+            backgroundSize: "80px 80px",
+            backgroundPosition: "center",
+          }}
+        ></div>
       </div>
-
       <div className="absolute top-5 left-5 h-10 w-10 border-t-2 border-l-2 border-[#c3ff49]/50" />
       <div className="absolute top-5 right-5 h-10 w-10 border-t-2 border-r-2 border-[#c3ff49]/50" />
       <div className="absolute bottom-5 left-5 z-10 h-10 w-10 border-b-2 border-l-2 border-[#c3ff49]/50" />
@@ -59,6 +68,9 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
           <h1 className="text-primary text-3xl font-bold tracking-wide uppercase sm:text-4xl md:text-5xl">
             Profile
           </h1>
+          <p className="mt-2 text-base text-gray-400">
+            &gt; Discover hackathons and events to grow your skills and network.
+          </p>
         </div>
 
         {/* Profile Form */}
@@ -68,9 +80,6 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
           <h2 className="text-primary text-2xl font-bold tracking-wide uppercase">
             Explore Opportunities
           </h2>
-          <p className="mt-2 text-base text-gray-400">
-            &gt; Discover hackathons and events to grow your skills and network.
-          </p>
         </div>
 
         {/* Cards Section */}

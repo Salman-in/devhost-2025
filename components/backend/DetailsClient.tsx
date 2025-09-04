@@ -126,6 +126,32 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-black py-8 text-white">
       <div className="font-orbitron w-full max-w-3xl px-4">
+        {/* Background grid */}
+        <div className="pointer-events-none absolute fixed inset-0 opacity-10">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `
+                  linear-gradient(#a3ff12 2px, transparent 1px),
+                  linear-gradient(90deg, #a3ff12 2px, transparent 1px)
+                `,
+              backgroundSize: "80px 80px",
+              backgroundPosition: "center",
+            }}
+          ></div>
+        </div>
+
+        {/* Back button */}
+        <div className="absolute top-6 left-4 z-10 sm:top-10 sm:left-10">
+          <ClippedButton
+            onClick={() => router.push("/")}
+            innerBg="bg-primary"
+            textColor="text-black"
+          >
+            Back
+          </ClippedButton>
+        </div>
+
         <ClippedCard innerBg="bg-[#101810]">
           <div className="flex w-full flex-col p-6 text-white sm:p-8">
             {/* Header */}

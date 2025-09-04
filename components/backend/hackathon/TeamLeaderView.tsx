@@ -143,7 +143,7 @@ export default function TeamLeaderView({
                               member.name,
                             )
                           }
-                          className="border-destructive text-destructive border px-3 py-1 text-xs hover:opacity-90 disabled:opacity-50"
+                          className="border-destructive text-destructive font-orbitron rounded border px-3 py-1 text-xs hover:opacity-90 disabled:opacity-50"
                           disabled={loadingStates.removing}
                         >
                           REMOVE
@@ -183,6 +183,7 @@ export default function TeamLeaderView({
                   innerBg="bg-background"
                   outerBg="bg-primary"
                   textColor="text-primary"
+                  className="font-orbitron"
                 >
                   <LinkIcon className="h-4 w-4" />
                   Add Drive Link
@@ -190,7 +191,7 @@ export default function TeamLeaderView({
               ) : null}
 
               {!team.finalized && (
-                <div className="flex gap-3">
+                <div className="font-orbitron flex gap-3">
                   <ClippedButton
                     innerBg="bg-red-500"
                     onClick={() => handleDeleteTeam(team.team_id)}
