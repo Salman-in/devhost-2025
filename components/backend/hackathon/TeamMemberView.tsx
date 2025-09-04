@@ -31,105 +31,113 @@ export default function TeamMemberView({
     useTeamActions(refreshAll);
 
   return (
-    <ClippedCard className="border-primary/40 mx-auto w-full max-w-2xl border">
-      <div className="w-full rounded-lg bg-[#101810] px-8 py-10">
-        {/* Team Name */}
-        <h2 className="font-orbitron bg-primary mb-6 rounded-lg p-2 text-center text-3xl tracking-tight text-black shadow-lg">
-          {team.team_name || "Team Name"}
-          {team.finalized && (
-            <span className="ml-2 align-middle text-lg text-green-600">
-              ✓ Finalized
-            </span>
-          )}
-        </h2>
+    <ClippedCard className="mx-auto w-full max-w-2xl">
+      <div className="flex w-full flex-col rounded-lg bg-[#101810] px-6 py-8">
+        {/* ==== Team Info ==== */}
+        <div className="border-primary/40 mb-6 border-b pb-4 text-center">
+          <h2 className="font-orbitron text-primary mb-2 text-sm tracking-wide uppercase">
+            Team Name:
+          </h2>
+          <p className="font-orbitron text-3xl tracking-tight text-white">
+            {team.team_name || "Team Name"}
+            {team.finalized && (
+              <span className="font-orbitron ml-2 align-middle text-lg text-green-400">
+                ✓ Finalized
+              </span>
+            )}
+          </p>
+        </div>
 
-        {/* Members List */}
-        <div className="mb-6">
-          <h3 className="font-orbitron text-primary mb-4 text-lg">
+        {/* ==== Members Section ==== */}
+        <div className="border-primary/40 mb-6 border-b pb-4">
+          <h3 className="font-orbitron text-primary mb-3 text-lg">
             Team Members
           </h3>
-          <div className="space-y-3">
-            {/* Team Leader */}
-            <div className="flex-col items-center justify-between rounded-lg border border-lime-400 bg-gradient-to-r from-lime-50 to-green-50 px-4 py-3">
-              <div className="flex items-center gap-3">
-                <span className="rounded-full bg-lime-700 px-2 py-1 text-xs font-bold text-white">
-                  LEADER
-                </span>
-                <span className="font-medium text-gray-800">
+
+          {/* Leader */}
+          <div className="border-primary/40 mb-4 rounded-md border">
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="border-primary text-primary rounded border px-2 py-0.5 text-xs font-bold">
+                LEADER
+              </span>
+              <div className="ml-3 flex w-full items-center justify-between">
+                <span className="font-medium text-white">
                   {team.team_leader}
                 </span>
               </div>
             </div>
+          </div>
 
-            {/* Team Members */}
-            {team.members &&
-            team.members.filter((m) => m.role === "member").length > 0 ? (
-              team.members
+          {/* Team Members */}
+          {team.members &&
+          team.members.filter((m) => m.role === "member").length > 0 ? (
+            <div className="space-y-3">
+              {team.members
                 .filter((m) => m.role === "member")
                 .map((member) => {
                   const isCurrentUser = member?.email === user?.email;
                   return (
                     <div
                       key={member.email}
-                      className={`flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 ${isCurrentUser ? "ring-primary bg-blue-50 ring-2" : ""}`}
+                      className={`border-primary/30 flex items-center justify-between rounded-md border px-4 py-2 ${
+                        isCurrentUser
+                          ? "ring-primary bg-primary/20 ring-1"
+                          : "bg-primary/10"
+                      }`}
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex w-full items-center justify-between gap-3">
+                        <span className="font-medium text-white">
+                          {member.name}
+                        </span>
                         {isCurrentUser && (
-                          <span className="bg-primary rounded-full px-2 py-1 text-xs font-bold text-white">
+                          <span className="border-primary text-primary rounded border px-2 py-0.5 text-xs font-bold">
                             YOU
                           </span>
                         )}
-                        <span className="font-medium text-gray-800">
-                          {member.name}
-                        </span>
                       </div>
                     </div>
                   );
-                })
-            ) : (
-              <div className="rounded-lg bg-gray-50 py-4 text-center text-gray-400 italic">
-                No other members yet
-              </div>
-            )}
-          </div>
+                })}
+            </div>
+          ) : (
+            <div className="text-primary bg-primary/10 rounded-lg py-4 text-center italic">
+              No other members yet
+            </div>
+          )}
         </div>
 
-        {/* Drive Link */}
+        {/* ==== Drive Link Section ==== */}
         {team.drive_link && (
-          <div className="mb-6">
-            <a
-              href={team.drive_link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full rounded-lg bg-blue-500 px-4 py-3 text-center font-medium text-white transition-colors hover:bg-blue-600"
-            >
-              Open Team Drive Link
-            </a>
-          </div>
-        )}
-
-        {/* Leave Team Button - Only show if not finalized */}
-        {!team.finalized && (
-          <div className="mt-6">
+          <div>
             <ClippedButton
-              innerBg="bg-destructive hover:bg-red-500"
-              onClick={() => handleLeaveTeam(team.team_id)}
-              className="bg-destructive w-full rounded-lg px-4 py-3 font-medium text-white transition-colors hover:bg-red-500 hover:text-black"
-              disabled={loadingStates.leaving}
+              outerBg="bg-primary"
+              innerBg="bg-black"
+              textColor="text-primary"
             >
-              {loadingStates.leaving
-                ? "Leaving..."
-                : successStates.left
-                  ? "Left!"
-                  : "Leave Team"}
+              <a
+                href={team.drive_link}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open Team Drive Link
+              </a>
             </ClippedButton>
           </div>
         )}
 
-        {/* Team Info */}
-        {/* <div className="mt-6 text-center text-xs text-gray-500">
-        Team ID: {team.team_id}
-      </div> */}
+        {/* ==== Leave Button ==== */}
+        {!team.finalized && (
+          <div className="mt-2">
+            <ClippedButton
+              innerBg="bg-red-500"
+              textColor="text-white"
+              onClick={() => handleLeaveTeam(team.team_id)}
+              disabled={loadingStates.leaving}
+            >
+              Leave Team
+            </ClippedButton>
+          </div>
+        )}
       </div>
     </ClippedCard>
   );

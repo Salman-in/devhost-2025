@@ -54,23 +54,16 @@ export default function DriveLinkModal({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-      style={{
-        background: "rgba(0,0,0,0.98)",
-        backdropFilter: "blur(8px)",
-        WebkitBackdropFilter: "blur(8px)",
-      }}
-    >
-      <div className="mx-4 w-full max-w-md rounded-lg bg-black p-6">
-        <h2 className="text-primary text-orbitron mb-4 flex items-center gap-2 text-xl font-bold">
+    <div className="fixed inset-0 z-50 flex h-screen w-screen items-center justify-center bg-black/90 backdrop-blur-sm">
+      <div className="border-primary/40 mx-2 w-full max-w-md rounded-lg border bg-[#101810] p-6 shadow-2xl">
+        <h2 className="text-primary font-orbitron mb-4 flex items-center gap-2 text-xl font-bold">
           <LinkIcon className="h-4 w-4" />
           Add Drive Link
         </h2>
 
         <form onSubmit={handleValidateAndSubmit}>
           <div className="mb-4">
-            <Label htmlFor="drive_link" className="mb-2">
+            <Label htmlFor="drive_link" className="text-primary mb-2 text-sm">
               Google Drive Link
             </Label>
             <Input
@@ -79,7 +72,7 @@ export default function DriveLinkModal({
               value={link}
               onChange={(e) => onLinkChange(e.target.value)}
               placeholder="https://drive.google.com/drive/folders/..."
-              className="focus:ring-primary rounded-md border border-white px-3 py-2 text-white placeholder:text-gray-400 focus:ring-2 focus:outline-none"
+              className="focus:ring-primary border-primary/40 placeholder:text-primary/50 rounded-md border bg-black px-3 py-2 text-white focus:ring-2 focus:outline-none"
               required
             />
           </div>
@@ -87,23 +80,23 @@ export default function DriveLinkModal({
           {/* Validation Result */}
           {validationResult && (
             <div
-              className={`mb-4 rounded-md p-3 ${
+              className={`mb-4 rounded-md border p-3 ${
                 validationResult.accessible
-                  ? "border border-green-200 bg-green-50"
-                  : "border border-red-200 bg-red-50"
+                  ? "border-green-500 bg-green-900/40"
+                  : "border-red-500 bg-red-900/40"
               }`}
             >
               <p
                 className={`text-sm ${
                   validationResult.accessible
-                    ? "text-green-500"
-                    : "text-red-500"
+                    ? "text-green-400"
+                    : "text-red-400"
                 }`}
               >
                 {validationResult.accessible ? "✓ " : "✗ "}
                 {validationResult.message}
               </p>
-              <p className="mt-1 text-xs text-gray-600">
+              <p className="text-primary/50 mt-1 text-xs">
                 HTTP Status: {validationResult.status}
               </p>
             </div>
@@ -122,17 +115,17 @@ export default function DriveLinkModal({
 
           <div className="flex gap-3">
             <ClippedButton
-              innerBg="bg-destructive hover:bg-red-500"
+              innerBg="bg-red-500"
+              textColor="text-white"
               type="button"
               onClick={onClose}
-              className="bg-destructive flex-1 px-4 py-2 text-white transition-colors hover:bg-red-500 hover:text-black"
             >
               Cancel
             </ClippedButton>
             <ClippedButton
-              innerBg="bg-primary hover:bg-brightness-90"
+              innerBg="bg-primary"
               type="submit"
-              className="bg-primary hover:bg-brightness-90 flex-1 px-4 py-2 text-white transition-colors disabled:opacity-50"
+              className="bg-primary"
               disabled={isUpdating || updated || !isDirty || isValidating}
             >
               {isValidating

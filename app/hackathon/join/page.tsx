@@ -110,7 +110,7 @@ export default function HackathonJoinTeam() {
       </div>
 
       {/* Top-right logs */}
-      <div className="text-primary absolute top-6 right-4 z-10 flex max-w-xs flex-col gap-1 text-xs sm:top-10 sm:right-10 sm:max-w-sm sm:text-sm md:max-w-md md:text-base">
+      {/* <div className="text-primary absolute top-6 right-4 z-10 flex max-w-xs flex-col gap-1 text-xs sm:top-10 sm:right-10 sm:max-w-sm sm:text-sm md:max-w-md md:text-base">
         <DecryptText
           text="> OPEN FORM FOR TEAM JOINING"
           startDelayMs={100}
@@ -132,11 +132,11 @@ export default function HackathonJoinTeam() {
           flickerIntervalMs={30}
           revealDelayMs={50}
         />
-      </div>
+      </div> */}
 
       {/* Centered clipped card container */}
       <div className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6">
-        <ClippedCard innerBg="bg-[#101810]">
+        <ClippedCard innerBg="bg-[#101810]" className="max-w-xl">
           <div className="relative mx-auto w-full max-w-4xl p-6 sm:p-8">
             <h2 className="mb-6 text-center text-lg font-bold tracking-wider text-white uppercase sm:text-xl md:text-2xl">
               Join Your Hackathon Team
@@ -154,14 +154,9 @@ export default function HackathonJoinTeam() {
                   >
                     Team Leader Email
                   </Label>
-                  <DecryptText
-                    text="> Enter valid email to join"
-                    startDelayMs={300}
-                    trailSize={5}
-                    flickerIntervalMs={50}
-                    revealDelayMs={100}
-                    className="mb-2 text-xs text-white/70 sm:text-sm"
-                  />
+                  <p className="mb-2 text-xs text-white/70 sm:text-sm">
+                    {"> Enter valid email to join"}
+                  </p>
                   <Input
                     id="leader_email"
                     type="email"

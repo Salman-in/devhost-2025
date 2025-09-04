@@ -27,7 +27,7 @@ export interface Profile {
 
 // Unified form-field class for inputs and selects
 const formFieldClass =
-  "w-full h-12 px-3 py-2 text-gray-400 text-sm leading-5 box-border rounded-md";
+  "w-full h-12 px-3 py-2 text-gray-400 text-sm leading-5 box-border rounded-md disabled:text-white disabled:opacity-100";
 
 export default function ProfileForm({ profile }: { profile: Profile }) {
   const [profileState, setProfileState] = useState(profile);
@@ -101,7 +101,7 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
                   disabled={isSaving || !hasChanges}
                 >
                   <Save className="h-4 w-4" />
-                  {isSaving ? "Saving..." : "Save"}
+                  {"Save"}
                 </ClippedButton>
                 <ClippedButton onClick={handleCancel}>
                   <X className="h-4 w-4" /> Cancel

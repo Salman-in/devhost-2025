@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { verifySessionCookie } from "@/firebase/admin";
+import { adminDb, verifySessionCookie } from "@/firebase/admin";
 import DetailsClient from "@/components/backend/DetailsClient";
+import { Profile } from "@/components/backend/ProfileForm";
 
 export default async function DetailsPage() {
   const cookieStore = await cookies();
@@ -13,7 +14,7 @@ export default async function DetailsPage() {
   if (!decoded) redirect("/");
 
   // Extract user info from session only, no DB checks
-  const { email, name } = decoded;
+  const { email, name, uid } = decoded;
 
   // Pass minimal user info from session to form component
   const initialProfile = {
@@ -24,6 +25,16 @@ export default async function DetailsPage() {
     branch: "",
     year: null,
   };
+
+  const userSnap = await adminDb.collection("users").doc(uid).get();
+  const profile = userSnap.data() as Profile;
+  if (userSnap.exists) {
+    if (profile.phone && profile.college && profile.branch) {
+      redirect("/profile");
+    }
+  }
+
+  // 3. Redirect if profile incomplete
 
   return <DetailsClient profile={initialProfile} />;
 }

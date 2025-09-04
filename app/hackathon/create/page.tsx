@@ -29,13 +29,6 @@ export default function HackathonCreateTeam() {
     clearErrors,
   } = useForm<TeamFormData>();
 
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLDivElement>(null);
-  const subtitleRef = useRef<HTMLDivElement>(null);
-  const verifyRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLFormElement>(null);
-  const joinCardRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -86,10 +79,7 @@ export default function HackathonCreateTeam() {
   if (!mounted) return null;
 
   return (
-    <div
-      ref={sectionRef}
-      className="font-orbitron relative min-h-screen w-full overflow-hidden bg-black text-white"
-    >
+    <div className="font-orbitron relative min-h-screen w-full overflow-hidden bg-black text-white">
       {/* Grid background */}
       <div className="pointer-events-none fixed inset-0 z-0">
         <div
@@ -117,7 +107,7 @@ export default function HackathonCreateTeam() {
       </div>
 
       {/* Top-right logs */}
-      <div className="text-primary absolute top-6 right-4 z-10 flex max-w-xs flex-col gap-1 text-xs sm:top-10 sm:right-10 sm:max-w-sm sm:text-sm md:max-w-md md:text-base">
+      {/* <div className="text-primary absolute top-6 right-4 z-10 flex max-w-xs flex-col gap-1 text-xs sm:top-10 sm:right-10 sm:max-w-sm sm:text-sm md:max-w-md md:text-base">
         <div ref={titleRef}>
           <DecryptText
             text="> OPEN FORM FOR TEAM CREATION"
@@ -145,19 +135,15 @@ export default function HackathonCreateTeam() {
             revealDelayMs={50}
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Centered card */}
       <div className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6">
-        <ClippedCard innerBg="bg-[#101810]">
-          <div
-            ref={joinCardRef}
-            className="relative mx-auto w-full max-w-4xl p-6 sm:p-8"
-          >
+        <ClippedCard innerBg="bg-[#101810]" className="max-w-xl">
+          <div className="relative mx-auto w-full max-w-4xl p-6 sm:p-8">
             <form
               className="flex w-full flex-col items-center justify-center space-y-6"
               onSubmit={handleSubmit(onSubmit)}
-              ref={gridRef}
             >
               <div className="flex w-full flex-col gap-4">
                 <h2 className="mb-6 text-center text-lg font-bold tracking-wider text-white uppercase sm:text-xl md:text-2xl">
@@ -170,14 +156,9 @@ export default function HackathonCreateTeam() {
                   >
                     Team Name
                   </Label>
-                  <DecryptText
-                    text="> Enter valid team name"
-                    startDelayMs={300}
-                    trailSize={5}
-                    flickerIntervalMs={50}
-                    revealDelayMs={100}
-                    className="mb-2 text-xs text-white/70 sm:text-sm"
-                  />
+                  <p className="mb-2 text-xs text-white/70 sm:text-sm">
+                    {"> Enter valid team name"}
+                  </p>
                   <Input
                     id="team_name"
                     type="text"

@@ -27,29 +27,31 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
   };
 
   return (
-    <section className="font-orbitron relative flex min-h-screen items-center justify-center overflow-hidden bg-black text-white">
+    <section className="font-orbitron relative flex min-h-screen items-center justify-center overflow-hidden bg-black py-12 text-white">
       {/* Background grid */}
       <div className="absolute inset-0 opacity-15">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#a3ff12_1px,transparent_1px),linear-gradient(to_bottom,#a3ff12_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,#000_70%,transparent_100%)] bg-[size:4rem_4rem]" />
       </div>
 
       {/* Back + Logout */}
-      <div className="absolute top-6 left-3 z-50 sm:top-10 sm:left-10">
+      <div className="absolute top-6 left-8 z-50 sm:top-10 sm:left-14">
         <ClippedButton onClick={() => router.push("/")}>Back</ClippedButton>
       </div>
-      <div className="absolute top-6 right-3 z-50 sm:top-10 sm:right-10">
+      <div className="absolute top-6 right-8 z-50 sm:top-10 sm:right-14">
         <ClippedButton
           onClick={handleLogout}
-          innerBg="bg-destructive"
+          innerBg="bg-red-500"
           textColor="text-white"
         >
           Logout
         </ClippedButton>
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-3xl px-5 py-5 sm:px-15 sm:py-16">
-        <div className="relative mt-20 mb-8 text-center sm:mt-0 sm:mb-8">
-          <h1 className="text-3xl font-bold tracking-wider text-[#a3ff12] uppercase sm:text-4xl md:text-5xl">
+      {/* Main Content */}
+      <div className="relative z-10 mx-auto w-full max-w-5xl px-8 py-12 sm:px-16">
+        {/* Title */}
+        <div className="mb-10 text-center">
+          <h1 className="text-primary text-3xl font-bold tracking-wide uppercase sm:text-4xl md:text-5xl">
             Profile
           </h1>
         </div>
@@ -57,32 +59,69 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
         {/* Profile Form */}
         <ProfileForm profile={profile} />
 
-        {/* Hackathon + Events */}
-        <div className="mx-auto mt-8 grid w-full max-w-3xl grid-cols-1 gap-6 sm:mt-10 sm:grid-cols-2 sm:gap-8">
-          <ClippedCard innerBg="bg-[#101810]" className="w-full">
-            <div className="mx-auto flex flex-col items-center p-6 sm:p-12">
-              <h3 className="mb-4 text-lg font-bold text-white sm:text-xl">
-                Hackathon
-              </h3>
-              {!profile?.team_id ? (
-                <ClippedButton>
-                  <Link href="/hackathon">Join Hackathon</Link>
-                </ClippedButton>
-              ) : (
-                <ClippedButton>
-                  <Link href="/hackathon/dashboard">Visit</Link>
-                </ClippedButton>
-              )}
+        <div className="mt-16 mb-4 text-center">
+          <h2 className="text-primary text-2xl font-bold tracking-wide uppercase">
+            Explore Opportunities
+          </h2>
+          <p className="mt-2 text-base text-gray-400">
+            &gt; Discover hackathons and events to grow your skills and network.
+          </p>
+        </div>
+
+        {/* Cards Section */}
+        <div className="mt-12 grid w-full grid-cols-1 gap-8 md:grid-cols-2">
+          {/* Hackathon Card */}
+          <ClippedCard innerBg="bg-[#101810]">
+            <div className="flex h-full flex-col border p-8">
+              <div className="text-primary font-amiga mb-3 text-2xl">01</div>
+              <h3 className="mb-4 text-2xl font-bold text-white">Hackathon</h3>
+              <p className="mb-6 flex-grow text-sm text-gray-400">
+                Team up, build something amazing, and compete for prizes. Join
+                the hackathon to showcase your skills and push your limits!
+              </p>
+              <ClippedButton
+                innerBg="bg-primary"
+                textColor="text-black"
+                asChild
+              >
+                <Link
+                  href={
+                    profile?.team_id ? "/hackathon/dashboard" : "/hackathon"
+                  }
+                  className="inline-flex w-full items-center justify-center py-2"
+                >
+                  {profile?.team_id ? "Visit Dashboard" : "Join Hackathon"}
+                </Link>
+              </ClippedButton>
             </div>
           </ClippedCard>
 
-          <ClippedCard innerBg="bg-[#101810]" className="w-full">
-            <div className="mx-auto flex flex-col items-center p-6 sm:p-12">
-              <h3 className="mb-4 text-lg font-bold text-white sm:text-xl">
-                Events
-              </h3>
-              <ClippedButton>
-                <Link href="/events">Visit</Link>
+          {/* Events Card */}
+          <ClippedCard innerBg="bg-[#101810]">
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-black">
+              <span className="font-orbitron text-primary text-xl font-bold uppercase">
+                Opening Soon
+              </span>
+            </div>
+            <div className="flex h-full flex-col p-8">
+              <div className="text-primary font-amiga mb-3 text-2xl">02</div>
+              <h3 className="mb-4 text-2xl font-bold text-white">Events</h3>
+              <p className="mb-6 flex-grow text-sm text-gray-400">
+                Explore a variety of exciting events lined up just for you. From
+                workshops to talks and fun activities, there is something for
+                everyone.
+              </p>
+              <ClippedButton
+                innerBg="bg-primary"
+                textColor="text-black"
+                asChild
+              >
+                <Link
+                  href="/events"
+                  className="inline-flex w-full items-center justify-center py-2"
+                >
+                  Visit Events
+                </Link>
               </ClippedButton>
             </div>
           </ClippedCard>

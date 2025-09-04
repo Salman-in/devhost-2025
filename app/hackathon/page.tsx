@@ -77,13 +77,8 @@ export default function HackathonPage() {
             TEAM UP
           </h1>
           <div className="mx-auto flex h-18 max-w-2xl items-center justify-center text-gray-300 md:text-lg">
-            <DecryptText
-              text="&gt; Join forces with other hackers or start your own team. The future of innovation awaits."
-              startDelayMs={800}
-              trailSize={6}
-              flickerIntervalMs={40}
-              revealDelayMs={30}
-            />
+            &gt; Join forces with other hackers or start your own team. The
+            future of innovation awaits.
           </div>
         </div>
 
@@ -104,10 +99,7 @@ export default function HackathonPage() {
                 textColor="text-black"
                 asChild
               >
-                <Link
-                  href="/hackathon/join"
-                  className="font-orbitron inline-flex min-h-[48px] w-full items-center justify-center py-3"
-                >
+                <Link href="/hackathon/join" className="font-orbitron">
                   Join a Team
                 </Link>
               </ClippedButton>
@@ -115,7 +107,7 @@ export default function HackathonPage() {
           </ClippedCard>
 
           {/* Create Team Card */}
-          <ClippedCard innerBg="bg-[#101810]">
+          <ClippedCard innerBg="bg-[#101810]" className="relative">
             <div className="flex h-full flex-col border p-8">
               <div className="text-primary font-amiga mb-4 text-3xl">02</div>
               <h3 className="mb-4 text-2xl text-white">Create a Team</h3>
@@ -128,10 +120,7 @@ export default function HackathonPage() {
                 textColor="text-black"
                 asChild
               >
-                <Link
-                  href="/hackathon/create"
-                  className="font-orbitron inline-flex min-h-[48px] w-full items-center justify-center py-3"
-                >
+                <Link href="/hackathon/create" className="font-orbitron">
                   Create a Team
                 </Link>
               </ClippedButton>

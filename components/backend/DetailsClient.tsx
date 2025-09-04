@@ -113,6 +113,9 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
     }
   };
 
+  const formFieldClass =
+    "w-full rounded-none px-3 py-2 text-gray-300 placeholder-gray-500 ";
+
   return (
     <div className="font-orbitron relative flex min-h-screen items-center overflow-hidden bg-black py-8 text-white">
       <div className="pointer-events-none fixed inset-0 z-0">
@@ -120,43 +123,12 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
           className="absolute inset-0"
           style={{
             backgroundImage: `
-              linear-gradient(to right, #a3ff12 1px, transparent 1px),
-              linear-gradient(to bottom, #a3ff12 1px, transparent 1px)
-            `,
+          linear-gradient(to right, #a3ff12 1px, transparent 1px),
+          linear-gradient(to bottom, #a3ff12 1px, transparent 1px)
+        `,
             backgroundSize: "80px 80px",
             opacity: 0.1,
           }}
-        />
-      </div>
-
-      <div className="text-primary absolute top-10 right-10 z-20 text-xs tracking-wider sm:text-sm">
-        <DecryptText
-          text="> PROFILE FORM"
-          startDelayMs={200}
-          trailSize={6}
-          flickerIntervalMs={40}
-          revealDelayMs={80}
-        />
-        <DecryptText
-          text="> ENTER YOUR DETAILS TO CONTINUE"
-          startDelayMs={800}
-          trailSize={6}
-          flickerIntervalMs={50}
-          revealDelayMs={90}
-        />
-        <DecryptText
-          text="> ALL FIELDS ARE REQUIRED"
-          startDelayMs={1600}
-          trailSize={6}
-          flickerIntervalMs={60}
-          revealDelayMs={100}
-        />
-        <DecryptText
-          text="> CLICK SUBMIT WHEN DONE"
-          startDelayMs={2400}
-          trailSize={6}
-          flickerIntervalMs={60}
-          revealDelayMs={100}
         />
       </div>
 
@@ -170,56 +142,30 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
         </ClippedButton>
       </div>
 
-      <div className="mx-auto mt-20 flex w-full max-w-sm items-center justify-center px-4 sm:mt-16 sm:max-w-md sm:px-6 md:mt-24 md:max-w-lg md:px-8 lg:mt-32 lg:max-w-xl lg:px-10 xl:max-w-2xl xl:px-12">
-        <ClippedCard innerBg="bg-[#101810]" className="w-full">
-          <div className="flex h-full flex-col p-2 sm:p-4 md:p-6 lg:p-8 xl:p-10">
-            <div className="mb-6">
-              <h1 className="text-primary mb-2 text-3xl font-bold tracking-wider uppercase">
+      <div className="mx-auto w-full max-w-3xl">
+        <ClippedCard innerBg="bg-[#101810]">
+          <div className="flex flex-col gap-6 p-6 sm:p-8 md:p-8">
+            {/* Header */}
+            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="flex items-center gap-2 text-xl font-bold text-white sm:text-2xl">
+                <User className="h-5 w-5 text-[#a3ff12] sm:h-6 sm:w-6" />
                 Complete Your Profile
-              </h1>
-              <DecryptText
-                text="> Please fill in all the required information to continue."
-                startDelayMs={400}
-                trailSize={6}
-                flickerIntervalMs={50}
-                revealDelayMs={90}
-                className="text-primary"
-              />
-
-              <div className="mt-4">
-                <div className="mb-1 flex items-center justify-between">
-                  <p className="text-sm font-bold tracking-wider text-white uppercase">
-                    Profile Completion
-                  </p>
-                  <p className="text-primary font-semibold">
-                    {completionPercentage}%
-                  </p>
-                </div>
-                <div
-                  className="h-2 w-full overflow-hidden border bg-black"
-                  style={{ borderColor: "#a3ff12" }}
-                >
-                  <div
-                    className="h-full transition-all duration-500 ease-out"
-                    style={{
-                      width: `${completionPercentage}%`,
-                      background: "#fff",
-                      boxShadow: "0 0 10px #fff",
-                    }}
-                  ></div>
-                </div>
-              </div>
+              </h2>
             </div>
 
-            <form className="space-y-6 text-white" onSubmit={handleSubmit}>
+            {/* Form */}
+            <form
+              className="flex flex-col gap-6 text-white"
+              onSubmit={handleSubmit}
+            >
               {/* Name & Email */}
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-7">
+                <div className="flex flex-col">
                   <Label
                     htmlFor="name"
-                    className="mb-2 flex items-center gap-1 text-gray-300"
+                    className="mb-2 flex items-center gap-1 text-sm text-white"
                   >
-                    <User size={14} className="inline-block" /> Full Name *
+                    <User size={14} /> Full Name *
                     {form.name && (
                       <CheckCircle2 size={14} className="text-primary ml-1" />
                     )}
@@ -230,13 +176,13 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     placeholder="Enter your full name"
-                    className="hover:border-primary focus:border-primary focus:ring-primary w-full rounded-none px-3 py-2 text-gray-300 placeholder-gray-500 focus:ring-2 focus:outline-none"
+                    className={formFieldClass}
                     required
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="email" className="mb-2 text-gray-300">
+                <div className="flex flex-col">
+                  <Label htmlFor="email" className="mb-2 text-sm text-white">
                     Email
                   </Label>
                   <Input
@@ -247,20 +193,20 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                       setForm({ ...form, email: e.target.value })
                     }
                     placeholder="Enter your email"
-                    className="hover:border-primary focus:border-primary focus:ring-primary/50 rounded-none px-3 py-2 text-gray-300 placeholder-gray-500 transition-all duration-150 focus:ring-2 focus:outline-none"
                     disabled
+                    className={`${formFieldClass} cursor-not-allowed bg-black/20 disabled:text-gray-400`}
                   />
                 </div>
               </div>
 
               {/* Phone & College */}
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-7">
+                <div className="flex flex-col">
                   <Label
                     htmlFor="phone"
-                    className="mb-2 flex items-center gap-1 text-gray-300"
+                    className="mb-2 flex items-center gap-1 text-sm text-white"
                   >
-                    <Phone size={14} className="inline-block" /> Phone Number *
+                    <Phone size={14} /> Phone Number *
                     {form.phone && isValidPhone(form.phone) && (
                       <CheckCircle2 size={14} className="text-primary ml-1" />
                     )}
@@ -273,18 +219,17 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                       setForm({ ...form, phone: e.target.value })
                     }
                     placeholder="Enter your phone number"
-                    className="hover:border-primary focus:border-primary focus:ring-primary/50 rounded-none px-3 py-2 text-gray-300 placeholder-gray-500 transition-all duration-150 focus:ring-2 focus:outline-none"
+                    className={formFieldClass}
                     required
                   />
                 </div>
 
-                <div>
+                <div className="flex flex-col">
                   <Label
                     htmlFor="college"
-                    className="mb-2 flex items-center gap-1 text-gray-300"
+                    className="mb-2 flex items-center gap-1 text-sm text-white"
                   >
-                    <School size={14} className="inline-block" />{" "}
-                    College/University *
+                    <School size={14} /> College/University *
                     {form.college && (
                       <CheckCircle2 size={14} className="text-primary ml-1" />
                     )}
@@ -295,7 +240,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                       setForm({ ...form, college: value })
                     }
                   >
-                    <SelectTrigger className="hover:border-primary focus:border-primary focus:ring-primary/50 active:border-primary w-full rounded-none px-3 py-2 text-gray-300 transition-all duration-150 focus:ring-2 focus:outline-none data-[placeholder]:text-gray-300">
+                    <SelectTrigger className={formFieldClass}>
                       <SelectValue
                         className="font-medium text-gray-300 placeholder-gray-500"
                         placeholder="Select your college"
@@ -303,14 +248,14 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                     </SelectTrigger>
                     <SelectContent className="border-primary rounded-none border bg-black font-medium">
                       <div
-                        className="border-primary border-b p-1 sm:p-2"
+                        className="border-primary border-b p-2"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Input
                           placeholder="Search college..."
                           value={collegeSearch}
                           onChange={(e) => setCollegeSearch(e.target.value)}
-                          className="focus:border-primary focus:ring-primary w-full rounded-none bg-black/40 px-2 py-1 text-xs text-gray-300 placeholder-gray-500 focus:ring-1 focus:outline-none sm:text-sm"
+                          className={`${formFieldClass} bg-black/40 p-1 text-xs sm:text-sm`}
                           autoFocus
                           onKeyDown={(e) => e.stopPropagation()}
                         />
@@ -345,14 +290,13 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
               </div>
 
               {/* Branch & Year */}
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-7">
+                <div className="flex flex-col">
                   <Label
                     htmlFor="branch"
-                    className="mb-2 flex items-center gap-1 text-gray-300"
+                    className="mb-2 flex items-center gap-1 text-sm text-white"
                   >
-                    <BookOpen size={14} className="inline-block" /> Branch/Major
-                    *
+                    <BookOpen size={14} /> Branch/Major *
                     {form.branch && (
                       <CheckCircle2 size={14} className="text-primary ml-1" />
                     )}
@@ -365,18 +309,17 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                       setForm({ ...form, branch: e.target.value })
                     }
                     placeholder="e.g., Computer Science, Electronics"
-                    className="hover:border-primary focus:border-primary focus:ring-primary/50 rounded-none px-3 py-2 text-gray-300 placeholder-gray-500 transition-all duration-150 focus:ring-2 focus:outline-none"
+                    className={formFieldClass}
                     required
                   />
                 </div>
 
-                <div>
+                <div className="flex flex-col">
                   <Label
                     htmlFor="year"
-                    className="mb-2 flex items-center gap-1 text-gray-300"
+                    className="mb-2 flex items-center gap-1 text-sm text-white"
                   >
-                    <Calendar size={14} className="inline-block" /> Academic
-                    Year *
+                    <Calendar size={14} /> Academic Year *
                     {form.year && (
                       <CheckCircle2 size={14} className="text-primary ml-1" />
                     )}
@@ -387,7 +330,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                       setForm({ ...form, year: Number(value) })
                     }
                   >
-                    <SelectTrigger className="hover:border-primary focus:border-primary focus:ring-primary/50 active:border-primary w-full rounded-none px-3 py-2 text-gray-300 transition-all duration-150 focus:ring-2 focus:outline-none data-[placeholder]:text-gray-300">
+                    <SelectTrigger className={formFieldClass}>
                       <SelectValue
                         className="font-medium text-gray-300 placeholder-gray-500"
                         placeholder="Select your year"
