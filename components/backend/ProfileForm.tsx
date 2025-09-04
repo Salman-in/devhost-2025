@@ -157,38 +157,14 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
           {/* College */}
           <div className="flex flex-col">
             <label className="text-sm text-white">College/University</label>
-            {isEditing ? (
-              <Select
-                value={editedProfile.college}
-                onValueChange={(value) =>
-                  setEditedProfile({ ...editedProfile, college: value })
-                }
-              >
-                <SelectTrigger className={formFieldClass}>
-                  <SelectValue
-                    className="flex h-full flex-1 items-center px-0"
-                    placeholder="Select college"
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {COLLEGES.map((college, idx) => (
-                    <SelectItem
-                      key={idx}
-                      value={college}
-                      className={formFieldClass}
-                    >
-                      {college}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : (
-              <Input
-                value={profileState.college}
-                disabled
-                className={formFieldClass}
-              />
-            )}
+            <Input
+              value={editedProfile.college}
+              disabled={!isEditing}
+              onChange={(e) =>
+                setEditedProfile({ ...editedProfile, college: e.target.value })
+              }
+              className={formFieldClass}
+            />
           </div>
 
           {/* Branch + Year */}

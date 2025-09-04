@@ -186,7 +186,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
               {/* College - Full Width Row */}
               <div className="flex flex-col gap-1">
                 <Label htmlFor="college">College/University *</Label>
-                <Popover open={open} onOpenChange={setOpen}>
+                {/* <Popover open={open} onOpenChange={setOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       role="combobox"
@@ -239,7 +239,18 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                       </CommandList>
                     </Command>
                   </PopoverContent>
-                </Popover>
+                </Popover> */}
+                <Input
+                  id="college"
+                  type="text"
+                  value={form.college}
+                  onChange={(e) =>
+                    setForm({ ...form, college: e.target.value })
+                  }
+                  placeholder="College Name"
+                  className={formFieldClass}
+                  required
+                />
               </div>
 
               {/* Branch + Year */}
