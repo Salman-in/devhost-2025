@@ -82,19 +82,19 @@ export default function HackathonJoinTeam() {
       ref={sectionRef}
       className="font-orbitron relative min-h-screen w-full overflow-hidden bg-black text-white"
     >
-      {/* grid background */}
-      <div className="pointer-events-none fixed inset-0 z-0">
+      {/* Background grid */}
+      <div className="pointer-events-none fixed absolute inset-0 opacity-10">
         <div
           className="absolute inset-0"
           style={{
             backgroundImage: `
-          linear-gradient(to right, #a3ff12 1px, transparent 1px),
-          linear-gradient(to bottom, #a3ff12 1px, transparent 1px)
-        `,
+              linear-gradient(#a3ff12 2px, transparent 1px),
+              linear-gradient(90deg, #a3ff12 2px, transparent 1px)
+            `,
             backgroundSize: "80px 80px",
-            opacity: 0.1,
+            backgroundPosition: "center",
           }}
-        />
+        ></div>
       </div>
 
       {/* Back button */}

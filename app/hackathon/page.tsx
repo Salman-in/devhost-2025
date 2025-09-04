@@ -55,19 +55,19 @@ export default function HackathonPage() {
         </ClippedButton>
       </div>
 
-      {/* Animated grid background */}
-      <div className="pointer-events-none fixed inset-0 z-0">
+      {/* Background grid */}
+      <div className="pointer-events-none fixed absolute inset-0 opacity-10">
         <div
           className="absolute inset-0"
           style={{
             backgroundImage: `
-              linear-gradient(to right, #a3ff12 1px, transparent 1px),
-              linear-gradient(to bottom, #a3ff12 1px, transparent 1px)
+              linear-gradient(#a3ff12 2px, transparent 1px),
+              linear-gradient(90deg, #a3ff12 2px, transparent 1px)
             `,
             backgroundSize: "80px 80px",
-            opacity: 0.13,
+            backgroundPosition: "center",
           }}
-        />
+        ></div>
       </div>
 
       <div className="relative z-10 container mx-auto flex min-h-screen flex-col items-center justify-center px-6 py-16">
