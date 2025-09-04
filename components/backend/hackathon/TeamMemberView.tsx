@@ -39,12 +39,12 @@ export default function TeamMemberView({
           </h2>
           <p className="font-orbitron text-3xl tracking-tight text-white">
             {team.team_name || "Team Name"}
-            {team.finalized && (
-              <span className="font-orbitron ml-2 align-middle text-lg text-green-400">
-                ✓ Finalized
-              </span>
-            )}
           </p>
+          {team.finalized && (
+            <span className="font-orbitron ml-2 align-middle text-sm text-green-400">
+              Finalized
+            </span>
+          )}
         </div>
 
         {/* ==== Members Section ==== */}
@@ -54,14 +54,14 @@ export default function TeamMemberView({
           </h3>
 
           {/* Leader */}
-          <div className="border-primary/40 mb-4 rounded-md border">
+          <div className="border-primary/40 mb-4 border">
             <div className="flex items-center justify-between px-4 py-3">
-              <span className="border-primary text-primary rounded border px-2 py-0.5 text-xs font-bold">
+              <span className="border-primary text-primary border px-2 py-0.5 text-xs font-bold">
                 LEADER
               </span>
               <div className="ml-3 flex w-full items-center justify-between">
                 <span className="font-medium text-white">
-                  {team.team_leader}
+                  {team.team_leader_email}
                 </span>
               </div>
             </div>
@@ -78,15 +78,13 @@ export default function TeamMemberView({
                   return (
                     <div
                       key={member.email}
-                      className={`border-primary/30 flex items-center justify-between rounded-md border px-4 py-2 ${
-                        isCurrentUser
-                          ? "ring-primary bg-primary/20 ring-1"
-                          : "bg-primary/10"
+                      className={`border-primary/30 flex items-center justify-between border px-4 py-2 ${
+                        isCurrentUser && "ring-primary/60 bg-primary/10 ring-1"
                       }`}
                     >
                       <div className="flex w-full items-center justify-between gap-3">
                         <span className="font-medium text-white">
-                          {member.name}
+                          {member.email}
                         </span>
                         {isCurrentUser && (
                           <span className="border-primary text-primary rounded border px-2 py-0.5 text-xs font-bold">
@@ -106,6 +104,7 @@ export default function TeamMemberView({
         </div>
 
         {/* ==== Drive Link Section ==== */}
+        <h3 className="font-orbitron text-primary mb-3 text-lg">Actions</h3>
         {team.drive_link && (
           <div>
             <ClippedButton
