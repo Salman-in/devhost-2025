@@ -10,7 +10,7 @@ export default function WIP() {
         trailSize={3}
         flickerIntervalMs={50}
         revealDelayMs={100}
-        className="font-orbitron text-2xl sm:text-3xl md:text-4xl lg:text-5xl uppercase text-center h-14"
+        className="font-orbitron h-14 text-center text-2xl uppercase sm:text-3xl md:text-4xl lg:text-5xl"
       />
       <div className="pointer-events-none fixed inset-0 -z-10 opacity-10">
         <div

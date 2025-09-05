@@ -6,6 +6,8 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import DecryptText from "./animated/TextAnimation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ClippedButton } from "./ClippedButton";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -111,6 +113,7 @@ export default function Events() {
   const eventsTitleRef = useRef<HTMLHeadingElement>(null);
   const eventsCaptionRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -193,6 +196,11 @@ export default function Events() {
     return () => ctx.revert();
   }, []);
 
+  function onCardClick(eventId: number) {
+    // router.push(`/events/${eventId}`);
+    router.push(`/register`);
+  }
+
   return (
     <div
       ref={sectionRef}
@@ -238,7 +246,7 @@ export default function Events() {
       </div>
 
       {/* Event cards */}
-      <div className="relative z-10 grid w-full max-w-[1200px] grid-cols-1 gap-8 px-4 md:grid-cols-2">
+      <div className="relative z-10 grid w-full max-w-[1200px] grid-cols-1 gap-8 px-4 lg:grid-cols-2">
         {events.map((event, idx) => {
           const noRegister = [6, 7, 8].includes(event.id);
           return (
@@ -252,6 +260,7 @@ export default function Events() {
                 clipPath:
                   "polygon(20px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
               }}
+              onClick={() => onCardClick && onCardClick(event.id)}
             >
               <div
                 className="relative z-10 m-[2px] flex h-full flex-col p-4 sm:flex-row"
@@ -318,15 +327,13 @@ export default function Events() {
 
                   {!noRegister && (
                     <div className="mt-6 flex justify-start">
-                      <button
-                        className="font-orbitron flex w-full cursor-pointer items-center justify-center gap-2 bg-[#b4ff39] px-6 py-2 text-center text-xs font-bold tracking-wider text-black uppercase"
-                        style={{
-                          clipPath:
-                            "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-                        }}
+                      <ClippedButton
+                        innerBg="bg-primary"
+                        textColor="text-black"
+                        className="font-orbitron flex w-full items-center justify-center gap-2 px-6 py-2 text-center text-xs font-bold tracking-wider uppercase"
                       >
-                        <Link href={"/register"}>Register</Link>
-                      </button>
+                        <Link href="/register">Register</Link>
+                      </ClippedButton>
                     </div>
                   )}
                 </div>

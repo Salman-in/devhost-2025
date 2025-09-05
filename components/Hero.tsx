@@ -4,9 +4,35 @@ import Logo from "./animated/Logo";
 import DecryptText from "./animated/TextAnimation";
 import { User } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { exchangeIdTokenForSession } from "@/firebase/auth";
+import { ClippedButton } from "./ClippedButton";
+import CallToAction from "./CallToAction";
 
 export default function Hero() {
+  const router = useRouter();
+  const { user, signInWithGoogle } = useAuth();
+
+  const handleGoogleLogin = async () => {
+    if (user) {
+      try {
+        const idToken = await user.getIdToken();
+        await exchangeIdTokenForSession(idToken);
+        router.push("/profile");
+      } catch (error) {
+        console.error("Session creation failed:", error);
+      }
+    } else {
+      try {
+        await signInWithGoogle();
+        router.push("/profile");
+      } catch (error) {
+        console.error("Sign in failed:", error);
+      }
+    }
+  };
+
   return (
     <Fragment>
       <div className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden text-zinc-300">
@@ -29,6 +55,8 @@ export default function Hero() {
 
           <Logo className="relative z-10 h-auto w-full max-w-[250px] sm:max-w-[300px] md:max-w-[400px]" />
         </div>
+
+        <CallToAction />
 
         {/* Cyberpunk side boot logs (left) */}
         <div className="font-orbitron absolute top-10 left-10 text-xs tracking-wider text-zinc-600 sm:text-sm">
@@ -68,20 +96,16 @@ export default function Hero() {
         <div className="absolute bottom-5 left-5 z-10 h-10 w-10 border-b-2 border-l-2 border-[#c3ff49]/50" />
 
         {/* Floating Dock (Top Right) */}
-        <div className="font-orbitron absolute top-10 right-10 z-20 flex gap-4">
-          <Link href={"/register"}>
-            <button
-              className="bg-primary relative flex cursor-pointer items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest text-black uppercase transition"
-              style={{
-                clipPath:
-                  "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
-              }}
-            >
-              <User size={14} /> Profile
-            </button>
-          </Link>
+        <div className="font-orbitron absolute top-6 right-4 z-20 flex gap-4 md:top-10 md:right-10">
+          <ClippedButton
+            innerBg="bg-primary"
+            textColor="text-black"
+            className="relative flex items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest uppercase"
+            onClick={handleGoogleLogin}
+          >
+            <User size={14} /> <span className="hidden sm:block">Profile</span>
+          </ClippedButton>
         </div>
-
         {/* Scroll Hint */}
         <div className="font-orbitron text-primary absolute right-5 bottom-5 z-10 flex items-center">
           <span className="mr-2 text-3xl">[</span>

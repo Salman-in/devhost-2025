@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
+import { TeamProvider } from "@/context/TeamContext";
 import ReactLenis from "lenis/react";
+import { Toaster } from "@/components/ui/sonner";
 
 const amiga = localFont({
   src: "../assets/fonts/amiga4ever.woff2",
@@ -25,6 +28,12 @@ const orbitron = localFont({
 const delagothic = localFont({
   src: "../assets/fonts/DelaGothicOne-Regular.ttf",
   variable: "--font-delagothic",
+  preload: true,
+});
+
+const monospace = localFont({
+  src: "../assets/fonts/GeistMono-VariableFont_wght.ttf",
+  variable: "--font-monospace",
   preload: true,
 });
 
@@ -76,10 +85,15 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${amiga.variable} ${dystopian.variable} ${delagothic.variable} ${orbitron.variable} antialiased`}
+        className={`${monospace.variable} ${amiga.variable} ${dystopian.variable} ${delagothic.variable} ${orbitron.variable} antialiased`}
       >
         <ReactLenis root />
-        {children}
+        <AuthProvider>
+          <TeamProvider>
+            {children}
+            <Toaster position="top-center" />
+          </TeamProvider>
+        </AuthProvider>
       </body>
     </html>
   );
