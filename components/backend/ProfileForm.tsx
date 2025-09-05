@@ -26,7 +26,7 @@ export interface Profile {
 
 // Unified form-field class for inputs and selects
 const formFieldClass =
-  "w-full h-12 text-gray-400 text-sm leading-5 box-border rounded-md disabled:text-white disabled:opacity-100 font-monospace";
+  "w-full h-12 text-gray-300 text-sm leading-5 box-border rounded-md disabled:text-white disabled:opacity-100 font-monospace";
 
 export default function ProfileForm({ profile }: { profile: Profile }) {
   const [profileState, setProfileState] = useState(profile);
@@ -131,12 +131,14 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
 
           {/* Email + Phone */}
           <div className="grid grid-cols-1 gap-4 py-2 sm:grid-cols-2 sm:gap-7 sm:py-3">
-            <div className="flex flex-col">
+            <div
+              className={`flex ${isEditing && "cursor-not-allowed"} flex-col`}
+            >
               <label className="text-sm text-white">Email Address</label>
               <Input
                 value={profileState.email}
                 disabled
-                className={formFieldClass}
+                className={` ${formFieldClass} ${isEditing && "disabled:text-gray-400"}`}
               />
             </div>
             <div className="flex flex-col">
