@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
 import {
   createContext,
   useContext,
   useEffect,
   useState,
-  ReactNode
-} from 'react';
+  ReactNode,
+} from "react";
+import { User, onIdTokenChanged } from "firebase/auth";
+import { auth } from "@/firebase/config";
 import {
-  User,
-  onIdTokenChanged
-} from 'firebase/auth';
-import { auth } from '@/firebase/config';
-import { signInWithGoogle as firebaseSignInWithGoogle, signOut as firebaseSignOut } from '@/firebase/auth';
+  signInWithGoogle as firebaseSignInWithGoogle,
+  signOut as firebaseSignOut,
+} from "@/firebase/auth";
 
 interface AuthContextType {
   user: User | null;
@@ -25,7 +25,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;
 };
 
@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         user,
         loading,
         signInWithGoogle,
-        signOut
+        signOut,
       }}
     >
       {children}

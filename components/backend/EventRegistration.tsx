@@ -11,8 +11,8 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import clsx from "clsx";
 import { events } from "@/assets/data/events";
-import { Button } from "../ui/button";
 import LoadingSpinner from "../LoadingSpinner";
+import { ClippedButton } from "../ClippedButton";
 
 type Props = { eventId: string };
 
@@ -78,12 +78,11 @@ export default function EventRegistration({ eventId }: Props) {
     fetchTeam();
   }, [eventId, userEmail, userLoading, getIdToken]);
 
-  // Generic api handler with alerts
   const handleApiAction = useCallback(
-    async (
+    async <T,>(
       url: string,
       options: RequestInit,
-      onSuccess: (data: any) => void,
+      onSuccess: (data: T) => void,
     ) => {
       setActionLoading(true);
       try {
@@ -97,10 +96,11 @@ export default function EventRegistration({ eventId }: Props) {
         };
 
         const res = await fetch(url, options);
-        const data = await res.json();
+        const data: T = await res.json();
 
         if (!res.ok) {
-          alert(data.error || "Action failed");
+          const err = (data as { error?: string }).error;
+          alert(err || "Action failed");
           if (res.status === 401) return;
         } else {
           onSuccess(data);
@@ -116,7 +116,7 @@ export default function EventRegistration({ eventId }: Props) {
 
   // Team and member related actions
   const handleCreateTeam = () =>
-    handleApiAction(
+    handleApiAction<{ teamId: string }>(
       `/api/v1/events/${eventId}/teams/create`,
       { method: "POST" },
       (data) => {
@@ -132,14 +132,14 @@ export default function EventRegistration({ eventId }: Props) {
 
   const handleJoinTeam = () => {
     if (!leaderEmail.trim()) return;
-    handleApiAction(
+    handleApiAction<{ teamId: string; members: string[] }>(
       `/api/v1/events/${eventId}/teams/join`,
       { method: "POST", body: JSON.stringify({ leaderEmail }) },
       (data) => {
         setTeam({
           id: data.teamId,
           leaderEmail,
-          members: [leaderEmail, userEmail],
+          members: data.members,
           paymentDone: false,
         });
         setStep(2);
@@ -149,7 +149,7 @@ export default function EventRegistration({ eventId }: Props) {
 
   const handlePayment = () => {
     if (!team) return;
-    handleApiAction(
+    handleApiAction<{ success: boolean }>(
       `/api/v1/events/${eventId}/teams/${team.id}/pay`,
       { method: "POST" },
       () => setTeam({ ...team, paymentDone: true, registered: true }),
@@ -159,7 +159,7 @@ export default function EventRegistration({ eventId }: Props) {
   const handleDisband = () => {
     if (!team) return;
     if (!confirm("Are you sure you want to disband the team?")) return;
-    handleApiAction(
+    handleApiAction<{ success: boolean }>(
       `/api/v1/events/${eventId}/teams/${team.id}`,
       { method: "DELETE" },
       () => {
@@ -172,7 +172,7 @@ export default function EventRegistration({ eventId }: Props) {
   const handleRemoveMember = (memberEmail: string) => {
     if (!team || memberEmail === userEmail) return;
     if (!confirm(`Remove ${memberEmail} from the team?`)) return;
-    handleApiAction(
+    handleApiAction<{ members: string[] }>(
       `/api/v1/events/${eventId}/teams/${team.id}/remove`,
       {
         method: "POST",
@@ -231,13 +231,12 @@ export default function EventRegistration({ eventId }: Props) {
                   innerBg="bg-primary"
                   className="hover:brightness-95"
                 >
-                  <Button
+                  <ClippedButton
                     onClick={handleCreateTeam}
                     disabled={actionLoading}
-                    className="h-fit w-full cursor-pointer rounded-none px-4 py-2 text-xs font-bold tracking-widest text-black uppercase"
                   >
                     Create Team
-                  </Button>
+                  </ClippedButton>
                 </ClippedCard>
               </div>
 
@@ -260,13 +259,12 @@ export default function EventRegistration({ eventId }: Props) {
                     innerBg="bg-primary"
                     className="hover:brightness-95"
                   >
-                    <Button
+                    <ClippedButton
                       onClick={handleJoinTeam}
                       disabled={actionLoading}
-                      className="h-fit w-full cursor-pointer rounded-none px-4 py-2 text-xs font-bold tracking-widest text-black uppercase"
                     >
                       Join
-                    </Button>
+                    </ClippedButton>
                   </ClippedCard>
                 </div>
               </div>
@@ -308,13 +306,14 @@ export default function EventRegistration({ eventId }: Props) {
                               innerBg="bg-red-600"
                               outerBg="bg-transparent"
                             >
-                              <button
+                              <ClippedButton
                                 onClick={() => handleRemoveMember(m)}
                                 disabled={actionLoading}
-                                className="px-3 py-1 text-xs font-bold text-white"
+                                innerBg="bg-red-600"
+                                textColor="text-white"
                               >
                                 Remove
-                              </button>
+                              </ClippedButton>
                             </ClippedCard>
                           )}
                       </li>
@@ -347,25 +346,27 @@ export default function EventRegistration({ eventId }: Props) {
                       innerBg="bg-primary"
                       className="flex-1 hover:brightness-95"
                     >
-                      <Button
+                      <ClippedButton
                         onClick={handlePayment}
                         disabled={actionLoading}
-                        className="h-fit w-full cursor-pointer rounded-none px-4 py-2 text-xs font-bold tracking-widest text-black uppercase"
+                        innerBg="bg-primary"
+                        textColor="text-black"
                       >
                         Pay Now
-                      </Button>
+                      </ClippedButton>
                     </ClippedCard>
                     <ClippedCard
                       innerBg="bg-black"
                       className="flex-1 hover:brightness-95"
                     >
-                      <Button
+                      <ClippedButton
                         onClick={handleDisband}
                         disabled={actionLoading}
-                        className="h-fit w-full cursor-pointer rounded-none bg-black px-4 py-2 text-xs font-bold tracking-widest text-white uppercase hover:bg-black"
+                        innerBg="bg-black"
+                        textColor="text-white"
                       >
                         Disband Team
-                      </Button>
+                      </ClippedButton>
                     </ClippedCard>
                   </div>
                 )}

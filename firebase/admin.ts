@@ -1,10 +1,10 @@
-import admin, { ServiceAccount } from 'firebase-admin';
-import { App } from 'firebase-admin/app';
-import { Auth } from 'firebase-admin/auth';
-import { Firestore } from 'firebase-admin/firestore';
+import admin, { ServiceAccount } from "firebase-admin";
+import { App } from "firebase-admin/app";
+import { Auth } from "firebase-admin/auth";
+import { Firestore } from "firebase-admin/firestore";
 
 const privateKey = process.env.FIREBASE_PRIVATE_KEY
-  ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+  ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n")
   : undefined;
 
 const serviceAccount: ServiceAccount = {
@@ -19,7 +19,7 @@ let adminAuth: Auth;
 
 if (!admin.apps.length) {
   app = admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+    credential: admin.credential.cert(serviceAccount),
   });
   adminDb = admin.firestore();
   adminAuth = admin.auth();

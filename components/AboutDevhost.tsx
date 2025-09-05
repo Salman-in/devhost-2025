@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Download } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ClippedButton } from "./ClippedButton";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -145,7 +146,7 @@ export default function AboutDevhost() {
 
     return () => ctx.revert();
   }, []);
-  
+
   return (
     <section
       ref={sectionRef}
@@ -199,30 +200,26 @@ export default function AboutDevhost() {
             ref={buttonsRef}
             className="font-orbitron flex flex-wrap justify-center gap-4"
           >
-            <a href="/brochure/Event Rulebook - Devhost.pdf" download>
-              <button
-                className="flex cursor-pointer items-center gap-3 border-2 border-black bg-black px-6 py-3 font-bold tracking-wider uppercase"
-                style={{
-                  clipPath:
-                    "polygon(15px 0%, 100% 0%, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0% 100%, 0% 15px)",
-                }}
+            {/* <a href="/brochure/Event Rulebook - Devhost.pdf" download>
+              <ClippedButton
+                innerBg="bg-black"
+                outerBg="bg-black"
+                textColor="text-white"
               >
                 <Download size={20} />
                 <span className="font-default text-xs">Event Rulebook</span>
-              </button>
-            </a>
+              </ClippedButton>
+            </a> */}
 
             <a href="/brochure/devhost_2025.pdf" download>
-              <button
-                className="flex cursor-pointer items-center gap-3 border-2 border-black bg-black px-6 py-3 font-bold tracking-wider uppercase"
-                style={{
-                  clipPath:
-                    "polygon(15px 0%, 100% 0%, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0% 100%, 0% 15px)",
-                }}
+              <ClippedButton
+                innerBg="bg-black"
+                outerBg="bg-black"
+                textColor="text-white"
               >
                 <Download size={20} />
                 <span className="font-default text-xs">DevHost Brochure</span>
-              </button>
+              </ClippedButton>
             </a>
           </div>
         </div>

@@ -45,6 +45,7 @@
   --font-dystopian: var(--font-dystopian);
   --font-orbitron: var(--font-orbitron);
   --font-delagothic: var(--font-delagothic);
+  --font-monospace: var(--font-monospace);
   --animate-spotlight: spotlight 2s ease 0.75s 1 forwards;
 }
 
@@ -88,7 +89,7 @@
   --foreground: oklch(0.984 0.003 247.858);
   --card: oklch(0.208 0.042 265.755);
   --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
+  --popover: oklch(20.841% 0.04169 266.371);
   --popover-foreground: oklch(98.415% 0.00352 248.585);
   --primary: oklch(90.689% 0.24579 131.21);
   --primary-foreground: oklch(0.208 0.042 265.755);
@@ -153,87 +154,6 @@
   }
 }
 
-@keyframes success-pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2);
-  }
-  70% {
-    box-shadow: 0 0 0 12px rgba(16, 185, 129, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-  }
-}
-
-@keyframes star-float {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 0.5;
-  }
-  100% {
-    transform: translateY(-10px) scale(1.2);
-    opacity: 1;
-  }
-}
-
-@keyframes countdown {
-  0% {
-    width: 100%;
-  }
-  100% {
-    width: 0%;
-  }
-}
-
-@keyframes slide-in-from-top-10 {
-  from {
-    transform: translateY(-2.5rem);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes zoom-in-95 {
-  from {
-    transform: scale(0.95);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-
-@layer utilities {
-  .animate-in {
-    animation: animate-in 0.3s ease-out;
-  }
-  
-  .slide-in-from-top {
-    animation: slide-in-from-top-10 0.3s ease-out;
-  }
-  
-  .slide-in-from-left {
-    animation: slide-in-from-left 0.3s ease-out;
-  }
-  
-  .zoom-in-95 {
-    animation: zoom-in-95 0.3s ease-out;
-  }
-}
-
-@keyframes slide-in-from-left {
-  from {
-    transform: translateX(-1rem);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
 /* Autofill Styles Override */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
@@ -244,5 +164,3 @@ input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
   caret-color: #9dff2c;
 }
-
-

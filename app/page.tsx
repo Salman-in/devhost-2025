@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import FAQ from "@/components/Faq";
 import Map from "@/components/Map";
 import Events from "@/components/Events";
+import CallToAction from "@/components/CallToAction";
 
 export default function Home() {
   return (

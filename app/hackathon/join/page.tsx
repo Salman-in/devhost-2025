@@ -6,11 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import DecryptText from "@/components/animated/TextAnimation";
-import gsap from "gsap";
-import ErrorModal from "@/components/ui/ErrorModal";
-import { useErrorModal } from "@/lib/hooks/useErrorModal";
 import { useTeam } from "@/context/TeamContext";
+import { ClippedCard } from "@/components/ClippedCard";
+import { toast } from "sonner";
+import { ClippedButton } from "@/components/ClippedButton";
 
 interface JoinFormData {
   leader_email: string;
@@ -21,82 +20,24 @@ export default function HackathonJoinTeam() {
   const { user, loading } = useAuth();
   const { setTeam } = useTeam();
   const [mounted, setMounted] = useState(false); // SSR guard
-  const errorModal = useErrorModal({ defaultTitle: 'Team Join Error' });
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-    setError,
+    formState: { isSubmitting },
     clearErrors,
   } = useForm<JoinFormData>();
 
   const sectionRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLDivElement>(null);
-  const subtitleRef = useRef<HTMLDivElement>(null);
-  const verifyRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLFormElement>(null);
-  const joinCardRef = useRef<HTMLDivElement>(null);
-  const joinButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (!loading && !user) router.push("/signin");
+    if (!loading && !user) router.push("/");
   }, [user, loading, router]);
-
-  useEffect(() => {
-    if (!mounted) return;
-
-    // Animation timeline
-    const tl = gsap.timeline();
-
-    tl.to(titleRef.current, {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      ease: "power2.out",
-    })
-      .to(
-        subtitleRef.current,
-        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
-        "-=0.4",
-      )
-      .to(
-        verifyRef.current,
-        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
-        "-=0.4",
-      )
-      .to(
-        gridRef.current,
-        { opacity: 1, scale: 1, duration: 0.8, ease: "power2.out" },
-        "-=0.4",
-      );
-
-    // Grid children fade
-    const gridItems = gridRef.current?.children;
-    if (gridItems) {
-      gsap.to(gridItems, {
-        opacity: 1,
-        stagger: 0.1,
-        duration: 0.5,
-        ease: "power2.out",
-      });
-    }
-
-    // Card + Button glow animation
-    if (joinCardRef.current && joinButtonRef.current) {
-      gsap.to([joinCardRef.current, joinButtonRef.current], {
-        boxShadow: "0 0 50px 10px rgba(163, 255, 18, 1)",
-        duration: 1.5,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-    }
-  }, [mounted]);
 
   const onSubmit = async (data: JoinFormData) => {
     if (!user) return;
@@ -115,30 +56,22 @@ export default function HackathonJoinTeam() {
       });
 
       if (res.ok) {
-        // Get the team data after joining
         const teamData = await res.json();
-        
-        // Update the team context
         setTeam(teamData);
-        console.log('Team joined successfully, updating team context');
-        
-        // Force a small delay to ensure state updates before navigation
+        console.log("Team joined successfully, updating team context");
+
         setTimeout(() => {
           window.location.href = "/hackathon/dashboard?joined=true";
         }, 300);
       } else {
         const errorData = await res.json();
-        setError("root", {
-          message:
-            errorData.error ||
-            "Team leader not found or team is already finalized. Please check the email and try again.",
-        });
+        toast.error(
+          errorData.error ||
+            "Team leader not found or team is already finalized. Please check the email and try again. aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        );
       }
     } catch {
-      errorModal.showError("An error occurred while joining the team.", "Team Join Error");
-      setError("root", {
-        message: "An error occurred while joining the team.",
-      });
+      toast.error("An error occurred while joining the team.");
     }
   };
 
@@ -149,96 +82,62 @@ export default function HackathonJoinTeam() {
       ref={sectionRef}
       className="font-orbitron relative min-h-screen w-full overflow-hidden bg-black text-white"
     >
-      {/* grid background */}
-      <div className="pointer-events-none fixed inset-0 z-0">
+      {/* Background grid */}
+      <div className="pointer-events-none fixed inset-0 opacity-10">
         <div
           className="absolute inset-0"
           style={{
             backgroundImage: `
-          linear-gradient(to right, #a3ff12 1px, transparent 1px),
-          linear-gradient(to bottom, #a3ff12 1px, transparent 1px)
-        `,
+              linear-gradient(#a3ff12 2px, transparent 1px),
+              linear-gradient(90deg, #a3ff12 2px, transparent 1px)
+            `,
             backgroundSize: "80px 80px",
-            opacity: 0.1,
+            backgroundPosition: "center",
           }}
-        />
+        ></div>
       </div>
 
       {/* Back button */}
       <div className="absolute top-6 left-4 z-10 sm:top-10 sm:left-10">
-        <button
+        <ClippedButton
           onClick={() => router.push("/hackathon")}
-          className="flex cursor-pointer items-center justify-center gap-2 bg-[#b4ff39] px-3 py-2 text-xs font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50 sm:px-4 sm:text-sm"
-          style={{
-            clipPath:
-              "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-            border: "2px solid #b4ff39",
-          }}
+          innerBg="bg-primary"
+          textColor="text-black"
         >
           Back
-        </button>
+        </ClippedButton>
       </div>
 
       {/* Top-right logs */}
-      <div className="absolute top-6 right-4 z-10 flex max-w-xs flex-col gap-1 text-xs text-[#b4ff39] sm:top-10 sm:right-10 sm:max-w-sm sm:text-sm md:max-w-md md:text-base">
-        <div
-          ref={titleRef}
-          style={{ opacity: 0, transform: "translateY(12px)" }}
-        >
-          <DecryptText
-            text="> OPEN FORM FOR TEAM JOINING"
-            startDelayMs={100}
-            trailSize={4}
-            flickerIntervalMs={30}
-            revealDelayMs={50}
-          />
-        </div>
-        <div
-          ref={subtitleRef}
-          style={{ opacity: 0, transform: "translateY(12px)" }}
-        >
-          <DecryptText
-            text="> ENTER TEAM LEADER EMAIL"
-            startDelayMs={300}
-            trailSize={4}
-            flickerIntervalMs={30}
-            revealDelayMs={50}
-          />
-        </div>
-        <div
-          ref={verifyRef}
-          style={{ opacity: 0, transform: "translateY(12px)" }}
-        >
-          <DecryptText
-            text="> VERIFY DETAILS AND SUBMIT"
-            startDelayMs={500}
-            trailSize={4}
-            flickerIntervalMs={30}
-            revealDelayMs={50}
-          />
-        </div>
-      </div>
+      {/* <div className="text-primary absolute top-6 right-4 z-10 flex max-w-xs flex-col gap-1 text-xs sm:top-10 sm:right-10 sm:max-w-sm sm:text-sm md:max-w-md md:text-base">
+        <DecryptText
+          text="> OPEN FORM FOR TEAM JOINING"
+          startDelayMs={100}
+          trailSize={4}
+          flickerIntervalMs={30}
+          revealDelayMs={50}
+        />
+        <DecryptText
+          text="> ENTER TEAM LEADER EMAIL"
+          startDelayMs={300}
+          trailSize={4}
+          flickerIntervalMs={30}
+          revealDelayMs={50}
+        />
+        <DecryptText
+          text="> VERIFY DETAILS AND SUBMIT"
+          startDelayMs={500}
+          trailSize={4}
+          flickerIntervalMs={30}
+          revealDelayMs={50}
+        />
+      </div> */}
 
-      {/* Centered card container with plain border */}
+      {/* Centered clipped card container */}
       <div className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6">
-        <div
-          style={{
-            clipPath:
-              "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-            backgroundColor: "#b4ff39",
-            padding: "2px",
-          }}
-        >
-          <div
-            ref={joinCardRef}
-            className="relative mx-auto w-full max-w-4xl p-6 sm:p-8"
-            style={{
-              clipPath:
-                "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-              backgroundColor: "#101810",
-            }}
-          >
-            <h2 className="mb-6 text-center text-lg font-bold tracking-wider text-[#b4ff39] uppercase sm:text-xl md:text-2xl">
+        <ClippedCard innerBg="bg-[#101810]" className="max-w-xl">
+          <div className="relative mx-auto w-full max-w-4xl p-6 sm:p-8">
+            <h2 className="mb-6 text-center text-lg font-bold tracking-wider text-white uppercase sm:text-xl md:text-2xl">
               Join Your Hackathon Team
             </h2>
             <form
@@ -250,18 +149,13 @@ export default function HackathonJoinTeam() {
                 <div className="flex flex-col">
                   <Label
                     htmlFor="leader_email"
-                    className="mb-2 text-sm font-bold tracking-wider text-[#b4ff39] uppercase sm:text-base"
+                    className="text-primary mb-2 text-sm font-bold tracking-wider uppercase sm:text-base"
                   >
                     Team Leader Email
                   </Label>
-                  <DecryptText
-                    text="> Enter valid email to join"
-                    startDelayMs={300}
-                    trailSize={5}
-                    flickerIntervalMs={50}
-                    revealDelayMs={100}
-                    className="mb-2 text-xs text-white/70 sm:text-sm"
-                  />
+                  <p className="mb-2 text-xs text-white/70 sm:text-sm">
+                    {"> Enter valid email to join"}
+                  </p>
                   <Input
                     id="leader_email"
                     type="email"
@@ -273,52 +167,35 @@ export default function HackathonJoinTeam() {
                       },
                     })}
                     placeholder="Enter team leader's email"
-                    className="w-full rounded-md border border-black bg-white/10 px-4 py-3 text-white transition-all placeholder:text-white/50 focus:ring-2 focus:ring-black focus:outline-none"
+                    className="w-full rounded-md border border-black bg-white/10 px-4 py-3 text-sm text-white transition-all placeholder:text-white/50 focus:ring-2 focus:ring-black focus:outline-none"
                   />
-                  {errors.leader_email?.message && (
-                    <p className="mt-2 text-xs tracking-wide text-red-500 sm:text-sm">
-                      {errors.leader_email?.message}
-                    </p>
-                  )}
                 </div>
               </div>
 
-              {errors.root?.message && (
-                <p className="text-sm tracking-wide text-pink-500 sm:text-base">
-                  {errors.root?.message}
-                </p>
-              )}
-
               {/* Join Team Button */}
-              <button
-                ref={joinButtonRef}
+              <ClippedButton
                 type="submit"
-                className="flex w-full cursor-pointer items-center justify-center gap-2 bg-[#b4ff39] px-6 py-3 text-xs font-bold tracking-wider text-black uppercase transition-all hover:brightness-90 disabled:opacity-50 sm:text-sm"
-                style={{
-                  clipPath:
-                    "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-                  border: "2px solid #b4ff39",
-                }}
+                onClick={undefined}
                 disabled={isSubmitting}
+                innerBg="bg-primary"
+                textColor="text-black"
               >
                 {isSubmitting ? "Joining..." : "Join Team"}
-              </button>
+              </ClippedButton>
             </form>
           </div>
-        </div>
+        </ClippedCard>
       </div>
 
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 h-12 w-full bg-gradient-to-t from-black/95 via-black/80 to-transparent" />
-      
-      {/* Error Modal */}
-      <ErrorModal
-        isOpen={errorModal.isOpen}
-        onClose={errorModal.hideError}
-        title={errorModal.title}
-        message={errorModal.message}
-        type={errorModal.type}
-      />
+
+      <div className="text-primary absolute bottom-6 left-6 text-sm opacity-80">
+        {"// DEVHOST 2025"}
+      </div>
+      <div className="text-primary absolute right-6 bottom-6 text-sm opacity-80">
+        {"TEAM SELECTION"}
+      </div>
     </div>
   );
 }
