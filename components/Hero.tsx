@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { exchangeIdTokenForSession } from "@/firebase/auth";
 import { ClippedButton } from "./ClippedButton";
+import CallToAction from "./CallToAction";
 
 export default function Hero() {
   const router = useRouter();
@@ -54,6 +55,8 @@ export default function Hero() {
 
           <Logo className="relative z-10 h-auto w-full max-w-[250px] sm:max-w-[300px] md:max-w-[400px]" />
         </div>
+
+        <CallToAction />
 
         {/* Cyberpunk side boot logs (left) */}
         <div className="font-orbitron absolute top-10 left-10 text-xs tracking-wider text-zinc-600 sm:text-sm">

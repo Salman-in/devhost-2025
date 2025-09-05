@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { ClippedCard } from "@/components/ClippedCard";
 import { useTeam } from "@/context/TeamContext";
 import { ClippedButton } from "@/components/ClippedButton";
+import { toast } from "sonner";
 
 export default function HackathonPage() {
   const { user, loading: authLoading } = useAuth();
@@ -14,9 +15,13 @@ export default function HackathonPage() {
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
 
+  const firedRef = useRef(false);
+
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/signin");
+    if (!authLoading && !user && !firedRef.current) {
+      toast.error("Please sign in");
+      router.push("/");
+      firedRef.current = true;
     }
   }, [user, authLoading, router]);
 

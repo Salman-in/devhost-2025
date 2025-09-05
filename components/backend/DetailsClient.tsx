@@ -27,7 +27,7 @@ interface Profile {
 }
 
 const formFieldClass =
-  "w-full h-12 px-3 py-2 text-white text-sm leading-5 rounded-md";
+  "w-full h-12 px-3 py-2 text-white text-sm leading-5 rounded-md font-monospace";
 
 export default function DetailsClient({ profile }: { profile: Profile }) {
   const router = useRouter();
@@ -140,33 +140,21 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
 
             {/* Form */}
             <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-              {/* Name + Email */}
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="name">Full Name *</Label>
-                  <Input
-                    id="name"
-                    type="text"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="Enter your full name"
-                    className={formFieldClass}
-                    required
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={form.email}
-                    disabled
-                    className={`${formFieldClass} cursor-not-allowed bg-black/20`}
-                  />
-                </div>
+              {/* Name */}
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="name">Full Name *</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  placeholder="Enter your full name"
+                  className={formFieldClass}
+                  required
+                />
               </div>
 
-              {/* Phone */}
+              {/* Phone + Email  */}
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div className="flex flex-col gap-1">
                   <Label htmlFor="phone">Phone Number *</Label>
@@ -183,65 +171,21 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                     required
                   />
                 </div>
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={form.email}
+                    disabled
+                    className={`${formFieldClass} cursor-not-allowed bg-black/20`}
+                  />
+                </div>
               </div>
 
               {/* College - Full Width Row */}
               <div className="flex flex-col gap-1">
                 <Label htmlFor="college">College/University *</Label>
-                {/* <Popover open={open} onOpenChange={setOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      role="combobox"
-                      variant={"outline"}
-                      aria-expanded={open}
-                      aria-haspopup="listbox"
-                      className="flex h-12 w-full items-center justify-between rounded-md bg-black/30 px-3 text-sm text-gray-400 hover:text-gray-300"
-                    >
-                      {form.college || "Select your College"}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="w-2xl rounded-md border bg-[#101810] p-0"
-                    sideOffset={4}
-                  >
-                    <Command>
-                      <CommandInput
-                        placeholder="Search college..."
-                        value={search}
-                        onValueChange={setSearch}
-                        className="h-9 rounded-t-md px-3 text-white"
-                        autoFocus
-                      />
-                      <CommandList>
-                        {filteredColleges.length === 0 && (
-                          <CommandEmpty className="p-3 text-center text-gray-500">
-                            No colleges found.
-                          </CommandEmpty>
-                        )}
-                        <CommandGroup>
-                          {filteredColleges.map((college, idx) => (
-                            <CommandItem
-                              key={idx}
-                              value={college}
-                              onSelect={(currentValue) => {
-                                setForm({ ...form, college: currentValue });
-                                setOpen(false);
-                                setSearch("");
-                              }}
-                              className="hover:bg-primary cursor-pointer truncate px-3 py-2 text-gray-300 hover:text-black"
-                            >
-                              {college}
-                              {form.college === college && (
-                                <Check className="text-primary ml-auto h-4 w-4" />
-                              )}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover> */}
                 <Input
                   id="college"
                   type="text"
@@ -266,7 +210,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                     onChange={(e) =>
                       setForm({ ...form, branch: e.target.value })
                     }
-                    placeholder="e.g., Computer Science, Electronics"
+                    placeholder="eg. CSE, ECE"
                     className={formFieldClass}
                     required
                   />
