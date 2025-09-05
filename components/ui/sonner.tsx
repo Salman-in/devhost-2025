@@ -34,7 +34,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
 export const showConfirmationToast = (
   message: string,
   onConfirm: () => void,
-  onCancel?: () => void
+  onCancel?: () => void,
 ) => {
   toast.custom(
     (t) => (
@@ -82,11 +82,11 @@ export const showConfirmationToast = (
             {message}
           </p>
 
-          <div className="flex gap-2 justify-center w-full mt-4 flex-wrap">
+          <div className="mt-4 flex w-full flex-wrap justify-center gap-2">
             <ClippedButton
               innerBg="bg-primary"
               textColor="text-black"
-              className="flex-1 min-w-[120px]"
+              className="min-w-[120px] flex-1"
               onClick={() => {
                 onConfirm();
                 toast.dismiss(t);
@@ -97,7 +97,7 @@ export const showConfirmationToast = (
             <ClippedButton
               innerBg="bg-red-500"
               textColor="text-white"
-              className="flex-1 min-w-[120px]"
+              className="min-w-[120px] flex-1"
               onClick={() => {
                 onCancel?.();
                 toast.dismiss(t);
@@ -109,7 +109,7 @@ export const showConfirmationToast = (
         </div>
       </div>
     ),
-    { duration: Infinity }
+    { duration: Infinity },
   );
 };
 

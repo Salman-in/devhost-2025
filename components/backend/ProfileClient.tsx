@@ -59,33 +59,34 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
         <ClippedButton onClick={() => router.push("/")}>Back</ClippedButton>
       </div>
       <div className="font-orbitron absolute top-10 right-10 z-20 flex gap-4">
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <ClippedButton innerBg="bg-red-500" textColor="text-white">
-            Logout
-          </ClippedButton>
-        </AlertDialogTrigger>
-        <AlertDialogContent className="border-2 border-primary">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to logout? Any unsaved changes will be lost.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex gap-2">
-            <AlertDialogCancel className="bg-red-500 text-white hover:bg-red-500/80">
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleLogout}
-              className="bg-red-500 text-white hover:bg-red-500/80"
-            >
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <ClippedButton innerBg="bg-red-500" textColor="text-white">
               Logout
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+            </ClippedButton>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="border-primary border-2">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to logout? Any unsaved changes will be
+                lost.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex gap-2">
+              <AlertDialogCancel className="bg-red-500 text-white hover:bg-red-500/80">
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleLogout}
+                className="bg-red-500 text-white hover:bg-red-500/80"
+              >
+                Logout
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
 
       {/* Main Content */}
       <div className="relative z-10 mx-auto w-full max-w-5xl px-4 py-12">

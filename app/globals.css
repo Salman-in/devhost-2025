@@ -164,15 +164,21 @@ input:-webkit-autofill:active {
   caret-color: #9dff2c;
 }
 
-
- .toaster [data-sonner-toast] {
-   position: relative;
- }
- .toaster [data-sonner-toast]::before {
-   content: "";
-   position: absolute;
-   inset: 0;
-   clip-path: polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px);
-   border: 2px solid var(--primary, #a3ff12);
-   pointer-events: none;
- }
+.toaster [data-sonner-toast] {
+  position: relative;
+}
+.toaster [data-sonner-toast]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(
+    12px 0%,
+    100% 0%,
+    100% calc(100% - 12px),
+    calc(100% - 12px) 100%,
+    0% 100%,
+    0% 12px
+  );
+  border: 2px solid var(--primary, #a3ff12);
+  pointer-events: none;
+}

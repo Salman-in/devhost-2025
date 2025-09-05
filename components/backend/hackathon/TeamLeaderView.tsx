@@ -224,12 +224,12 @@ export default function TeamLeaderView({
                         Delete Team
                       </ClippedButton>
                     </AlertDialogTrigger>
-                    <AlertDialogContent className="border-2 border-primary">
+                    <AlertDialogContent className="border-primary border-2">
                       <AlertDialogHeader>
                         <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Are you sure you want to delete this team? This
-                          action cannot be undone.
+                          Are you sure you want to delete this team? This action
+                          cannot be undone.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter className="flex gap-2">
@@ -257,9 +257,11 @@ export default function TeamLeaderView({
                         Finalize Team
                       </ClippedButton>
                     </AlertDialogTrigger>
-                    <AlertDialogContent className="border-2 border-primary">
+                    <AlertDialogContent className="border-primary border-2">
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Confirm Finalization</AlertDialogTitle>
+                        <AlertDialogTitle>
+                          Confirm Finalization
+                        </AlertDialogTitle>
                         <AlertDialogDescription>
                           Once finalized, the team cannot be modified. Are you
                           sure?
@@ -271,7 +273,7 @@ export default function TeamLeaderView({
                         </AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => handleFinalizeTeam(team.team_id)}
-                          className="bg-primary text-black hover:bg-primary/80"
+                          className="bg-primary hover:bg-primary/80 text-black"
                         >
                           Finalize
                         </AlertDialogAction>
