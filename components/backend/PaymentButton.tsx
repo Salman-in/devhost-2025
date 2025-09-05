@@ -69,7 +69,7 @@ export default function PaymentButton({
       }
 
       // Create order on server
-      const createRes = await fetch("/api/create-order", {
+      const createRes = await fetch("/api/v1/payment/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount }),
