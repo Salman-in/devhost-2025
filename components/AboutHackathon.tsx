@@ -334,27 +334,29 @@ export default function Home() {
             <span className="text-white">October 10, 2025</span>
           </p>
 
-          <div className="mx-auto flex w-full max-w-md items-center gap-4">
-            <div className="font-orbitron flex-1">
+          <div className="mx-auto flex w-full max-w-md flex-col items-center justify-center gap-4 sm:flex-row">
+            <div className="font-orbitron">
               {/* Know More Button */}
               <ClippedButton
                 innerBg="bg-primary"
                 textColor="text-black"
-                className="flex flex-1 cursor-pointer items-center justify-center gap-2 px-6 py-2 text-xs font-bold tracking-widest whitespace-nowrap uppercase transition"
+                className="w-fit"
               >
                 <Link href="/hackathon">Know More</Link>
               </ClippedButton>
             </div>
 
-            <div className="mx-auto w-fit">
+            <div className="">
               <a href="/brochure/RulebookDevhost.pdf" download>
                 <ClippedButton
                   innerBg="bg-black"
                   outerBg="bg-primary"
                   textColor="text-primary"
                 >
-                  <Download size={20} />
-                  Rulebook
+                  <p className="flex items-center gap-2 whitespace-pre">
+                    <Download size={14} />
+                    Rulebook
+                  </p>
                 </ClippedButton>
               </a>
             </div>
