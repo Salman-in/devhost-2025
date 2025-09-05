@@ -29,7 +29,7 @@ export default function HackathonDashboardPage() {
   // Redirect if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push("/signin");
+      router.push("/");
     }
   }, [user, authLoading, router]);
 
