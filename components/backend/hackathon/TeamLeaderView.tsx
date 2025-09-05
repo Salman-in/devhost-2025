@@ -7,6 +7,17 @@ import { useDriveLink } from "@/lib/hooks/useDriveLink";
 import { useTeamActions } from "@/lib/hooks/useTeamActions";
 import { ClippedCard } from "@/components/ClippedCard";
 import { ClippedButton } from "@/components/ClippedButton";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 
 interface Team {
   team_id: string;
@@ -196,35 +207,86 @@ export default function TeamLeaderView({
 
               {!team.finalized && (
                 <div className="font-orbitron flex flex-col gap-3 sm:flex-row">
-                  <ClippedButton
-                    innerBg="bg-red-500"
-                    onClick={() => handleDeleteTeam(team.team_id)}
-                    className="flex-1"
-                    textColor="text-white"
-                    disabled={
-                      loadingStates.deleting ||
-                      (team.members &&
-                        team.members.filter((m) => m.role === "member").length >
-                          0)
-                    }
-                  >
-                    Delete Team
-                  </ClippedButton>
+                  {/* ==== Delete Team with AlertDialog ==== */}
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <ClippedButton
+                        innerBg="bg-red-500"
+                        className="flex-1"
+                        textColor="text-white"
+                        disabled={
+                          loadingStates.deleting ||
+                          (team.members &&
+                            team.members.filter((m) => m.role === "member")
+                              .length > 0)
+                        }
+                      >
+                        Delete Team
+                      </ClippedButton>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="border-primary border-2">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete this team? This action
+                          cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter className="flex gap-2">
+                        <AlertDialogCancel className="bg-red-500 text-white hover:bg-red-500/80">
+                          Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDeleteTeam(team.team_id)}
+                          className="bg-red-500 text-white hover:bg-red-500/80"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
 
-                  <ClippedButton
-                    innerBg="bg-primary"
-                    className="flex-1 font-medium text-white hover:text-black"
-                    onClick={() => handleFinalizeTeam(team.team_id)}
-                    disabled={loadingStates.finalizing}
-                  >
-                    Finalize Team
-                  </ClippedButton>
+                  {/* ==== Finalize Team with AlertDialog ==== */}
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <ClippedButton
+                        innerBg="bg-primary"
+                        className="flex-1 font-medium text-white hover:text-black"
+                        disabled={loadingStates.finalizing}
+                      >
+                        Finalize Team
+                      </ClippedButton>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="border-primary border-2">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Confirm Finalization
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Once finalized, the team cannot be modified. Are you
+                          sure?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter className="flex gap-2">
+                        <AlertDialogCancel className="bg-red-500 text-white hover:bg-red-500/80">
+                          Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleFinalizeTeam(team.team_id)}
+                          className="bg-primary hover:bg-primary/80 text-black"
+                        >
+                          Finalize
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               )}
             </div>
           </div>
         </div>
       </ClippedCard>
+
       {/* ==== Drive Link Modal ==== */}
       {!team.finalized && (
         <DriveLinkModal

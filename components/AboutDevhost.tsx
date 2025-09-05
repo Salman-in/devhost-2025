@@ -200,7 +200,7 @@ export default function AboutDevhost() {
             ref={buttonsRef}
             className="font-orbitron flex flex-wrap justify-center gap-4"
           >
-            <a href="/brochure/Event Rulebook - Devhost.pdf" download>
+            {/* <a href="/brochure/Event Rulebook - Devhost.pdf" download>
               <ClippedButton
                 innerBg="bg-black"
                 outerBg="bg-black"
@@ -209,7 +209,7 @@ export default function AboutDevhost() {
                 <Download size={20} />
                 <span className="font-default text-xs">Event Rulebook</span>
               </ClippedButton>
-            </a>
+            </a> */}
 
             <a href="/brochure/devhost_2025.pdf" download>
               <ClippedButton

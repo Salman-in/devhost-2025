@@ -67,7 +67,7 @@ export default function HackathonJoinTeam() {
         const errorData = await res.json();
         toast.error(
           errorData.error ||
-            "Team leader not found or team is already finalized. Please check the email and try again.",
+            "Team leader not found or team is already finalized. Please check the email and try again. aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         );
       }
     } catch {
