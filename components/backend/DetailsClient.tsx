@@ -27,7 +27,7 @@ interface Profile {
 }
 
 const formFieldClass =
-  "w-full h-12 px-3 py-2 text-white text-sm leading-5 rounded-md";
+  "w-full h-12 px-3 py-2 text-white text-sm leading-5 rounded-md font-monospace";
 
 export default function DetailsClient({ profile }: { profile: Profile }) {
   const router = useRouter();
@@ -210,7 +210,7 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
                     onChange={(e) =>
                       setForm({ ...form, branch: e.target.value })
                     }
-                    placeholder="e.g., Computer Science, Electronics"
+                    placeholder="eg. CSE, ECE"
                     className={formFieldClass}
                     required
                   />

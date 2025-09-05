@@ -12,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { COLLEGES } from "@/lib/constants";
 import { toast } from "sonner";
 
 export interface Profile {
@@ -27,7 +26,7 @@ export interface Profile {
 
 // Unified form-field class for inputs and selects
 const formFieldClass =
-  "w-full h-12 px-3 py-2 text-gray-400 text-sm leading-5 box-border rounded-md disabled:text-white disabled:opacity-100";
+  "w-full h-12 text-gray-400 text-sm leading-5 box-border rounded-md disabled:text-white disabled:opacity-100 font-monospace";
 
 export default function ProfileForm({ profile }: { profile: Profile }) {
   const [profileState, setProfileState] = useState(profile);
