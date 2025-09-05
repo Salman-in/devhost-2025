@@ -4,14 +4,14 @@ import { verifyToken } from "@/lib/verify-token";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { eventid: string; teamid: string } },
+  { params }: { params: Promise<{ eventid: string; teamid: string }> },
 ) {
   const decoded = await verifyToken(req);
   if (!decoded)
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
 
   const { memberEmail } = await req.json();
-  const { eventid, teamid } = params;
+  const { eventid, teamid } = await params;
 
   if (!memberEmail)
     return NextResponse.json({ error: "Missing memberEmail" }, { status: 400 });

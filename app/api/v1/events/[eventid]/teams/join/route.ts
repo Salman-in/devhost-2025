@@ -6,7 +6,7 @@ import { groupEventMaxMembers } from "@/assets/data/events";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { eventid: string } },
+  { params }: { params: Promise<{ eventid: string }> },
 ) {
   const decoded = await verifyToken(req);
   if (!decoded) {
@@ -15,7 +15,7 @@ export async function POST(
 
   const { email } = decoded;
   const { leaderEmail } = await req.json();
-  const eventId = params.eventid;
+  const eventId = (await params).eventid;
 
   const teamsRef = adminDb
     .collection("registrations")
