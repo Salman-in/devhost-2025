@@ -26,7 +26,10 @@ export default function HackathonCreateTeam() {
     handleSubmit,
     formState: { errors, isSubmitting },
     clearErrors,
+    watch,
   } = useForm<TeamFormData>();
+
+  const teamName = watch("team_name", "");
 
   useEffect(() => {
     setMounted(true);
@@ -167,10 +170,28 @@ export default function HackathonCreateTeam() {
                         value: 2,
                         message: "Team name must be at least 2 characters",
                       },
+                      maxLength: {
+                        value: 20,
+                        message: "Can't exceed 20 letters",
+                      },
                     })}
                     placeholder="Enter a team name"
                     className="w-full rounded-md border border-black bg-white/10 px-4 py-3 text-sm text-white transition-all placeholder:text-white/50 focus:ring-2 focus:ring-black focus:outline-none"
                   />
+
+                  {/* Counter + error message */}
+                  <div className="mt-1 flex items-center justify-between text-xs text-white/70">
+                    <span
+                      className={teamName.length > 20 ? "text-red-400" : ""}
+                    >
+                      {teamName.length}/20
+                    </span>
+                    {errors.team_name && (
+                      <span className="text-red-400">
+                        {errors.team_name.message}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 
