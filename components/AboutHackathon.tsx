@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import Link from "next/link";
 import { ClippedButton } from "./ClippedButton";
+import { Download } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -328,14 +329,35 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="font-orbitron flex gap-4">
-            <ClippedButton
-              innerBg="bg-primary"
-              textColor="text-black"
-              className="relative flex cursor-pointer items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest uppercase transition"
-            >
-              <Link href="/hackathon">Know More</Link>
-            </ClippedButton>
+          <p className="font-orbitron text-primary mb-3 text-center text-[0.625rem] font-bold tracking-widest whitespace-nowrap uppercase sm:text-xs md:text-sm">
+            Registration closes on{" "}
+            <span className="text-white">October 10, 2025</span>
+          </p>
+
+          <div className="mx-auto flex w-full max-w-md items-center gap-4">
+            <div className="font-orbitron flex-1">
+              {/* Know More Button */}
+              <ClippedButton
+                innerBg="bg-primary"
+                textColor="text-black"
+                className="flex flex-1 cursor-pointer items-center justify-center gap-2 px-6 py-2 text-xs font-bold tracking-widest whitespace-nowrap uppercase transition"
+              >
+                <Link href="/hackathon">Know More</Link>
+              </ClippedButton>
+            </div>
+
+            <div className="mx-auto w-fit">
+              <a href="/brochure/RulebookDevhost.pdf" download>
+                <ClippedButton
+                  innerBg="bg-black"
+                  outerBg="bg-primary"
+                  textColor="text-primary"
+                >
+                  <Download size={20} />
+                  Rulebook
+                </ClippedButton>
+              </a>
+            </div>
           </div>
         </div>
 
