@@ -55,10 +55,10 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
       </div>
 
       {/* Back + Logout */}
-      <div className="font-orbitron absolute top-10 left-10 z-20 flex gap-4">
+      <div className="font-orbitron absolute top-4 left-4 z-20 flex gap-4 md:top-10 md:left-10">
         <ClippedButton onClick={() => router.push("/")}>Back</ClippedButton>
       </div>
-      <div className="font-orbitron absolute top-10 right-10 z-20 flex gap-4">
+      <div className="font-orbitron absolute top-4 right-4 z-20 flex gap-4 md:top-10 md:right-10">
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <ClippedButton innerBg="bg-red-500" textColor="text-white">
