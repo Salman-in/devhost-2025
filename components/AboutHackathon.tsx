@@ -334,7 +334,7 @@ export default function Home() {
               textColor="text-black"
               className="relative flex cursor-pointer items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest uppercase transition"
             >
-              <Link href="/register">Know More</Link>
+              <Link href="/hackathon">Know More</Link>
             </ClippedButton>
           </div>
         </div>
