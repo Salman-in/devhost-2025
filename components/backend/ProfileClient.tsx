@@ -89,7 +89,7 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 mx-auto w-full max-w-5xl px-4 py-12">
+      <div className="relative z-10 mx-auto w-full max-w-5xl px-4 py-8">
         {/* Title */}
         <div className="mb-10 text-center">
           <h1 className="text-primary text-3xl font-bold tracking-wide uppercase sm:text-4xl md:text-5xl">

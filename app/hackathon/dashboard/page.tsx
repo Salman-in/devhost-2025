@@ -83,7 +83,7 @@ export default function HackathonDashboardPage() {
   const isTeamLeader = team.team_leader_email === user.email;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-start bg-black px-4 py-24">
+    <div className="flex min-h-screen flex-col items-center justify-start bg-black px-4 py-14">
       <div className="font-orbitron absolute top-6 left-4 z-10 sm:top-10 sm:left-10">
         <ClippedButton>
           <Link href="/profile" className="flex items-center gap-2">
@@ -107,7 +107,7 @@ export default function HackathonDashboardPage() {
       </div>
 
       <div className="relative z-10 mb-10 w-full max-w-3xl pt-10 text-center sm:pt-0">
-        <h1 className="text-primary font-orbitron mb-3 text-center text-lg font-bold tracking-wider uppercase sm:text-2xl md:text-4xl">
+        <h1 className="text-primary font-orbitron mb-3 text-center text-3xl font-bold tracking-wider uppercase sm:text-2xl md:text-4xl">
           Hackathon Dashboard
         </h1>
 
