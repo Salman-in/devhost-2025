@@ -83,7 +83,7 @@ export default function TeamLeaderView({
 
   return (
     <Fragment>
-      <ClippedCard className="mx-auto w-full max-w-2xl">
+      <ClippedCard className="mx-auto w-full max-w-4xl">
         <div className="flex w-full flex-col bg-[#101810] px-6 py-8">
           {/* ==== Team Info ==== */}
           <div className="border-primary/40 mb-6 border-b pb-4 text-center">
