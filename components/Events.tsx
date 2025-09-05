@@ -138,7 +138,7 @@ export default function Events() {
             "polygon(0% 0%, 100% 0%, 100% 92%, 85% 100%, -5% 100%)";
         } else {
           bgRef.current.style.clipPath =
-            "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)"; 
+            "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)";
         }
       };
 
@@ -151,7 +151,7 @@ export default function Events() {
   }, []);
 
   function onCardClick(eventId: number) {
-  // router.push(`/events/${eventId}`);
+    // router.push(`/events/${eventId}`);
     router.push(`/register`);
   }
 
@@ -239,23 +239,35 @@ export default function Events() {
                     <h2 className="font-orbitron mb-4 text-lg font-bold text-[#b4ff39] lg:text-xl">
                       &gt; {event.title}
                     </h2>
-                    <p className="mb-1 text-sm text-white/90 italic">{event.tagline}</p>
-                    <p className="mb-2 text-xs text-white/70 lg:text-sm">{event.description}</p>
+                    <p className="mb-1 text-sm text-white/90 italic">
+                      {event.tagline}
+                    </p>
+                    <p className="mb-2 text-xs text-white/70 lg:text-sm">
+                      {event.description}
+                    </p>
                     <div className="space-y-0.5 text-xs text-white/80 lg:text-sm">
                       <p>
-                        <span className="mr-1 font-semibold text-[#b4ff39]">Date:</span>
+                        <span className="mr-1 font-semibold text-[#b4ff39]">
+                          Date:
+                        </span>
                         {event.date}
                       </p>
                       <p>
-                        <span className="mr-1 font-semibold text-[#b4ff39]">Time:</span>
+                        <span className="mr-1 font-semibold text-[#b4ff39]">
+                          Time:
+                        </span>
                         {event.time}
                       </p>
                       <p>
-                        <span className="mr-1 font-semibold text-[#b4ff39]">Organizer:</span>
+                        <span className="mr-1 font-semibold text-[#b4ff39]">
+                          Organizer:
+                        </span>
                         {event.organizer}
                       </p>
                       <p>
-                        <span className="mr-1 font-semibold text-[#b4ff39]">Contact:</span>
+                        <span className="mr-1 font-semibold text-[#b4ff39]">
+                          Contact:
+                        </span>
                         {event.contact}
                       </p>
                     </div>
