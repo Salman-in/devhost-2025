@@ -80,7 +80,7 @@ export default function HackathonCreateTeam() {
   return (
     <div className="font-orbitron relative min-h-screen w-full overflow-hidden bg-black text-white">
       {/* Background grid */}
-      <div className="pointer-events-none absolute fixed inset-0 opacity-10">
+      <div className="pointer-events-none fixed inset-0 opacity-10">
         <div
           className="absolute inset-0"
           style={{
@@ -169,21 +169,10 @@ export default function HackathonCreateTeam() {
                       },
                     })}
                     placeholder="Enter a team name"
-                    className="w-full rounded-md border border-black bg-white/10 px-4 py-3 text-white transition-all placeholder:text-white/50 focus:ring-2 focus:ring-black focus:outline-none"
+                    className="w-full rounded-md border border-black bg-white/10 px-4 py-3 text-sm text-white transition-all placeholder:text-white/50 focus:ring-2 focus:ring-black focus:outline-none"
                   />
-                  {errors.team_name && (
-                    <p className="mt-2 text-xs tracking-wide text-red-500 sm:text-sm">
-                      {errors.team_name.message}
-                    </p>
-                  )}
                 </div>
               </div>
-
-              {errors.root && (
-                <p className="text-sm tracking-wide text-pink-500 sm:text-base">
-                  {errors.root.message}
-                </p>
-              )}
 
               <ClippedButton
                 type="submit"

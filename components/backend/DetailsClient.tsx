@@ -14,26 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  CheckCircle2,
-  User,
-  ArrowRight,
-  Loader2,
-  ChevronsUpDown,
-  Check,
-} from "lucide-react";
-import { COLLEGES } from "@/lib/constants";
+import { CheckCircle2, User, ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "../ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "../ui/command";
 
 interface Profile {
   name: string;
@@ -62,12 +44,6 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [completionPercentage, setCompletionPercentage] = useState(0);
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
-
-  const filteredColleges = COLLEGES.filter((college) =>
-    college.toLowerCase().includes(search.toLowerCase()),
-  );
 
   const isValidPhone = (phone: string) => /^[0-9]{10}$/.test(phone);
 
@@ -124,10 +100,10 @@ export default function DetailsClient({ profile }: { profile: Profile }) {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black py-8 text-white">
+    <div className="flex min-h-screen items-center justify-center bg-black py-24 text-white">
       <div className="font-orbitron w-full max-w-3xl px-4">
         {/* Background grid */}
-        <div className="pointer-events-none absolute fixed inset-0 opacity-10">
+        <div className="pointer-events-none fixed inset-0 opacity-10">
           <div
             className="absolute inset-0"
             style={{

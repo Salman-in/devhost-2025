@@ -54,13 +54,16 @@ export default function TeamMemberView({
           </h3>
 
           {/* Leader */}
-          <div className="border-primary/40 mb-4 border">
+          <div className="border-primary/40 mb-4 border text-sm">
             <div className="flex items-center justify-between px-4 py-3">
-              <span className="border-primary text-primary border px-2 py-0.5 text-xs font-bold">
+              <span className="border-primary text-primary hidden border px-2 py-0.5 text-xs font-bold sm:block">
                 LEADER
               </span>
-              <div className="ml-3 flex w-full items-center justify-between">
-                <span className="font-medium text-white">
+              <span className="border-primary text-primary block border px-2 py-0.5 text-xs font-bold sm:hidden">
+                L
+              </span>
+              <div className="font-orbitron ml-3 flex w-full items-center justify-between overflow-hidden">
+                <span className="truncate font-medium text-white">
                   {team.team_leader_email}
                 </span>
               </div>
@@ -70,7 +73,7 @@ export default function TeamMemberView({
           {/* Team Members */}
           {team.members &&
           team.members.filter((m) => m.role === "member").length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-3 text-sm">
               {team.members
                 .filter((m) => m.role === "member")
                 .map((member) => {
@@ -82,15 +85,10 @@ export default function TeamMemberView({
                         isCurrentUser && "ring-primary/60 bg-primary/10 ring-1"
                       }`}
                     >
-                      <div className="flex w-full items-center justify-between gap-3">
-                        <span className="font-medium text-white">
+                      <div className="font-orbitron flex w-full items-center justify-between gap-3 overflow-hidden">
+                        <span className="truncate font-medium text-white">
                           {member.email}
                         </span>
-                        {isCurrentUser && (
-                          <span className="border-primary text-primary rounded border px-2 py-0.5 text-xs font-bold">
-                            YOU
-                          </span>
-                        )}
                       </div>
                     </div>
                   );

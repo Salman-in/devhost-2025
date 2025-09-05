@@ -97,13 +97,16 @@ export default function TeamLeaderView({
             </h3>
 
             {/* Leader */}
-            <div className="border-primary/40 mb-4 border">
+            <div className="border-primary/40 mb-4 border text-sm">
               <div className="flex items-center justify-between px-4 py-3">
-                <span className="border-primary text-primary border px-2 py-0.5 text-xs font-bold">
+                <span className="border-primary text-primary hidden border px-2 py-0.5 text-xs font-bold sm:block">
                   LEADER
                 </span>
-                <div className="ml-3 flex w-full items-center justify-between">
-                  <span className="text-foreground font-medium">
+                <span className="border-primary text-primary block border px-2 py-0.5 text-xs font-bold sm:hidden">
+                  L
+                </span>
+                <div className="font-orbitron ml-3 flex w-full items-center justify-between overflow-hidden">
+                  <span className="truncate font-medium text-white">
                     {team.team_leader_email}
                   </span>
                   <button
@@ -123,15 +126,15 @@ export default function TeamLeaderView({
             {/* Members List */}
             {team.members &&
             team.members.filter((m) => m.role === "member").length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-3 text-sm">
                 {team.members
                   .filter((m) => m.role === "member")
                   .map((member) => (
                     <div
                       key={member.email}
-                      className="border-primary/30 flex items-center justify-between border px-4 py-2"
+                      className="border-primary/30 flex items-center justify-between overflow-hidden border px-4 py-2"
                     >
-                      <span className="text-foreground font-medium">
+                      <span className="text-foreground font-orbitron truncate font-medium">
                         {member.email}
                       </span>
                       {!team.finalized && (
@@ -143,10 +146,11 @@ export default function TeamLeaderView({
                               member.name,
                             )
                           }
-                          className="border-destructive text-destructive font-orbitron rounded border px-3 py-1 text-xs hover:opacity-90 disabled:opacity-50"
+                          className="border-destructive text-destructive font-orbitron border px-2 py-1 text-xs hover:opacity-90 disabled:opacity-50"
                           disabled={loadingStates.removing}
                         >
-                          REMOVE
+                          <span className="hidden sm:block">REMOVE</span>
+                          <span className="block sm:hidden">R</span>
                         </button>
                       )}
                     </div>
@@ -191,7 +195,7 @@ export default function TeamLeaderView({
               ) : null}
 
               {!team.finalized && (
-                <div className="font-orbitron flex gap-3">
+                <div className="font-orbitron flex flex-col gap-3 sm:flex-row">
                   <ClippedButton
                     innerBg="bg-red-500"
                     onClick={() => handleDeleteTeam(team.team_id)}

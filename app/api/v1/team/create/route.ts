@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
       team_name: team_name,
       team_leader: name,
       team_leader_email: email,
-      members: [{ name, email, role: "leader" }],
+      members: [{ email, role: "leader" }],
       drive_link: "",
       finalized: false,
       shortlisted: false,

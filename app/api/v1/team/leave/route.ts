@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       }
 
       await teamRef.update({
-        members: FieldValue.arrayRemove({ name, email, role: "member" }),
+        members: FieldValue.arrayRemove({ email, role: "member" }),
         updatedAt: new Date().toISOString(),
       });
     }

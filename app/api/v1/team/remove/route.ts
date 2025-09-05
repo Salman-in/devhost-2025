@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     const { email } = decoded;
 
     const searchData = await req.json();
-    const { team_id, member_email, member_name } = searchData;
+    const { team_id, member_email } = searchData;
 
     // Verify the user is the team leader
     const teamRef = adminDb.collection("teams").doc(team_id);
@@ -36,7 +36,6 @@ export async function POST(req: NextRequest) {
     // Remove the member from the team
     await teamRef.update({
       members: FieldValue.arrayRemove({
-        name: member_name,
         email: member_email,
         role: "member",
       }),
@@ -45,7 +44,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `${member_name} removed from team successfully`,
+      message: `${member_email} removed from team successfully`,
     });
   } catch (err) {
     console.error("API error:", err);

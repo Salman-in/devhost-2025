@@ -29,7 +29,7 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
   return (
     <section className="font-orbitron relative flex min-h-screen items-center justify-center overflow-hidden bg-black py-12 text-white">
       {/* Background grid */}
-      <div className="pointer-events-none absolute fixed inset-0 opacity-10">
+      <div className="pointer-events-none fixed inset-0 opacity-10">
         <div
           className="absolute inset-0"
           style={{
@@ -42,10 +42,6 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
           }}
         ></div>
       </div>
-      <div className="absolute top-5 left-5 h-10 w-10 border-t-2 border-l-2 border-[#c3ff49]/50" />
-      <div className="absolute top-5 right-5 h-10 w-10 border-t-2 border-r-2 border-[#c3ff49]/50" />
-      <div className="absolute bottom-5 left-5 z-10 h-10 w-10 border-b-2 border-l-2 border-[#c3ff49]/50" />
-      <div className="absolute right-5 bottom-5 z-10 h-10 w-10 border-r-2 border-b-2 border-[#c3ff49]/50" />
 
       {/* Back + Logout */}
       <div className="font-orbitron absolute top-10 left-10 z-20 flex gap-4">
@@ -62,7 +58,7 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 mx-auto w-full max-w-5xl px-8 py-12 sm:px-16">
+      <div className="relative z-10 mx-auto w-full max-w-5xl px-4 py-12">
         {/* Title */}
         <div className="mb-10 text-center">
           <h1 className="text-primary text-3xl font-bold tracking-wide uppercase sm:text-4xl md:text-5xl">
@@ -85,7 +81,7 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
         {/* Cards Section */}
         <div className="mt-12 grid w-full grid-cols-1 gap-8 md:grid-cols-2">
           {/* Hackathon Card */}
-          <ClippedCard innerBg="bg-[#101810]">
+          <ClippedCard innerBg="bg-[#101810]" innerHeight="h-full">
             <div className="flex h-full flex-col border p-8">
               <div className="text-primary font-amiga mb-3 text-2xl">01</div>
               <h3 className="mb-4 text-2xl font-bold text-white">Hackathon</h3>

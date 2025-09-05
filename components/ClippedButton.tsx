@@ -48,7 +48,7 @@ export function ClippedButton({
 
   return (
     <ClippedCard
-      className={`flex-1 hover:brightness-95 ${className}`}
+      className={`font-orbitron flex-1 hover:brightness-95 ${className}`}
       innerBg={innerBg}
       outerBg={outerBg}
     >

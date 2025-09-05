@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
     const teamRef = teamDoc.ref;
 
     await teamRef.update({
-      members: FieldValue.arrayUnion({ name, email, role: "member" }),
+      members: FieldValue.arrayUnion({ email, role: "member" }),
       updatedAt: new Date().toISOString(),
     });
 

@@ -83,7 +83,7 @@ export default function HackathonJoinTeam() {
       className="font-orbitron relative min-h-screen w-full overflow-hidden bg-black text-white"
     >
       {/* Background grid */}
-      <div className="pointer-events-none absolute fixed inset-0 opacity-10">
+      <div className="pointer-events-none fixed inset-0 opacity-10">
         <div
           className="absolute inset-0"
           style={{
@@ -167,21 +167,10 @@ export default function HackathonJoinTeam() {
                       },
                     })}
                     placeholder="Enter team leader's email"
-                    className="w-full rounded-md border border-black bg-white/10 px-4 py-3 text-white placeholder:text-white/50 focus:ring-2 focus:ring-black focus:outline-none"
+                    className="w-full rounded-md border border-black bg-white/10 px-4 py-3 text-sm text-white transition-all placeholder:text-white/50 focus:ring-2 focus:ring-black focus:outline-none"
                   />
-                  {errors.leader_email?.message && (
-                    <p className="mt-2 text-xs tracking-wide text-red-500 sm:text-sm">
-                      {errors.leader_email?.message}
-                    </p>
-                  )}
                 </div>
               </div>
-
-              {errors.root?.message && (
-                <p className="text-sm tracking-wide text-pink-500 sm:text-base">
-                  {errors.root?.message}
-                </p>
-              )}
 
               {/* Join Team Button */}
               <ClippedButton
