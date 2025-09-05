@@ -83,7 +83,7 @@ export default function HackathonDashboardPage() {
   const isTeamLeader = team.team_leader_email === user.email;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-start bg-black px-4 py-14">
+    <div className="flex min-h-screen flex-col items-center justify-start bg-black px-4 py-10 sm:px-6 md:px-12 md:py-24 lg:px-20">
       <div className="font-orbitron absolute top-6 left-4 z-10 sm:top-10 sm:left-10">
         <ClippedButton>
           <Link href="/profile" className="flex items-center gap-2">
