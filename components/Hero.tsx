@@ -96,7 +96,7 @@ export default function Hero() {
         <div className="absolute bottom-5 left-5 z-10 h-10 w-10 border-b-2 border-l-2 border-[#c3ff49]/50" />
 
         {/* Floating Dock (Top Right) */}
-        <div className="font-orbitron absolute top-10 right-10 z-20 flex gap-4">
+        <div className="font-orbitron absolute top-6 right-4 z-20 flex gap-4 md:top-10 md:right-10">
           <ClippedButton
             innerBg="bg-primary"
             textColor="text-black"
@@ -106,7 +106,6 @@ export default function Hero() {
             <User size={14} /> <span className="hidden sm:block">Profile</span>
           </ClippedButton>
         </div>
-
         {/* Scroll Hint */}
         <div className="font-orbitron text-primary absolute right-5 bottom-5 z-10 flex items-center">
           <span className="mr-2 text-3xl">[</span>
