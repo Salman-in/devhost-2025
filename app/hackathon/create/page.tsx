@@ -37,7 +37,7 @@ export default function HackathonCreateTeam() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/signin");
+      router.push("/");
     }
   }, [user, loading, router]);
 

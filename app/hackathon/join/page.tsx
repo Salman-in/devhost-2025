@@ -24,7 +24,7 @@ export default function HackathonJoinTeam() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
     clearErrors,
   } = useForm<JoinFormData>();
 
@@ -36,7 +36,7 @@ export default function HackathonJoinTeam() {
   }, []);
 
   useEffect(() => {
-    if (!loading && !user) router.push("/signin");
+    if (!loading && !user) router.push("/");
   }, [user, loading, router]);
 
   const onSubmit = async (data: JoinFormData) => {
