@@ -57,7 +57,7 @@ export function ClippedButton({
         onClick={onClick}
         disabled={disabled}
         className={clsx(
-          "flex w-full cursor-pointer items-center justify-center gap-2 px-5 py-2 text-xs font-bold tracking-widest uppercase disabled:opacity-50",
+          "z-10 flex w-full cursor-pointer items-center justify-center gap-2 px-5 py-2 text-xs font-bold tracking-widest uppercase disabled:opacity-50",
           textColor,
         )}
       >
