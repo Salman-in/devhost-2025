@@ -32,7 +32,7 @@ const faqData = [
   {
     question: "Can students from different colleges be in the same team?",
     answer:
-      "Students from different colleges and universities can form teams together. Cross-college collaboration is encouraged.",
+      "No, all team members must be from the same college or university. Cross-college teams are not allowed.",
   },
   {
     question: "Will there be mentors or workshops during the hackathon?",
