@@ -103,7 +103,7 @@ export default function FAQ() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen overflow-hidden bg-black py-12 text-white md:px-8"
+      className="relative flex min-h-screen items-center overflow-hidden bg-black py-24 text-white md:px-8"
     >
       {/* Enhanced cyberpunk grid background */}
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(#a3ff1208_1px,transparent_1px),linear-gradient(90deg,#a3ff1208_1px,transparent_1px)] bg-[size:40px_40px] opacity-30"></div>
@@ -116,7 +116,7 @@ export default function FAQ() {
       <div className="absolute bottom-0 h-48 w-full bg-gradient-to-t from-black/95 via-black/80 to-transparent" />
       <div className="absolute top-0 h-48 w-full bg-gradient-to-b from-black/95 via-black/80 to-transparent" />
 
-      <div className="relative mx-auto max-w-4xl">
+      <div className="relative mx-auto w-full max-w-4xl">
         {/* Cyberpunk Title with enhanced styling */}
         <div className="relative mb-16 text-center">
           <h2 className="font-orbitron relative mb-6 inline-block text-5xl font-bold md:text-7xl">

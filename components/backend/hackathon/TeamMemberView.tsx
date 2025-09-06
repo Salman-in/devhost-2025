@@ -30,7 +30,7 @@ export default function TeamMemberView({
   const { loadingStates, handleLeaveTeam } = useTeamActions(refreshAll);
 
   return (
-    <ClippedCard className="mx-auto w-full max-w-2xl">
+    <ClippedCard className="mx-auto w-full max-w-4xl">
       <div className="flex w-full flex-col rounded-lg bg-[#101810] px-6 py-8">
         {/* ==== Team Info ==== */}
         <div className="border-primary/40 mb-6 border-b pb-4 text-center">
