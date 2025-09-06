@@ -165,7 +165,11 @@ export default function HackathonDashboardPage() {
 
           {/* Resource Buttons */}
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <a href="/brochure/devhost_2025.pdf" className="w-full" download>
+            <a
+              href="/brochure/devhack_rulebook.pdf"
+              className="w-full"
+              download
+            >
               <ClippedButton>
                 <Download size={14} />
                 Devhack Rulebook

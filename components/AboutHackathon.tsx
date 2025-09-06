@@ -346,8 +346,8 @@ export default function Home() {
               </ClippedButton>
             </div>
 
-            <div className="">
-              <a href="/brochure/RulebookDevhost.pdf" download>
+            <div>
+              <a href="/brochure/devhack_rulebook.pdf" download>
                 <ClippedButton
                   innerBg="bg-black"
                   outerBg="bg-primary"
