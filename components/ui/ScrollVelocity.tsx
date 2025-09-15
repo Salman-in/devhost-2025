@@ -28,6 +28,7 @@ interface VelocityTextProps {
   scrollerClassName?: string;
   parallaxStyle?: React.CSSProperties;
   scrollerStyle?: React.CSSProperties;
+  delay?: number;
 }
 
 interface ScrollVelocityProps {
@@ -43,6 +44,7 @@ interface ScrollVelocityProps {
   scrollerClassName?: string;
   parallaxStyle?: React.CSSProperties;
   scrollerStyle?: React.CSSProperties;
+  delay?: number;
 }
 
 function useElementWidth<T extends HTMLElement>(
@@ -77,6 +79,7 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
   scrollerClassName = "scroller",
   parallaxStyle,
   scrollerStyle,
+  delay = 0,
 }) => {
   function VelocityText({
     children,
@@ -91,6 +94,7 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
     scrollerClassName,
     parallaxStyle,
     scrollerStyle,
+    delay = 0,
   }: VelocityTextProps) {
     const baseX = useMotionValue(0);
     const scrollOptions = scrollContainerRef
@@ -124,7 +128,17 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
     });
 
     const directionFactor = useRef<number>(1);
+    const startTime = useRef<number | null>(null);
+
     useAnimationFrame((t, delta) => {
+      if (startTime.current === null) {
+        startTime.current = t;
+      }
+
+      if (t - startTime.current < delay) {
+        return;
+      }
+
       let moveBy = directionFactor.current * baseVelocity * (delta / 1000);
 
       if (velocityFactor.get() < 0) {
@@ -174,6 +188,7 @@ export const ScrollVelocity: React.FC<ScrollVelocityProps> = ({
           scrollerClassName={scrollerClassName}
           parallaxStyle={parallaxStyle}
           scrollerStyle={scrollerStyle}
+          delay={delay}
         >
           &nbsp;&nbsp;{text}&nbsp;&nbsp; <span className="text-primary">|</span>
           &nbsp;

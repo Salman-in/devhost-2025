@@ -15,6 +15,7 @@ export default function CallToAction() {
         <ScrollVelocity
           texts={["Hackathon Registrations Open"]}
           velocity={80}
+          delay={1600}
           className="font-orbitron text-sm tracking-widest uppercase opacity-80 sm:text-lg"
         />
       </div>

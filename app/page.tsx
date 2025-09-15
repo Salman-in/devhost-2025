@@ -1,5 +1,5 @@
 "use client";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Hero from "@/components/Hero";
 import AboutDevhost from "@/components/AboutDevhost";
 import Counter from "@/components/Counter";
@@ -9,12 +9,29 @@ import Footer from "@/components/Footer";
 import FAQ from "@/components/Faq";
 import Map from "@/components/Map";
 import Events from "@/components/Events";
-import CallToAction from "@/components/CallToAction";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Home() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const handleLoaded = () => setReady(true);
+
+    if (document.readyState === "complete") {
+      setReady(true);
+    } else {
+      window.addEventListener("load", handleLoaded);
+      return () => window.removeEventListener("load", handleLoaded);
+    }
+  }, []);
+
+  if (!ready) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <div className="relative">
-      <Suspense fallback={<Skeleton />}>
+      <Suspense fallback={<LoadingSpinner />}>
         <Hero />
         <Counter />
         <AboutDevhost />
@@ -35,25 +52,14 @@ export default function Home() {
           className="absolute inset-0"
           style={{
             backgroundImage: `
-        linear-gradient(#a3ff12 2px, transparent 1px),
-        linear-gradient(90deg, #a3ff12 2px, transparent 1px)
-      `,
+              linear-gradient(#a3ff12 2px, transparent 1px),
+              linear-gradient(90deg, #a3ff12 2px, transparent 1px)
+            `,
             backgroundSize: "80px 80px",
             backgroundPosition: "center",
           }}
         ></div>
       </div>
-    </div>
-  );
-}
-
-function Skeleton() {
-  return (
-    <div className="animate-pulse space-y-6 p-6">
-      <div className="bg-primary/30 h-8 w-1/3 rounded"></div>
-      <div className="bg-primary/20 h-4 w-2/3 rounded"></div>
-      <div className="bg-primary/20 h-4 w-1/2 rounded"></div>
-      <div className="bg-primary/10 h-64 rounded"></div>
     </div>
   );
 }
