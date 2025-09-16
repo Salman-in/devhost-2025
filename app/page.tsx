@@ -10,9 +10,12 @@ import FAQ from "@/components/Faq";
 import Map from "@/components/Map";
 import Events from "@/components/Events";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Home() {
   const [ready, setReady] = useState(false);
+
+  const { loginLoading } = useAuth();
 
   useEffect(() => {
     const handleLoaded = () => setReady(true);
@@ -26,11 +29,27 @@ export default function Home() {
   }, []);
 
   if (!ready) {
-    return <LoadingSpinner />;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-black">
+        <div className="text-center">
+          <div className="border-primary mx-auto h-12 w-12 animate-spin rounded-full border-b-2"></div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="relative">
+      {loginLoading && (
+        <div className="fixed z-50 flex h-screen w-screen items-center justify-center bg-black">
+          <div className="text-center">
+            <div className="border-primary mx-auto h-12 w-12 animate-spin rounded-full border-b-2"></div>
+            <p className="font-orbitron text-primary mt-4 uppercase">
+              Logging in...
+            </p>
+          </div>
+        </div>
+      )}
       <Suspense fallback={<LoadingSpinner />}>
         <Hero />
         <Counter />
