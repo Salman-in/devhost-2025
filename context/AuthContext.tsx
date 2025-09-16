@@ -13,10 +13,12 @@ import {
   signInWithGoogle as firebaseSignInWithGoogle,
   signOut as firebaseSignOut,
 } from "@/firebase/auth";
+import { useRouter } from "next/navigation";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  loginLoading: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -32,6 +34,9 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loginLoading, setLoginLoading] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(auth, (u) => {
@@ -43,7 +48,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const signInWithGoogle = async () => {
-    await firebaseSignInWithGoogle();
+    setLoginLoading(true);
+    try {
+      await firebaseSignInWithGoogle();
+    } finally {
+      router.push("/profile");
+      setLoginLoading(false);
+    }
   };
 
   const signOut = async () => {
@@ -55,6 +66,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         loading,
+        loginLoading,
         signInWithGoogle,
         signOut,
       }}

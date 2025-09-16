@@ -26,7 +26,6 @@ export default function Hero() {
     } else {
       try {
         await signInWithGoogle();
-        router.push("/profile");
       } catch (error) {
         console.error("Sign in failed:", error);
       }
