@@ -151,8 +151,8 @@ export default function Events() {
   }, []);
 
   function onCardClick(eventId: number) {
-    // router.push(`/events/${eventId}`);
-    router.push(`/register`);
+    router.push(`/events/${eventId}`);
+    // router.push(`/register`);
   }
 
   return (
