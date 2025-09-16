@@ -23,7 +23,6 @@ export async function POST(
       );
     }
 
-    // Validate if it's a Google Drive link
     if (!driveLink.includes("drive.google.com")) {
       return NextResponse.json(
         { error: "Invalid Google Drive link" },
@@ -31,22 +30,47 @@ export async function POST(
       );
     }
 
-    // Make request without following redirects to check the initial response
+    // HEAD request to check accessibility
     const response = await fetch(driveLink, {
       method: "HEAD",
-      redirect: "manual", // Don't follow redirects automatically
+      redirect: "manual",
     });
 
     let accessible = false;
     let message = "";
     let redirectUrl = "";
 
-    // Check response status
     if (response.status === 200) {
       accessible = true;
       message = "Google Drive link is publicly accessible.";
+
+      // Fetch HTML to check for abstract files
+      try {
+        const htmlResponse = await fetch(driveLink, { method: "GET" });
+        const html = await htmlResponse.text();
+
+        const lower = html.toLowerCase();
+        if (lower.includes("abstract.pdf") || lower.includes("abstract.pptx")) {
+          message += " Required abstract file found.";
+        } else {
+          return NextResponse.json(
+            {
+              error:
+                "Google Drive link does not contain the required abstract file (abstract.pdf or abstract.pptx).",
+            },
+            { status: 400 },
+          );
+        }
+      } catch {
+        return NextResponse.json(
+          {
+            error:
+              "Failed to fetch Google Drive folder contents for abstract file check.",
+          },
+          { status: 500 },
+        );
+      }
     } else if (response.status === 302 || response.status === 301) {
-      // Check if redirect is to Google accounts (authentication required)
       const location = response.headers.get("location");
       if (location && location.includes("accounts.google.com")) {
         accessible = false;
@@ -54,7 +78,6 @@ export async function POST(
           "Google Drive link is restricted and requires authentication.";
         redirectUrl = location;
       } else {
-        // Other redirect, might still be accessible
         accessible = false;
         message = "Google Drive link redirected, accessibility uncertain.";
         redirectUrl = location || "";
