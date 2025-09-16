@@ -10,6 +10,8 @@ import { useTeam } from "@/context/TeamContext";
 import TeamLeaderView from "@/components/backend/hackathon/TeamLeaderView";
 import TeamMemberView from "@/components/backend/hackathon/TeamMemberView";
 import { ClippedButton } from "@/components/ClippedButton";
+import { ClippedCard } from "@/components/ClippedCard";
+import { Download } from "lucide-react";
 
 export default function HackathonDashboardPage() {
   const router = useRouter();
@@ -83,7 +85,7 @@ export default function HackathonDashboardPage() {
   const isTeamLeader = team.team_leader_email === user.email;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-start bg-black px-4 py-14">
+    <div className="flex min-h-screen flex-col items-center justify-start bg-black px-4 py-10 sm:px-6 md:px-12 md:py-24 lg:px-20">
       <div className="font-orbitron absolute top-6 left-4 z-10 sm:top-10 sm:left-10">
         <ClippedButton>
           <Link href="/profile" className="flex items-center gap-2">
@@ -118,7 +120,7 @@ export default function HackathonDashboardPage() {
         </p>
       </div>
 
-      <div className="w-full max-w-4xl">
+      <div className="mb-12 w-full max-w-4xl">
         <div className="animate-fade-in-up">
           {isTeamLeader ? (
             <TeamLeaderView
@@ -131,6 +133,65 @@ export default function HackathonDashboardPage() {
           )}
         </div>
       </div>
+
+      <h2 className="text-primary font-orbitron mb-4 text-xl font-bold tracking-widest uppercase sm:text-3xl md:text-3xl">
+        Hackathon Details
+      </h2>
+
+      {/* Subheading */}
+      <p className="font-orbitron mb-12 text-center text-xs text-white/70 sm:text-sm">
+        &gt; Secure your spot, review the rules, and get started with your team!
+      </p>
+
+      {/* Details Card */}
+      <ClippedCard className="mx-auto w-full max-w-4xl" innerBg="bg-[#101810]">
+        <div className="p-6 py-8">
+          <div className="mb-6">
+            <h3 className="font-orbitron text-primary mb-2 text-lg font-semibold tracking-wide">
+              Registration Details
+            </h3>
+            <p className="mb-3 text-sm leading-relaxed text-white/70">
+              Register your team for the hackathon and access the resources you
+              need. Make sure to go through the rulebook carefully before
+              submission.
+            </p>
+            <p className="font-orbitron text-primary text-center text-xs font-bold tracking-widest uppercase">
+              Registration closes on{" "}
+              <span className="whitespace-pre text-white">
+                September 30, 2025
+              </span>
+            </p>
+          </div>
+
+          {/* Resource Buttons */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+            <a
+              href="/brochure/devhack_rulebook.pdf"
+              className="w-full"
+              download
+            >
+              <ClippedButton>
+                <Download size={14} />
+                Devhack Rulebook
+              </ClippedButton>
+            </a>
+            <a
+              href="/brochure/devhack_template.pptx"
+              className="w-full"
+              download
+            >
+              <ClippedButton
+                innerBg="bg-black"
+                outerBg="bg-primary"
+                textColor="text-primary"
+              >
+                <Download size={14} />
+                Abstract Template
+              </ClippedButton>
+            </a>
+          </div>
+        </div>
+      </ClippedCard>
     </div>
   );
 }

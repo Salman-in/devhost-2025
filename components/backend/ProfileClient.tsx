@@ -120,6 +120,12 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
                 Team up, build something amazing, and compete for prizes. Join
                 the hackathon to showcase your skills and push your limits!
               </p>
+              <p className="mb-6 text-sm text-gray-400">
+                Registration closes on{" "}
+                <span className="font-semibold text-white">
+                  September 30, 2025
+                </span>
+              </p>
               <ClippedButton
                 innerBg="bg-primary"
                 textColor="text-black"

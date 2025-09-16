@@ -37,23 +37,31 @@ export default function Hero() {
     <Fragment>
       <div className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden text-zinc-300">
         <div className="flex flex-col items-center">
+          {/* Logo header */}
           <div className="-mt-24 flex w-full max-w-[250px] flex-col pb-1 sm:max-w-[300px] md:max-w-[400px]">
             <div className="flex items-center justify-center">
-              <Image
-                priority
-                src="/logo_group.png"
-                className="w-full object-contain px-3"
-                alt="logo"
-                width={500}
-                height={500}
-              />
+              <div className="relative h-[50px] w-full max-w-[200px] sm:max-w-[240px] md:max-w-[320px]">
+                <Image
+                  priority
+                  src="/logo_group.png"
+                  className="object-contain"
+                  alt="logo"
+                  fill
+                  sizes="(max-width: 640px) 200px, (max-width: 768px) 240px, 320px"
+                />
+              </div>
             </div>
-            <p className="text-neon-green font-orbitron py-1 text-center text-xs tracking-wide">
+            <p className="font-orbitron py-1 text-center text-xs tracking-wide text-[#c3ff49]">
               Presents
             </p>
           </div>
 
-          <Logo className="relative z-10 h-auto w-full max-w-[250px] sm:max-w-[300px] md:max-w-[400px]" />
+          {/* Logo wrapper with fixed max-width */}
+          <div className="relative z-10 w-fit">
+            <div className="relative h-auto max-w-[250px] sm:max-w-[300px] md:max-w-[400px]">
+              <Logo className="h-auto max-w-[250px] sm:max-w-[300px] md:max-w-[400px]" />
+            </div>
+          </div>
         </div>
 
         <CallToAction />
