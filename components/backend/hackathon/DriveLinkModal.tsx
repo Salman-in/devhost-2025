@@ -54,7 +54,7 @@ export default function DriveLinkModal({
 
   return (
     <div className="fixed inset-0 z-50 flex h-screen w-screen items-center justify-center bg-black/90 backdrop-blur-sm">
-      <div className="border-primary/40 mx-2 w-full max-w-md rounded-lg border bg-[#101810] p-6 shadow-2xl">
+      <div className="border-primary/40 mx-2 w-full max-w-xl rounded-lg border bg-[#101810] p-6">
         <h2 className="text-primary font-orbitron mb-4 flex items-center gap-2 text-xl font-bold">
           <LinkIcon className="h-4 w-4" />
           Add Drive Link
@@ -101,17 +101,33 @@ export default function DriveLinkModal({
             </div>
           )}
 
-          <div className="mb-6">
-            <p className="text-primary/60 text-sm">
-              Please make sure your drive folder is set to &quot;Anyone with the
-              link can view&quot; permissions.
-            </p>
+          {/* Info Section */}
+          <div className="border-primary/30 mb-6 space-y-2 border-t pt-4">
+            <div className="border-primary/30 rounded-md border bg-black/40 p-3">
+              <p className="text-primary/80 text-sm">
+                Please make sure your drive folder is set to{" "}
+                <span className="text-primary font-semibold">
+                  &quot;Anyone with the link can view&quot;
+                </span>{" "}
+                permissions.
+              </p>
+            </div>
+
+            <div className="rounded-md border border-yellow-500 bg-yellow-900/40 p-3">
+              <p className="text-sm font-medium text-yellow-300">
+                ⚠️ The drive link must contain the abstract ppt, named as{" "}
+                <span className="font-bold text-yellow-200">abstract.pptx</span>{" "}
+                or{" "}
+                <span className="font-bold text-yellow-200">abstract.pdf</span>.
+              </p>
+            </div>
           </div>
 
           {error && !validationResult && (
             <p className="mb-4 text-sm text-red-500">{error}</p>
           )}
 
+          {/* Action Buttons */}
           <div className="flex gap-3">
             <ClippedButton
               innerBg="bg-red-500"
