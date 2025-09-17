@@ -1,5 +1,4 @@
 "use client";
-
 import {
   useState,
   useEffect,
@@ -10,9 +9,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import clsx from "clsx";
-import { events } from "@/assets/data/events";
+import { events, groupEventMaxMembers } from "@/assets/data/events";
+import { Button } from "../ui/button";
 import LoadingSpinner from "../LoadingSpinner";
-import { ClippedButton } from "../ClippedButton";
+import PaymentButton from "@/components/backend/PaymentButton";
 
 type Props = { eventId: string };
 
@@ -33,8 +33,8 @@ export default function EventRegistration({ eventId }: Props) {
   const [team, setTeam] = useState<TeamType | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const [showPaymentValidation, setShowPaymentValidation] = useState(false);
 
-  // Utility function to get ID token
   const getIdToken = useCallback(async () => {
     if (!user) return null;
     return await user.getIdToken(true);
@@ -50,7 +50,6 @@ export default function EventRegistration({ eventId }: Props) {
       try {
         const idToken = await getIdToken();
         if (!idToken) return;
-
         const res = await fetch(`/api/v1/events/${eventId}/teams/me`, {
           method: "POST",
           headers: {
@@ -58,7 +57,6 @@ export default function EventRegistration({ eventId }: Props) {
             Authorization: `Bearer ${idToken}`,
           },
         });
-
         if (res.ok) {
           const data = await res.json();
           if (data.team) {
@@ -79,28 +77,24 @@ export default function EventRegistration({ eventId }: Props) {
   }, [eventId, userEmail, userLoading, getIdToken]);
 
   const handleApiAction = useCallback(
-    async <T,>(
+    async (
       url: string,
       options: RequestInit,
-      onSuccess: (data: T) => void,
+      onSuccess: (data: any) => void,
     ) => {
       setActionLoading(true);
       try {
         const idToken = await getIdToken();
         if (!idToken) return;
-
         options.headers = {
           ...options.headers,
           "Content-Type": "application/json",
           Authorization: `Bearer ${idToken}`,
         };
-
         const res = await fetch(url, options);
-        const data: T = await res.json();
-
+        const data = await res.json();
         if (!res.ok) {
-          const err = (data as { error?: string }).error;
-          alert(err || "Action failed");
+          alert(data.error || "Action failed");
           if (res.status === 401) return;
         } else {
           onSuccess(data);
@@ -114,9 +108,8 @@ export default function EventRegistration({ eventId }: Props) {
     [getIdToken],
   );
 
-  // Team and member related actions
   const handleCreateTeam = () =>
-    handleApiAction<{ teamId: string }>(
+    handleApiAction(
       `/api/v1/events/${eventId}/teams/create`,
       { method: "POST" },
       (data) => {
@@ -132,14 +125,14 @@ export default function EventRegistration({ eventId }: Props) {
 
   const handleJoinTeam = () => {
     if (!leaderEmail.trim()) return;
-    handleApiAction<{ teamId: string; members: string[] }>(
+    handleApiAction(
       `/api/v1/events/${eventId}/teams/join`,
       { method: "POST", body: JSON.stringify({ leaderEmail }) },
       (data) => {
         setTeam({
           id: data.teamId,
           leaderEmail,
-          members: data.members,
+          members: [leaderEmail, userEmail],
           paymentDone: false,
         });
         setStep(2);
@@ -147,19 +140,51 @@ export default function EventRegistration({ eventId }: Props) {
     );
   };
 
-  const handlePayment = () => {
+  type RazorpayResponse = {
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    razorpay_signature: string;
+  };
+
+  const event = events.find((event) => event.id === parseInt(eventId));
+  const eventPrice = 5000;
+  const maxMembers = groupEventMaxMembers[parseInt(eventId)] ?? 1;
+  const membersCount = team?.members.length ?? 0;
+  const canPay =
+    team &&
+    team.leaderEmail === userEmail &&
+    !team.paymentDone &&
+    membersCount === maxMembers;
+
+  const handlePaymentSuccess = async (response: RazorpayResponse) => {
     if (!team) return;
-    handleApiAction<{ success: boolean }>(
+    await handleApiAction(
       `/api/v1/events/${eventId}/teams/${team.id}/pay`,
-      { method: "POST" },
-      () => setTeam({ ...team, paymentDone: true, registered: true }),
+      {
+        method: "POST",
+        body: JSON.stringify({
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature,
+        }),
+      },
+      (data) => {
+        if (data.team) {
+          setTeam(data.team);
+        } else {
+          setTeam((prev) =>
+            prev ? { ...prev, paymentDone: true, registered: true } : prev,
+          );
+        }
+      },
     );
+    setShowPaymentValidation(false);
   };
 
   const handleDisband = () => {
     if (!team) return;
     if (!confirm("Are you sure you want to disband the team?")) return;
-    handleApiAction<{ success: boolean }>(
+    handleApiAction(
       `/api/v1/events/${eventId}/teams/${team.id}`,
       { method: "DELETE" },
       () => {
@@ -172,7 +197,7 @@ export default function EventRegistration({ eventId }: Props) {
   const handleRemoveMember = (memberEmail: string) => {
     if (!team || memberEmail === userEmail) return;
     if (!confirm(`Remove ${memberEmail} from the team?`)) return;
-    handleApiAction<{ members: string[] }>(
+    handleApiAction(
       `/api/v1/events/${eventId}/teams/${team.id}/remove`,
       {
         method: "POST",
@@ -185,8 +210,6 @@ export default function EventRegistration({ eventId }: Props) {
   if (userLoading || !initialized) {
     return <LoadingSpinner />;
   }
-
-  const event = events.find((event) => event.id === parseInt(eventId));
 
   const polygonClip =
     "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)";
@@ -202,7 +225,6 @@ export default function EventRegistration({ eventId }: Props) {
           &gt; {event?.title}
         </div>
       </div>
-
       {/* Outer Card */}
       <div
         className="bg-primary relative mx-auto w-full max-w-lg p-[1px]"
@@ -212,14 +234,11 @@ export default function EventRegistration({ eventId }: Props) {
           className="font-orbitron flex flex-col gap-6 bg-[#101810] p-4 sm:p-6"
           style={{ clipPath: polygonClip }}
         >
-          {/* If not logged in */}
           {!userEmail && (
             <p className="text-center text-sm text-gray-300">
               Please log in to continue.
             </p>
           )}
-
-          {/* Step 1 – Create or Join */}
           {userEmail && step === 1 && (
             <div className="space-y-6">
               {/* Create Team */}
@@ -231,17 +250,16 @@ export default function EventRegistration({ eventId }: Props) {
                   innerBg="bg-primary"
                   className="hover:brightness-95"
                 >
-                  <ClippedButton
+                  <Button
                     onClick={handleCreateTeam}
                     disabled={actionLoading}
+                    className="h-fit w-full cursor-pointer rounded-none px-4 py-2 text-xs font-bold tracking-widest text-black uppercase"
                   >
                     Create Team
-                  </ClippedButton>
+                  </Button>
                 </ClippedCard>
               </div>
-
               <div className="border-primary/50 border-t" />
-
               {/* Join Team */}
               <div>
                 <h3 className="mb-3 text-xs font-semibold tracking-wide text-white uppercase sm:text-sm">
@@ -259,25 +277,23 @@ export default function EventRegistration({ eventId }: Props) {
                     innerBg="bg-primary"
                     className="hover:brightness-95"
                   >
-                    <ClippedButton
+                    <Button
                       onClick={handleJoinTeam}
                       disabled={actionLoading}
+                      className="h-fit w-full cursor-pointer rounded-none px-4 py-2 text-xs font-bold tracking-widest text-black uppercase"
                     >
                       Join
-                    </ClippedButton>
+                    </Button>
                   </ClippedCard>
                 </div>
               </div>
             </div>
           )}
-
-          {/* Step 2 – Team Dashboard */}
           {userEmail && step === 2 && team && (
             <div>
               <h3 className="mb-3 text-xs font-semibold tracking-wide text-white uppercase sm:text-sm">
                 Team Dashboard
               </h3>
-
               <div className="border-primary/50 space-y-6 rounded-md border bg-white/5 p-4">
                 {/* Leader */}
                 <div className="text-xs sm:text-sm">
@@ -286,7 +302,6 @@ export default function EventRegistration({ eventId }: Props) {
                   </p>
                   <p className="text-primary break-all">{team.leaderEmail}</p>
                 </div>
-
                 {/* Members */}
                 <div>
                   <p className="mb-2 text-xs font-medium text-white sm:text-sm">
@@ -306,23 +321,23 @@ export default function EventRegistration({ eventId }: Props) {
                               innerBg="bg-red-600"
                               outerBg="bg-transparent"
                             >
-                              <ClippedButton
+                              <button
                                 onClick={() => handleRemoveMember(m)}
                                 disabled={actionLoading}
-                                innerBg="bg-red-600"
-                                textColor="text-white"
+                                className="px-3 py-1 text-xs font-bold text-white"
                               >
                                 Remove
-                              </ClippedButton>
+                              </button>
                             </ClippedCard>
                           )}
                       </li>
                     ))}
                   </ul>
+                  <p className="text-xs text-white">
+                    {`(Members: ${team.members.length} / ${maxMembers})`}
+                  </p>
                 </div>
-
                 <div className="border-primary/50 border-t" />
-
                 {/* Status + Payment */}
                 <div className="flex flex-col justify-between space-y-1 text-xs font-medium text-white sm:flex-row sm:space-y-0 sm:text-sm">
                   <p>
@@ -338,44 +353,56 @@ export default function EventRegistration({ eventId }: Props) {
                     </span>
                   </p>
                 </div>
-
                 {/* Leader Actions */}
                 {team.leaderEmail === userEmail && !team.paymentDone && (
-                  <div className="flex flex-col gap-4 pt-2 sm:flex-row">
-                    <ClippedCard
-                      innerBg="bg-primary"
-                      className="flex-1 hover:brightness-95"
-                    >
-                      <ClippedButton
-                        onClick={handlePayment}
-                        disabled={actionLoading}
+                  <>
+                    <div className="flex flex-col gap-4 pt-2 sm:flex-row">
+                      <ClippedCard
                         innerBg="bg-primary"
-                        textColor="text-black"
+                        className="flex-1 hover:brightness-95"
                       >
-                        Pay Now
-                      </ClippedButton>
-                    </ClippedCard>
-                    <ClippedCard
-                      innerBg="bg-black"
-                      className="flex-1 hover:brightness-95"
-                    >
-                      <ClippedButton
-                        onClick={handleDisband}
-                        disabled={actionLoading}
+                        {canPay ? (
+                          <PaymentButton
+                            amount={eventPrice}
+                            disabled={actionLoading}
+                            onPaymentSuccess={handlePaymentSuccess}
+                            eventName={event?.title ?? "Event"}
+                          />
+                        ) : (
+                          <Button
+                            onClick={() => setShowPaymentValidation(true)}
+                            disabled={actionLoading}
+                            className="h-fit w-full cursor-pointer rounded-none px-4 py-2 text-xs font-bold tracking-widest text-black uppercase"
+                          >
+                            Pay Now
+                          </Button>
+                        )}
+                      </ClippedCard>
+                      <ClippedCard
                         innerBg="bg-black"
-                        textColor="text-white"
+                        className="flex-1 hover:brightness-95"
                       >
-                        Disband Team
-                      </ClippedButton>
-                    </ClippedCard>
-                  </div>
+                        <Button
+                          onClick={handleDisband}
+                          disabled={actionLoading}
+                          className="h-fit w-full cursor-pointer rounded-none bg-black px-4 py-2 text-xs font-bold tracking-widest text-white uppercase hover:bg-black"
+                        >
+                          Disband Team
+                        </Button>
+                      </ClippedCard>
+                    </div>
+                    {showPaymentValidation && (
+                      <div className="mt-2 text-center font-bold text-red-500">
+                        {`Add ${maxMembers - membersCount} more member(s) to proceed to payment.`}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
           )}
         </div>
       </div>
-
       {/* Footer text */}
       <div className="font-orbitron text-primary absolute bottom-6 left-6 hidden text-sm opacity-80 sm:hidden">
         {"// DEVHOST 2025"}
@@ -397,7 +424,6 @@ type ClippedCardProps = {
   style?: CSSProperties;
   children: ReactNode;
 };
-
 function ClippedCard({
   className = "",
   outerBg = "bg-primary",
