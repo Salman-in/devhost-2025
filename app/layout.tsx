@@ -31,6 +31,12 @@ const delagothic = localFont({
   preload: true,
 });
 
+const monospace = localFont({
+  src: "../assets/fonts/GeistMono-VariableFont_wght.ttf",
+  variable: "--font-monospace",
+  preload: true,
+});
+
 export const metadata: Metadata = {
   title: {
     default: "DevHost 2025",
@@ -79,7 +85,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${amiga.variable} ${dystopian.variable} ${delagothic.variable} ${orbitron.variable} antialiased`}
+        className={`${monospace.variable} ${amiga.variable} ${dystopian.variable} ${delagothic.variable} ${orbitron.variable} antialiased`}
       >
         <ReactLenis root />
         <AuthProvider>

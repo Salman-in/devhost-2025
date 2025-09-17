@@ -7,52 +7,63 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { exchangeIdTokenForSession } from "@/firebase/auth";
+import { ClippedButton } from "./ClippedButton";
+import CallToAction from "./CallToAction";
 
 export default function Hero() {
   const router = useRouter();
   const { user, signInWithGoogle } = useAuth();
 
-const handleGoogleLogin = async () => {
-  if (user) {
-    try {
-      const idToken = await user.getIdToken();
-      await exchangeIdTokenForSession(idToken);
-      router.push('/profile');
-    } catch (error) {
-      console.error('Session creation failed:', error);
+  const handleGoogleLogin = async () => {
+    if (user) {
+      try {
+        const idToken = await user.getIdToken();
+        await exchangeIdTokenForSession(idToken);
+        router.push("/profile");
+      } catch (error) {
+        console.error("Session creation failed:", error);
+      }
+    } else {
+      try {
+        await signInWithGoogle();
+      } catch (error) {
+        console.error("Sign in failed:", error);
+      }
     }
-  } else {
-    try {
-      await signInWithGoogle();
-      router.push('/profile');
-    } catch (error) {
-      console.error('Sign in failed:', error);
-    }
-  }
-};
-    
+  };
+
   return (
     <Fragment>
       <div className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden text-zinc-300">
         <div className="flex flex-col items-center">
+          {/* Logo header */}
           <div className="-mt-24 flex w-full max-w-[250px] flex-col pb-1 sm:max-w-[300px] md:max-w-[400px]">
             <div className="flex items-center justify-center">
-              <Image
-                priority
-                src="/logo_group.png"
-                className="w-full object-contain px-3"
-                alt="logo"
-                width={500}
-                height={500}
-              />
+              <div className="relative h-[50px] w-full max-w-[200px] sm:max-w-[240px] md:max-w-[320px]">
+                <Image
+                  priority
+                  src="/logo_group.png"
+                  className="object-contain"
+                  alt="logo"
+                  fill
+                  sizes="(max-width: 640px) 200px, (max-width: 768px) 240px, 320px"
+                />
+              </div>
             </div>
-            <p className="text-neon-green font-orbitron py-1 text-center text-xs tracking-wide">
+            <p className="font-orbitron py-1 text-center text-xs tracking-wide text-[#c3ff49]">
               Presents
             </p>
           </div>
 
-          <Logo className="relative z-10 h-auto w-full max-w-[250px] sm:max-w-[300px] md:max-w-[400px]" />
+          {/* Logo wrapper with fixed max-width */}
+          <div className="relative z-10 w-fit">
+            <div className="relative h-auto max-w-[250px] sm:max-w-[300px] md:max-w-[400px]">
+              <Logo className="h-auto max-w-[250px] sm:max-w-[300px] md:max-w-[400px]" />
+            </div>
+          </div>
         </div>
+
+        <CallToAction />
 
         {/* Cyberpunk side boot logs (left) */}
         <div className="font-orbitron absolute top-10 left-10 text-xs tracking-wider text-zinc-600 sm:text-sm">
@@ -92,19 +103,16 @@ const handleGoogleLogin = async () => {
         <div className="absolute bottom-5 left-5 z-10 h-10 w-10 border-b-2 border-l-2 border-[#c3ff49]/50" />
 
         {/* Floating Dock (Top Right) */}
-        <div className="font-orbitron absolute top-10 right-10 z-20 flex gap-4">
-            <button
-              className="bg-primary relative flex cursor-pointer items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest text-black uppercase transition"
-              style={{
-                clipPath:
-                  "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
-              }}
-              onClick={handleGoogleLogin}
-            >
-              <User size={14} /> Profile
-            </button>
+        <div className="font-orbitron absolute top-6 right-4 z-20 flex gap-4 md:top-10 md:right-10">
+          <ClippedButton
+            innerBg="bg-primary"
+            textColor="text-black"
+            className="relative flex items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest uppercase"
+            onClick={handleGoogleLogin}
+          >
+            <User size={14} /> <span className="hidden sm:block">Profile</span>
+          </ClippedButton>
         </div>
-
         {/* Scroll Hint */}
         <div className="font-orbitron text-primary absolute right-5 bottom-5 z-10 flex items-center">
           <span className="mr-2 text-3xl">[</span>

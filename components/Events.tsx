@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import DecryptText from "./animated/TextAnimation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ClippedButton } from "./ClippedButton";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -108,73 +109,27 @@ const events = [
 export default function Events() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
-  const eventsContentRef = useRef<HTMLDivElement>(null);
-  const eventsTitleRef = useRef<HTMLHeadingElement>(null);
-  const eventsCaptionRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement[]>([]);
   const router = useRouter();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      requestAnimationFrame(() => {
-        gsap.set(
-          [
-            eventsTitleRef.current,
-            eventsCaptionRef.current,
-            eventsContentRef.current,
-          ],
-          { opacity: 0, y: 30 },
-        );
-        gsap.set(bgRef.current, { scaleY: 0, transformOrigin: "top center" });
-        gsap.set(cardsRef.current, { y: 30 });
-
-        const tl = gsap.timeline({
+      // Animate cards only
+      cardsRef.current.forEach((card) => {
+        gsap.to(card, {
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out",
           scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 80%",
-            end: "top 20%",
-            scrub: 1,
+            trigger: card,
+            start: "top 85%",
+            end: "top 60%",
+            toggleActions: "play none none none",
           },
-        });
-
-        tl.to(
-          eventsContentRef.current,
-          { opacity: 1, duration: 0.8, ease: "power2.out" },
-          0,
-        )
-          .to(
-            eventsTitleRef.current,
-            { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
-            0.1,
-          )
-          .to(
-            eventsCaptionRef.current,
-            { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
-            0.2,
-          )
-          .to(
-            bgRef.current,
-            { scaleY: 1, duration: 1, ease: "power2.out" },
-            0.2,
-          );
-
-        // Cards animation
-        cardsRef.current.forEach((card) => {
-          gsap.to(card, {
-            y: 0,
-            duration: 0.8,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: card,
-              start: "top 85%",
-              end: "top 60%",
-              toggleActions: "play none none none",
-            },
-          });
         });
       });
 
-      // Responsive clip-path for background
+      // Responsive clip-path for green background
       const updateClipPath = () => {
         if (!bgRef.current) return;
         const width = window.innerWidth;
@@ -183,7 +138,7 @@ export default function Events() {
             "polygon(0% 0%, 100% 0%, 100% 92%, 85% 100%, -5% 100%)";
         } else {
           bgRef.current.style.clipPath =
-            "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)"; // rectangle
+            "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)";
         }
       };
 
@@ -197,6 +152,7 @@ export default function Events() {
 
   function onCardClick(eventId: number) {
     router.push(`/events/${eventId}`);
+    // router.push(`/register`);
   }
 
   return (
@@ -204,7 +160,7 @@ export default function Events() {
       ref={sectionRef}
       className="relative flex flex-col items-center overflow-hidden bg-black py-20 md:pb-[20vh]"
     >
-      {/* Green background with responsive cut */}
+      {/* Static Green Background */}
       <div
         ref={bgRef}
         className="bg-opacity-5 bg-primary absolute inset-0 z-0"
@@ -221,17 +177,11 @@ export default function Events() {
       </div>
 
       {/* Heading */}
-      <div
-        ref={eventsContentRef}
-        className="relative z-10 mb-16 px-4 text-center"
-      >
-        <h1
-          ref={eventsTitleRef}
-          className="font-orbitron mb-6 text-center text-4xl font-bold text-black sm:text-7xl"
-        >
+      <div className="relative z-10 mb-16 px-4 text-center">
+        <h1 className="font-orbitron mb-6 text-center text-4xl font-bold text-black sm:text-7xl">
           DEVHOST EVENTS
         </h1>
-        <div ref={eventsCaptionRef} className="mt-4 px-4 text-lg sm:text-xl">
+        <div className="mt-4 px-4 text-lg sm:text-xl">
           <DecryptText
             text="> Build, Compete, and Leave Your Mark"
             startDelayMs={200}
@@ -244,7 +194,7 @@ export default function Events() {
       </div>
 
       {/* Event cards */}
-      <div className="relative z-10 grid w-full max-w-[1200px] grid-cols-1 gap-8 px-4 md:grid-cols-2">
+      <div className="relative z-10 grid w-full max-w-[1200px] grid-cols-1 gap-8 px-4 lg:grid-cols-2">
         {events.map((event, idx) => {
           const noRegister = [6, 7, 8].includes(event.id);
           return (
@@ -258,7 +208,7 @@ export default function Events() {
                 clipPath:
                   "polygon(20px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
               }}
-              onClick={() => onCardClick && onCardClick(event.id)}
+              onClick={() => onCardClick(event.id)}
             >
               <div
                 className="relative z-10 m-[2px] flex h-full flex-col p-4 sm:flex-row"
@@ -325,15 +275,13 @@ export default function Events() {
 
                   {!noRegister && (
                     <div className="mt-6 flex justify-start">
-                      <button
-                        className="font-orbitron flex w-full cursor-pointer items-center justify-center gap-2 bg-[#b4ff39] px-6 py-2 text-center text-xs font-bold tracking-wider text-black uppercase"
-                        style={{
-                          clipPath:
-                            "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
-                        }}
+                      <ClippedButton
+                        innerBg="bg-primary"
+                        textColor="text-black"
+                        className="font-orbitron flex w-full items-center justify-center gap-2 px-6 py-2 text-center text-xs font-bold tracking-wider uppercase"
                       >
-                        <Link href={"/register"}>Register</Link>
-                      </button>
+                        <Link href="/register">Register</Link>
+                      </ClippedButton>
                     </div>
                   )}
                 </div>

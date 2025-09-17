@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   createContext,
@@ -6,9 +6,9 @@ import {
   useState,
   ReactNode,
   useEffect,
-  useCallback
-} from 'react';
-import { useAuth } from './AuthContext';
+  useCallback,
+} from "react";
+import { useAuth } from "./AuthContext";
 
 // Define the Team interface
 export interface Team {
@@ -38,25 +38,25 @@ const TeamContext = createContext<TeamContextType | null>(null);
 // Custom hook to use the team context
 export const useTeam = () => {
   const ctx = useContext(TeamContext);
-  if (!ctx) throw new Error('useTeam must be used within TeamProvider');
+  if (!ctx) throw new Error("useTeam must be used within TeamProvider");
   return ctx;
 };
 
 // Fetch team data from API
 async function fetchTeamData(token: string) {
-  const response = await fetch('/api/v1/team/get', {
+  const response = await fetch("/api/v1/team/get", {
     headers: {
-      'Authorization': `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     },
   });
-  
+
   if (!response.ok) {
     if (response.status === 404) {
       return null; // No team found is a valid state
     }
-    throw new Error('Failed to fetch team data');
+    throw new Error("Failed to fetch team data");
   }
-  
+
   return response.json();
 }
 
@@ -82,8 +82,8 @@ export const TeamProvider = ({ children }: { children: ReactNode }) => {
       setTeam(teamData);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Unknown error'));
-      console.error('Error fetching team data:', err);
+      setError(err instanceof Error ? err : new Error("Unknown error"));
+      console.error("Error fetching team data:", err);
     } finally {
       setLoading(false);
     }
@@ -107,7 +107,7 @@ export const TeamProvider = ({ children }: { children: ReactNode }) => {
         error,
         hasTeam,
         refreshTeam,
-        setTeam
+        setTeam,
       }}
     >
       {children}

@@ -14,10 +14,8 @@ export default async function EventDetails({
   const session = cookieStore.get("__session")?.value;
   if (!session) redirect("/");
 
-  let uid: string;
   try {
-    const decoded = await verifySessionCookie(session);
-    uid = decoded.uid;
+    await verifySessionCookie(session);
   } catch {
     redirect("/");
   }

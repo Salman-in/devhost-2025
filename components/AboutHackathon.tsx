@@ -5,12 +5,13 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import Link from "next/link";
+import { ClippedButton } from "./ClippedButton";
+import { Download } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
   const [isClient, setIsClient] = useState(false);
-  const [showContent, setShowContent] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const hacRef = useRef<HTMLDivElement>(null);
@@ -185,7 +186,6 @@ export default function Home() {
             y: 0,
             duration: 1.5,
             ease: "power2.out",
-            onComplete: () => setShowContent(true),
           },
           "-=1",
         )
@@ -329,16 +329,37 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="font-orbitron flex gap-4">
-            <button
-              className="bg-primary relative flex cursor-pointer items-center gap-2 px-5 py-2 text-xs font-bold tracking-widest text-black uppercase transition"
-              style={{
-                clipPath:
-                  "polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px)",
-              }}
-            >
-              <Link href={"/register"}>Know More</Link>
-            </button>
+          <p className="font-orbitron text-primary mb-3 text-center text-[0.625rem] font-bold tracking-widest whitespace-nowrap uppercase sm:text-xs md:text-sm">
+            Registration closes on{" "}
+            <span className="text-white">September 30, 2025</span>
+          </p>
+
+          <div className="mx-auto flex w-full max-w-md flex-col items-center justify-center gap-4 sm:flex-row">
+            <div className="font-orbitron">
+              {/* Know More Button */}
+              <ClippedButton
+                innerBg="bg-primary"
+                textColor="text-black"
+                className="w-fit"
+              >
+                <Link href="/hackathon">Know More</Link>
+              </ClippedButton>
+            </div>
+
+            <div>
+              <a href="/brochure/devhack_rulebook.pdf" download>
+                <ClippedButton
+                  innerBg="bg-black"
+                  outerBg="bg-primary"
+                  textColor="text-primary"
+                >
+                  <p className="flex items-center gap-2 whitespace-pre">
+                    <Download size={14} />
+                    Rulebook
+                  </p>
+                </ClippedButton>
+              </a>
+            </div>
           </div>
         </div>
 

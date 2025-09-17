@@ -4,7 +4,7 @@ import { verifyToken } from "@/lib/verify-token";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { eventid: string; teamid: string } },
+  { params }: { params: Promise<{ eventid: string; teamid: string }> },
 ) {
   try {
     // Authenticate user

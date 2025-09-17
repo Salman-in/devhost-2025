@@ -4,14 +4,14 @@ import { verifyToken } from "@/lib/verify-token";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { eventid: string } },
+  { params }: { params: Promise<{ eventid: string }> },
 ) {
   const decoded = await verifyToken(req);
   if (!decoded) {
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
   const { email } = decoded;
-  const eventId = params.eventid;
+  const eventId = (await params).eventid;
 
   const teamsRef = adminDb
     .collection("registrations")
