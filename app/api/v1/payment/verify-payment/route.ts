@@ -4,17 +4,12 @@ import { adminDb } from "@/firebase/admin";
 
 export async function POST(req: Request) {
   try {
-    const {
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-      amount,
-    } = await req.json();
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      await req.json();
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return NextResponse.json({ error: "Missing params" }, { status: 400 });
     }
-
 
     const generated_signature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
@@ -54,7 +49,6 @@ export async function POST(req: Request) {
     const amount = paymentDetails.amount;
 
     // Store in Firestore
-
     await adminDb
       .collection("payments")
       .doc(razorpay_payment_id)

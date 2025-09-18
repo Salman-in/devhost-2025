@@ -26,7 +26,7 @@ interface CheckoutOptions {
   theme?: {
     color: string;
   };
-  notes?: Record<string, any>;
+  notes?: Record<string, string | number | boolean | null>;
   modal?: {
     ondismiss?: () => void;
   };
@@ -74,26 +74,37 @@ export default function PaymentButton({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount }),
       });
+
       if (!createRes.ok) {
-        const err = await createRes.json().catch(() => ({}));
+        const err: { error?: string } = await createRes
+          .json()
+          .catch(() => ({}));
         alert("Order creation failed: " + (err?.error || createRes.status));
         setLoading(false);
         return;
       }
-      const order = await createRes.json();
+
+      const order: {
+        amount: number;
+        currency?: string;
+        orderId?: string;
+        id?: string;
+        error?: string;
+      } = await createRes.json();
+
       if (!order || order.error) {
         alert("Order creation failed: " + (order?.error || "unknown"));
         setLoading(false);
         return;
       }
-      // continue with options...
+
       const options: CheckoutOptions = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
         amount: order.amount,
         currency: order.currency || "INR",
-        name: eventName, // Dynamic event name
+        name: eventName,
         description: "Ticket",
-        order_id: order.orderId || order.id,
+        order_id: order.orderId || order.id!,
         handler: function (response: SuccessResponse) {
           onPaymentSuccess(response);
           setLoading(false);
@@ -106,6 +117,7 @@ export default function PaymentButton({
         theme: { color: "#3399cc" },
         modal: { ondismiss: () => setLoading(false) },
       };
+
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch {

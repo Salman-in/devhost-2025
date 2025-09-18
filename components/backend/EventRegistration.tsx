@@ -57,15 +57,13 @@ export default function EventRegistration({ eventId }: Props) {
             Authorization: `Bearer ${idToken}`,
           },
         });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.team) {
-            setTeam(data.team);
-            setStep(2);
-          }
+        type ResponseType = { team?: TeamType; error?: string };
+        const data: ResponseType = await res.json();
+        if (res.ok && data.team) {
+          setTeam(data.team);
+          setStep(2);
         } else {
-          const err = await res.json();
-          alert(err.error || "Failed to fetch team");
+          alert(data.error || "Failed to fetch team");
         }
       } catch {
         alert("Unexpected error while fetching team");
@@ -77,10 +75,10 @@ export default function EventRegistration({ eventId }: Props) {
   }, [eventId, userEmail, userLoading, getIdToken]);
 
   const handleApiAction = useCallback(
-    async (
+    async <T,>(
       url: string,
       options: RequestInit,
-      onSuccess: (data: any) => void,
+      onSuccess: (data: T) => void,
     ) => {
       setActionLoading(true);
       try {
@@ -92,7 +90,7 @@ export default function EventRegistration({ eventId }: Props) {
           Authorization: `Bearer ${idToken}`,
         };
         const res = await fetch(url, options);
-        const data = await res.json();
+        const data: T & { error?: string } = await res.json();
         if (!res.ok) {
           alert(data.error || "Action failed");
           if (res.status === 401) return;
@@ -109,7 +107,7 @@ export default function EventRegistration({ eventId }: Props) {
   );
 
   const handleCreateTeam = () =>
-    handleApiAction(
+    handleApiAction<{ teamId: string }>(
       `/api/v1/events/${eventId}/teams/create`,
       { method: "POST" },
       (data) => {
@@ -125,7 +123,7 @@ export default function EventRegistration({ eventId }: Props) {
 
   const handleJoinTeam = () => {
     if (!leaderEmail.trim()) return;
-    handleApiAction(
+    handleApiAction<{ teamId: string }>(
       `/api/v1/events/${eventId}/teams/join`,
       { method: "POST", body: JSON.stringify({ leaderEmail }) },
       (data) => {
@@ -146,9 +144,9 @@ export default function EventRegistration({ eventId }: Props) {
     razorpay_signature: string;
   };
 
-  const event = events.find((event) => event.id === parseInt(eventId));
-  const eventPrice = 5000;
-  const maxMembers = groupEventMaxMembers[parseInt(eventId)] ?? 1;
+  const event = events.find((event) => event.id === parseInt(eventId, 10));
+  const eventPrice = 5000; // You can replace with backend fetched price in real app
+  const maxMembers = groupEventMaxMembers[parseInt(eventId, 10)] ?? 1;
   const membersCount = team?.members.length ?? 0;
   const canPay =
     team &&
@@ -158,7 +156,7 @@ export default function EventRegistration({ eventId }: Props) {
 
   const handlePaymentSuccess = async (response: RazorpayResponse) => {
     if (!team) return;
-    await handleApiAction(
+    await handleApiAction<{ team?: TeamType }>(
       `/api/v1/events/${eventId}/teams/${team.id}/pay`,
       {
         method: "POST",
@@ -184,7 +182,7 @@ export default function EventRegistration({ eventId }: Props) {
   const handleDisband = () => {
     if (!team) return;
     if (!confirm("Are you sure you want to disband the team?")) return;
-    handleApiAction(
+    handleApiAction<unknown>(
       `/api/v1/events/${eventId}/teams/${team.id}`,
       { method: "DELETE" },
       () => {
@@ -197,7 +195,7 @@ export default function EventRegistration({ eventId }: Props) {
   const handleRemoveMember = (memberEmail: string) => {
     if (!team || memberEmail === userEmail) return;
     if (!confirm(`Remove ${memberEmail} from the team?`)) return;
-    handleApiAction(
+    handleApiAction<{ members: string[] }>(
       `/api/v1/events/${eventId}/teams/${team.id}/remove`,
       {
         method: "POST",
@@ -333,7 +331,7 @@ export default function EventRegistration({ eventId }: Props) {
                       </li>
                     ))}
                   </ul>
-                  <p className="text-xs text-white">
+                  <p className="mt-1 text-xs text-white">
                     {`(Members: ${team.members.length} / ${maxMembers})`}
                   </p>
                 </div>
@@ -392,7 +390,7 @@ export default function EventRegistration({ eventId }: Props) {
                       </ClippedCard>
                     </div>
                     {showPaymentValidation && (
-                      <div className="mt-2 text-center font-bold text-red-500">
+                      <div className="mt-2 text-center text-sm tracking-wide text-red-500">
                         {`Add ${maxMembers - membersCount} more member(s) to proceed to payment.`}
                       </div>
                     )}
