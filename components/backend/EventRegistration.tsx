@@ -9,10 +9,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import clsx from "clsx";
-import { events, groupEventMaxMembers } from "@/assets/data/events";
+import { events } from "@/assets/data/events";
 import { Button } from "../ui/button";
 import LoadingSpinner from "../LoadingSpinner";
 import PaymentButton from "@/components/backend/PaymentButton";
+import { eventDetails } from "@/assets/data/eventPayment";
+import { Crown } from "lucide-react";
 
 type Props = { eventId: string };
 
@@ -62,11 +64,9 @@ export default function EventRegistration({ eventId }: Props) {
         if (res.ok && data.team) {
           setTeam(data.team);
           setStep(2);
-        } else {
-          alert(data.error || "Failed to fetch team");
         }
       } catch {
-        alert("Unexpected error while fetching team");
+        console.error("Unexpected error while fetching team");
       } finally {
         setInitialized(true);
       }
@@ -145,14 +145,15 @@ export default function EventRegistration({ eventId }: Props) {
   };
 
   const event = events.find((event) => event.id === parseInt(eventId, 10));
-  const eventPrice = 5000; // You can replace with backend fetched price in real app
-  const maxMembers = groupEventMaxMembers[parseInt(eventId, 10)] ?? 1;
+  const eventPrice = eventDetails[parseInt(eventId, 10)].amount * 100;
+  const minMembers = eventDetails[parseInt(eventId, 10)].min;
+  const maxMembers = eventDetails[parseInt(eventId, 10)].max;
   const membersCount = team?.members.length ?? 0;
   const canPay =
     team &&
     team.leaderEmail === userEmail &&
     !team.paymentDone &&
-    membersCount === maxMembers;
+    membersCount >= minMembers;
 
   const handlePaymentSuccess = async (response: RazorpayResponse) => {
     if (!team) return;
@@ -292,26 +293,25 @@ export default function EventRegistration({ eventId }: Props) {
               <h3 className="mb-3 text-xs font-semibold tracking-wide text-white uppercase sm:text-sm">
                 Team Dashboard
               </h3>
-              <div className="border-primary/50 space-y-6 rounded-md border bg-white/5 p-4">
-                {/* Leader */}
-                <div className="text-xs sm:text-sm">
-                  <p>
-                    <b>&gt; Leader:</b>
-                  </p>
-                  <p className="text-primary break-all">{team.leaderEmail}</p>
-                </div>
+
+              <div className="border-primary/50 space-y-2 rounded-md border bg-white/5 p-4">
                 {/* Members */}
                 <div>
                   <p className="mb-2 text-xs font-medium text-white sm:text-sm">
                     <b>&gt; Members:</b>
                   </p>
-                  <ul className="space-y-2">
+
+                  <ul className="space-y-2 pb-6">
                     {team.members.map((m) => (
                       <li
                         key={m}
                         className="text-primary flex items-center justify-between text-xs sm:text-sm"
                       >
-                        <span className="break-all">{m}</span>
+                        <span className="inline-flex items-center gap-1">
+                          {team.leaderEmail === m && <Crown size={12} />}
+                          {m}
+                        </span>
+
                         {team.leaderEmail === userEmail &&
                           m !== userEmail &&
                           !team.registered && (
@@ -331,11 +331,17 @@ export default function EventRegistration({ eventId }: Props) {
                       </li>
                     ))}
                   </ul>
-                  <p className="mt-1 text-xs text-white">
-                    {`(Members: ${team.members.length} / ${maxMembers})`}
+
+                  <div className="border-primary/50 border-t" />
+
+                  <p className="mt-1 flex justify-around gap-8 text-xs text-white uppercase">
+                    <span>{`min : ${minMembers}`}</span>
+                    <span>{`max : ${maxMembers}`}</span>
                   </p>
                 </div>
+
                 <div className="border-primary/50 border-t" />
+
                 {/* Status + Payment */}
                 <div className="flex flex-col justify-between space-y-1 text-xs font-medium text-white sm:flex-row sm:space-y-0 sm:text-sm">
                   <p>
@@ -351,6 +357,7 @@ export default function EventRegistration({ eventId }: Props) {
                     </span>
                   </p>
                 </div>
+
                 {/* Leader Actions */}
                 {team.leaderEmail === userEmail && !team.paymentDone && (
                   <>
@@ -376,6 +383,7 @@ export default function EventRegistration({ eventId }: Props) {
                           </Button>
                         )}
                       </ClippedCard>
+
                       <ClippedCard
                         innerBg="bg-black"
                         className="flex-1 hover:brightness-95"
@@ -389,9 +397,10 @@ export default function EventRegistration({ eventId }: Props) {
                         </Button>
                       </ClippedCard>
                     </div>
+
                     {showPaymentValidation && (
                       <div className="mt-2 text-center text-sm tracking-wide text-red-500">
-                        {`Add ${maxMembers - membersCount} more member(s) to proceed to payment.`}
+                        {`Add ${minMembers - membersCount} more member(s) to proceed to payment.`}
                       </div>
                     )}
                   </>

@@ -1,6 +1,8 @@
+// components/backend/PaymentButton.tsx
 "use client";
 import Script from "next/script";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface SuccessResponse {
   razorpay_signature: string;
@@ -23,13 +25,9 @@ interface CheckoutOptions {
     contact?: string;
     method?: "card" | "netbanking" | "wallet" | "emi" | "upi";
   };
-  theme?: {
-    color: string;
-  };
+  theme?: { color: string };
   notes?: Record<string, string | number | boolean | null>;
-  modal?: {
-    ondismiss?: () => void;
-  };
+  modal?: { ondismiss?: () => void };
 }
 
 declare global {
@@ -58,28 +56,30 @@ export default function PaymentButton({
     setLoading(true);
     try {
       if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
-        alert("Payment configuration missing.");
+        toast.error("Payment configuration missing.");
         setLoading(false);
         return;
       }
       if (typeof window === "undefined" || !window.Razorpay) {
-        alert("Payment SDK not loaded yet. Please retry in a moment.");
+        toast.error("Payment SDK not loaded yet. Please retry in a moment.");
         setLoading(false);
         return;
       }
 
-      // Create order on server
+      // Create order with markup
       const createRes = await fetch("/api/v1/payment/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount }),
+        body: JSON.stringify({ amount }), // This amount already includes markup
       });
 
       if (!createRes.ok) {
         const err: { error?: string } = await createRes
           .json()
           .catch(() => ({}));
-        alert("Order creation failed: " + (err?.error || createRes.status));
+        toast.error(
+          "Order creation failed: " + (err?.error || createRes.status),
+        );
         setLoading(false);
         return;
       }
@@ -93,7 +93,7 @@ export default function PaymentButton({
       } = await createRes.json();
 
       if (!order || order.error) {
-        alert("Order creation failed: " + (order?.error || "unknown"));
+        toast.error("Order creation failed: " + (order?.error || "unknown"));
         setLoading(false);
         return;
       }
@@ -109,11 +109,6 @@ export default function PaymentButton({
           onPaymentSuccess(response);
           setLoading(false);
         },
-        prefill: {
-          name: "Test User",
-          email: "test@example.com",
-          contact: "9999999999",
-        },
         theme: { color: "#3399cc" },
         modal: { ondismiss: () => setLoading(false) },
       };
@@ -121,7 +116,7 @@ export default function PaymentButton({
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch {
-      alert("Could not start payment. Please try again.");
+      toast.error("Could not start payment. Please try again.");
       setLoading(false);
     }
   };

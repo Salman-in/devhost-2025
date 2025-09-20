@@ -1,31 +1,9 @@
+// pages/api/v1/events/[eventid]/teams/[teamid]/pay.ts
+import Razorpay from "razorpay";
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/firebase/admin";
 import { verifyToken } from "@/lib/verify-token";
 import { eventDetails } from "@/assets/data/eventPayment";
-
-/**
- * Minimal typing for the subset of the Razorpay SDK used here.
- * We avoid `any` by declaring the shapes we need.
- */
-interface RazorpayPayment {
-  status?: string;
-  order_id?: string;
-  amount?: number;
-  [key: string]: unknown;
-}
-
-interface RazorpayPaymentsAPI {
-  fetch(paymentId: string): Promise<RazorpayPayment>;
-}
-
-interface RazorpayInstance {
-  payments: RazorpayPaymentsAPI;
-}
-
-type RazorpayConstructor = new (opts: {
-  key_id: string;
-  key_secret: string;
-}) => RazorpayInstance;
 
 export async function POST(
   req: NextRequest,
@@ -49,17 +27,12 @@ export async function POST(
       );
     }
 
-    // Get server authoritative event price and team size
+    // Server-side event price
     const eventIdNum = Number(eventId);
     const eventDetail = eventDetails[eventIdNum];
     if (!eventDetail) {
       return NextResponse.json({ error: "Invalid event" }, { status: 400 });
     }
-
-    // Dynamically import Razorpay and type it using our RazorpayConstructor
-    const RazorpayImport = await import("razorpay");
-    const Razorpay = (RazorpayImport.default ??
-      RazorpayImport) as unknown as RazorpayConstructor;
 
     const rz = new Razorpay({
       key_id:
@@ -69,7 +42,7 @@ export async function POST(
 
     const payment = await rz.payments.fetch(razorpay_payment_id);
 
-    const expectedAmount = eventDetail.amount * eventDetail.max * 100; // amount in paise
+    const expectedAmount = Math.round(eventDetail.amount * 100 * 1.05);
     if (
       payment?.status !== "captured" ||
       payment?.order_id !== razorpay_order_id ||
@@ -115,10 +88,10 @@ export async function POST(
         { status: 403 },
       );
     }
-    if (!teamData.members || teamData.members.length !== eventDetail.max) {
+    if (!teamData.members || teamData.members.length !== eventDetail.min) {
       return NextResponse.json(
         {
-          error: `Team must have exactly ${eventDetail.max} members to pay`,
+          error: `Team must have atleast ${eventDetail.min} members to pay`,
           success: false,
         },
         { status: 400 },

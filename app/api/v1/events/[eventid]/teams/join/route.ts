@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/firebase/admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { verifyToken } from "@/lib/verify-token";
-import { groupEventMaxMembers } from "@/assets/data/events";
+import { eventDetails } from "@/assets/data/eventPayment";
 
 export async function POST(
   req: NextRequest,
@@ -53,7 +53,7 @@ export async function POST(
   }
 
   // Check max members
-  const maxMembers = groupEventMaxMembers[parseInt(eventId)] ?? 1;
+  const maxMembers = eventDetails[parseInt(eventId)].max ?? 1;
 
   if (teamData.members.length >= maxMembers) {
     return NextResponse.json(
