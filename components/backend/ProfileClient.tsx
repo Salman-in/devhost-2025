@@ -178,15 +178,13 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
             innerHeight="h-full"
             className="relative w-full md:col-span-2"
           >
-           
-            <div className="absolute inset-0 z-20 flex items-center justify-center bg-black bg-opacity-90 pointer-events-none">
+            <div className="bg-opacity-90 pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-black">
               <span className="font-orbitron text-primary text-xl font-bold uppercase">
                 Coming Soon
               </span>
             </div>
 
             <div className="flex flex-col gap-6 px-4 py-6 sm:flex-row sm:px-12">
-              
               <div
                 className="relative w-full flex-shrink-0 overflow-hidden sm:w-1/2"
                 style={{
@@ -247,16 +245,16 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
                         </button>
                       ))}
                       */}
-                      <button className="flex-1 rounded px-5 py-3 font-semibold bg-gray-700 text-gray-300 cursor-not-allowed">
+                      <button className="flex-1 cursor-not-allowed rounded bg-gray-700 px-5 py-3 font-semibold text-gray-300">
                         S
                       </button>
-                      <button className="flex-1 rounded px-5 py-3 font-semibold bg-gray-700 text-gray-300 cursor-not-allowed">
+                      <button className="flex-1 cursor-not-allowed rounded bg-gray-700 px-5 py-3 font-semibold text-gray-300">
                         M
                       </button>
-                      <button className="flex-1 rounded px-5 py-3 font-semibold bg-gray-700 text-gray-300 cursor-not-allowed">
+                      <button className="flex-1 cursor-not-allowed rounded bg-gray-700 px-5 py-3 font-semibold text-gray-300">
                         L
                       </button>
-                      <button className="flex-1 rounded px-5 py-3 font-semibold bg-gray-700 text-gray-300 cursor-not-allowed">
+                      <button className="flex-1 cursor-not-allowed rounded bg-gray-700 px-5 py-3 font-semibold text-gray-300">
                         XL
                       </button>
                     </div>
@@ -266,7 +264,6 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
                 </div>
 
                 <div className="mt-6 border-t border-gray-700 pt-6">
-                  
                   <ClippedButton
                     innerBg="bg-gray-500"
                     textColor="text-black"
