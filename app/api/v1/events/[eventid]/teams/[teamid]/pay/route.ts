@@ -17,6 +17,7 @@ export async function POST(
     const { eventid: eventId, teamid: teamId } = await params;
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
       await req.json();
+
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return NextResponse.json(
         {
@@ -41,8 +42,8 @@ export async function POST(
     });
 
     const payment = await rz.payments.fetch(razorpay_payment_id);
-
     const expectedAmount = Math.round(eventDetail.amount * 100 * 1.05);
+
     if (
       payment?.status !== "captured" ||
       payment?.order_id !== razorpay_order_id ||
@@ -57,28 +58,36 @@ export async function POST(
       );
     }
 
-    // Check team doc and leader
-    const ref = adminDb
-      .collection("registrations")
-      .doc(eventId)
-      .collection("teams")
-      .doc(teamId);
-
+    // Flat structure: team doc directly in registrations
+    const ref = adminDb.collection("registrations").doc(teamId);
     const teamSnap = await ref.get();
+
     if (!teamSnap.exists) {
       return NextResponse.json(
         { error: "Team not found", success: false },
         { status: 404 },
       );
     }
+
     const teamData = teamSnap.data() as {
+      eventId?: string;
       leaderEmail?: string;
       members?: string[];
       paymentDone?: boolean;
     };
+
+    // Ensure the team belongs to this event
+    if (teamData.eventId !== eventId) {
+      return NextResponse.json(
+        { error: "Team does not belong to this event", success: false },
+        { status: 400 },
+      );
+    }
+
     if (teamData.paymentDone) {
       return NextResponse.json({ success: true, team: teamData });
     }
+
     if (!teamData.leaderEmail || decoded.email !== teamData.leaderEmail) {
       return NextResponse.json(
         {
@@ -88,10 +97,11 @@ export async function POST(
         { status: 403 },
       );
     }
+
     if (!teamData.members || teamData.members.length !== eventDetail.min) {
       return NextResponse.json(
         {
-          error: `Team must have atleast ${eventDetail.min} members to pay`,
+          error: `Team must have at least ${eventDetail.min} members to pay`,
           success: false,
         },
         { status: 400 },

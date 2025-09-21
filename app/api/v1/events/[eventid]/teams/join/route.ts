@@ -13,17 +13,33 @@ export async function POST(
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
 
-  const { email } = decoded;
+  const { email, uid } = decoded;
   const { leaderEmail } = await req.json();
   const eventId = (await params).eventid;
 
-  const teamsRef = adminDb
-    .collection("registrations")
-    .doc(eventId)
-    .collection("teams");
+  const profileRef = adminDb.collection("users").doc(uid);
+  const profileSnapshot = await profileRef.get();
+
+  if (!profileSnapshot.exists) {
+    return NextResponse.json(
+      { error: "User profile not found" },
+      { status: 404 },
+    );
+  }
+
+  const userProfile = profileSnapshot.data();
+  if (!userProfile || !userProfile.name) {
+    return NextResponse.json(
+      { error: "Invalid user profile data" },
+      { status: 400 },
+    );
+  }
+
+  const registrationsRef = adminDb.collection("registrations");
 
   // Check if user is already in a team for this event
-  const existingSnap = await teamsRef
+  const existingSnap = await registrationsRef
+    .where("eventId", "==", eventId)
     .where("members", "array-contains", email)
     .get();
 
@@ -35,7 +51,11 @@ export async function POST(
   }
 
   // Find the team with given leaderEmail
-  const teamSnap = await teamsRef.where("leaderEmail", "==", leaderEmail).get();
+  const teamSnap = await registrationsRef
+    .where("eventId", "==", eventId)
+    .where("leaderEmail", "==", leaderEmail)
+    .get();
+
   if (teamSnap.empty) {
     return NextResponse.json({ error: "No team found" }, { status: 404 });
   }

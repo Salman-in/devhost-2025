@@ -113,19 +113,23 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
         <div className="mt-12 grid w-full grid-cols-1 gap-8 md:grid-cols-2">
           {/* Hackathon Card */}
           <ClippedCard innerBg="bg-[#101810]" innerHeight="h-full">
-            <div className="flex h-full flex-col border p-8">
-              <div className="text-primary font-amiga mb-3 text-2xl">01</div>
-              <h3 className="mb-4 text-2xl font-bold text-white">Hackathon</h3>
-              <p className="mb-6 flex-grow text-sm text-gray-400">
-                Team up, build something amazing, and compete for prizes. Join
-                the hackathon to showcase your skills and push your limits!
-              </p>
-              <p className="mb-6 text-sm text-gray-400">
-                Registration closes on{" "}
-                <span className="font-semibold text-white">
-                  September 30, 2025
-                </span>
-              </p>
+            <div className="flex h-full flex-col justify-between border p-8">
+              <div className="h-full">
+                <div className="text-primary font-amiga mb-3 text-2xl">01</div>
+                <h3 className="mb-4 text-2xl font-bold text-white">
+                  Hackathon
+                </h3>
+                <p className="mb-6 flex-grow text-sm text-gray-400">
+                  Team up, build something amazing, and compete for prizes. Join
+                  the hackathon to showcase your skills and push your limits!
+                </p>
+                <p className="mb-6 text-sm text-gray-400">
+                  Registration closes on{" "}
+                  <span className="font-semibold text-white">
+                    September 30, 2025
+                  </span>
+                </p>
+              </div>
               <ClippedButton
                 innerBg="bg-primary"
                 textColor="text-black"
@@ -146,13 +150,16 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
           {/* Events Card */}
           <ClippedCard innerBg="bg-[#101810]" innerHeight="h-full">
             <div className="flex h-full flex-col p-8">
-              <div className="text-primary font-amiga mb-3 text-2xl">02</div>
-              <h3 className="mb-4 text-2xl font-bold text-white">Events</h3>
-              <p className="mb-6 flex-grow text-sm text-gray-400">
-                Explore a variety of exciting events lined up just for you. From
-                workshops to talks and fun activities, there is something for
-                everyone.
-              </p>
+              <div className="h-full">
+                <div className="text-primary font-amiga mb-3 text-2xl">02</div>
+                <h3 className="mb-4 text-2xl font-bold text-white">Events</h3>
+                <p className="text-sm text-gray-400">
+                  Explore a variety of exciting events lined up just for you.
+                  From workshops to talks and fun activities, there is something
+                  for everyone.
+                </p>
+              </div>
+
               <ClippedButton
                 innerBg="bg-primary"
                 textColor="text-black"
