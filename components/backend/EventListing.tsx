@@ -1,82 +1,33 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import Image from "next/image";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import DecryptText from "./animated/TextAnimation";
+import React from "react";
+import { ClippedButton } from "../ClippedButton";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ClippedButton } from "./ClippedButton";
+import Image from "next/image";
 import { events } from "@/assets/data/events";
+import DecryptText from "../animated/TextAnimation";
+import { useRouter } from "next/navigation";
 
-gsap.registerPlugin(ScrollTrigger);
-
-export default function Events() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement[]>([]);
+export default function EventListing() {
   const router = useRouter();
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Animate cards only
-      cardsRef.current.forEach((card) => {
-        gsap.to(card, {
-          y: 0,
-          duration: 0.8,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: card,
-            start: "top 85%",
-            end: "top 60%",
-            toggleActions: "play none none none",
-          },
-        });
-      });
-
-      // Responsive clip-path for green background
-      const updateClipPath = () => {
-        if (!bgRef.current) return;
-        const width = window.innerWidth;
-        if (width >= 1024) {
-          bgRef.current.style.clipPath =
-            "polygon(0% 0%, 100% 0%, 100% 92%, 85% 100%, -5% 100%)";
-        } else {
-          bgRef.current.style.clipPath =
-            "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)";
-        }
-      };
-
-      updateClipPath();
-      window.addEventListener("resize", updateClipPath);
-      return () => window.removeEventListener("resize", updateClipPath);
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
 
   function onCardClick(eventId: number) {
     router.push(`/events/${eventId}`);
-    // router.push(`/register`);
   }
 
   return (
-    <div
-      ref={sectionRef}
-      className="relative flex flex-col items-center overflow-hidden bg-black py-20 md:pb-[20vh]"
-    >
+    <div className="relative flex flex-col items-center overflow-hidden bg-black py-20 md:pb-[20vh]">
       {/* Static Green Background */}
-      <div
-        ref={bgRef}
-        className="bg-opacity-5 bg-primary absolute inset-0 z-0"
-        style={{
-          clipPath: "polygon(0% 0%, 100% 0%, 100% 92%, 85% 100%, -5% 100%)",
-        }}
-      />
-
-      <div className="font-orbitron absolute top-6 left-6 text-sm font-bold text-black opacity-80">
-        {"// DEVHOST"}
+      <div className="bg-primary absolute inset-0 z-0" />
+      <div className="font-orbitron absolute top-4 left-4 z-20 flex gap-4 md:top-10 md:left-10">
+        <ClippedButton
+          innerBg="bg-black"
+          outerBg="bg-black"
+          textColor="text-white"
+          onClick={() => router.back()}
+        >
+          Back
+        </ClippedButton>
       </div>
       <div className="font-orbitron absolute top-6 right-6 text-sm font-bold text-black opacity-80">
         2025
@@ -101,14 +52,11 @@ export default function Events() {
 
       {/* Event cards */}
       <div className="relative z-10 grid w-full max-w-[1200px] grid-cols-1 gap-8 px-4 lg:grid-cols-2">
-        {events.map((event, idx) => {
+        {events.map((event) => {
           const noRegister = [6, 7, 8].includes(event.id);
           return (
             <div
               key={event.id}
-              ref={(el) => {
-                if (el) cardsRef.current[idx] = el;
-              }}
               className="relative mx-auto w-full overflow-hidden"
               style={{
                 clipPath:

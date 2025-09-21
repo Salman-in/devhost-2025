@@ -31,7 +31,7 @@ interface Profile {
   team_id?: string;
 }
 export default function ProfileClient({ profile }: { profile: Profile }) {
-  // const [selectedSize, setSelectedSize] = useState<string>(""); 
+  // const [selectedSize, setSelectedSize] = useState<string>(""); // commented out
 
   const router = useRouter();
   const { signOut } = useAuth();
@@ -172,7 +172,7 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
             </div>
           </ClippedCard>
 
-          {/* Shirt Card*/}
+          {/* Shirt Card - Coming Soon */}
           <ClippedCard
             innerBg="bg-[#101810]"
             innerHeight="h-full"
@@ -181,12 +181,12 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
            
             <div className="absolute inset-0 z-20 flex items-center justify-center bg-black bg-opacity-90 pointer-events-none">
               <span className="font-orbitron text-primary text-xl font-bold uppercase">
-                Coming Soon....
+                Coming Soon
               </span>
             </div>
 
             <div className="flex flex-col gap-6 px-4 py-6 sm:flex-row sm:px-12">
-             
+              
               <div
                 className="relative w-full flex-shrink-0 overflow-hidden sm:w-1/2"
                 style={{
@@ -230,6 +230,7 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
 
                   <div className="border-b border-gray-700 pb-6">
                     <div className="flex justify-between gap-3">
+                      {/* Size selection commented out to prevent hydration error */}
                       {/*
                       {["S", "M", "L", "XL"].map((size) => (
                         <button
@@ -265,7 +266,7 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
                 </div>
 
                 <div className="mt-6 border-t border-gray-700 pt-6">
-                 
+                  
                   <ClippedButton
                     innerBg="bg-gray-500"
                     textColor="text-black"

@@ -14,7 +14,20 @@ import { Button } from "../ui/button";
 import LoadingSpinner from "../LoadingSpinner";
 import PaymentButton from "@/components/backend/PaymentButton";
 import { eventDetails } from "@/assets/data/eventPayment";
-import { Crown } from "lucide-react";
+import { ClippedButton } from "../ClippedButton";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 type Props = { eventId: string };
 
@@ -26,16 +39,71 @@ type TeamType = {
   registered?: boolean;
 };
 
+type ConfirmDialogProps = {
+  open: boolean;
+  title: string;
+  description: string;
+  confirmText?: string;
+  cancelText?: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  loading?: boolean;
+};
+function ConfirmDialog({
+  open,
+  title,
+  description,
+  confirmText = "Confirm",
+  cancelText = "Cancel",
+  onConfirm,
+  onCancel,
+  loading,
+}: ConfirmDialogProps) {
+  return (
+    <AlertDialog open={open} onOpenChange={(open) => !open && onCancel()}>
+      <AlertDialogContent className="border-primary border-2">
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{description}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="flex gap-2">
+          <AlertDialogCancel
+            disabled={loading}
+            className="bg-red-500 text-white hover:bg-red-500/80"
+            onClick={onCancel}
+          >
+            {cancelText}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            disabled={loading}
+            onClick={onConfirm}
+            className="bg-red-500 text-white hover:bg-red-500/80"
+          >
+            {confirmText}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
 export default function EventRegistration({ eventId }: Props) {
   const { user, loading: userLoading } = useAuth();
   const userEmail = user?.email ?? "";
+  const router = useRouter();
+
+  // Dialog state
+  const [confirmDialog, setConfirmDialog] = useState<null | {
+    title: string;
+    description: string;
+    action: () => void;
+  }>(null);
 
   const [step, setStep] = useState<1 | 2>(1);
   const [leaderEmail, setLeaderEmail] = useState("");
   const [team, setTeam] = useState<TeamType | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
-  const [showPaymentValidation, setShowPaymentValidation] = useState(false);
 
   const getIdToken = useCallback(async () => {
     if (!user) return null;
@@ -92,13 +160,13 @@ export default function EventRegistration({ eventId }: Props) {
         const res = await fetch(url, options);
         const data: T & { error?: string } = await res.json();
         if (!res.ok) {
-          alert(data.error || "Action failed");
+          toast.error(data.error || "Action failed");
           if (res.status === 401) return;
         } else {
           onSuccess(data);
         }
       } catch {
-        alert("Unexpected error");
+        toast.error("Unexpected error");
       } finally {
         setActionLoading(false);
       }
@@ -177,37 +245,75 @@ export default function EventRegistration({ eventId }: Props) {
         }
       },
     );
-    setShowPaymentValidation(false);
   };
 
+  // Handlers using ConfirmDialog
   const handleDisband = () => {
-    if (!team) return;
-    if (!confirm("Are you sure you want to disband the team?")) return;
-    handleApiAction<unknown>(
-      `/api/v1/events/${eventId}/teams/${team.id}`,
-      { method: "DELETE" },
-      () => {
-        setTeam(null);
-        setStep(1);
+    setConfirmDialog({
+      title: "Confirm Disband",
+      description:
+        "Are you sure you want to disband the team? This action cannot be undone.",
+      action: async () => {
+        setConfirmDialog(null);
+        if (!team) return;
+        await handleApiAction<unknown>(
+          `/api/v1/events/${eventId}/teams/${team.id}`,
+          { method: "DELETE" },
+          () => {
+            setTeam(null);
+            setStep(1);
+          },
+        );
       },
-    );
+    });
   };
 
   const handleRemoveMember = (memberEmail: string) => {
-    if (!team || memberEmail === userEmail) return;
-    if (!confirm(`Remove ${memberEmail} from the team?`)) return;
-    handleApiAction<{ members: string[] }>(
-      `/api/v1/events/${eventId}/teams/${team.id}/remove`,
-      {
-        method: "POST",
-        body: JSON.stringify({ memberEmail }),
+    setConfirmDialog({
+      title: "Remove Member",
+      description: `Remove ${memberEmail} from the team? This action cannot be undone.`,
+      action: async () => {
+        setConfirmDialog(null);
+        if (!team || memberEmail === userEmail) return;
+        await handleApiAction<{ members: string[] }>(
+          `/api/v1/events/${eventId}/teams/${team.id}/remove`,
+          {
+            method: "POST",
+            body: JSON.stringify({ memberEmail }),
+          },
+          (data) => setTeam({ ...team, members: data.members }),
+        );
       },
-      (data) => setTeam({ ...team, members: data.members }),
-    );
+    });
+  };
+
+  const handleLeaveTeam = () => {
+    setConfirmDialog({
+      title: "Leave Team",
+      description:
+        "Are you sure you want to leave the team? This action cannot be undone.",
+      action: async () => {
+        setConfirmDialog(null);
+        if (!team) return;
+        await handleApiAction<{ members: string[] }>(
+          `/api/v1/events/${eventId}/teams/${team.id}/leave`,
+          {
+            method: "POST",
+          },
+          () => {
+            window.location.reload();
+          },
+        );
+      },
+    });
   };
 
   if (userLoading || !initialized) {
-    return <LoadingSpinner />;
+    return (
+      <div className="h-screen w-screen">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   const polygonClip =
@@ -215,6 +321,19 @@ export default function EventRegistration({ eventId }: Props) {
 
   return (
     <div className="max-w-full px-2 sm:px-4">
+      {confirmDialog && (
+        <ConfirmDialog
+          open={true}
+          title={confirmDialog.title}
+          description={confirmDialog.description}
+          onConfirm={confirmDialog.action}
+          onCancel={() => setConfirmDialog(null)}
+          loading={actionLoading}
+        />
+      )}
+      <div className="font-orbitron absolute top-4 left-4 z-20 flex gap-4 md:top-10 md:left-10">
+        <ClippedButton onClick={() => router.back()}>Back</ClippedButton>
+      </div>
       {/* Header */}
       <div className="mb-8 space-y-2 text-center">
         <h1 className="font-orbitron text-primary text-2xl font-bold tracking-wider uppercase sm:text-4xl">
@@ -297,21 +416,23 @@ export default function EventRegistration({ eventId }: Props) {
               <div className="border-primary/50 space-y-2 rounded-md border bg-white/5 p-4">
                 {/* Members */}
                 <div>
-                  <p className="mb-2 text-xs font-medium text-white sm:text-sm">
+                  <p className="text-primary mb-2 text-xs font-medium sm:text-sm">
                     <b>&gt; Members:</b>
                   </p>
-
                   <ul className="space-y-2 pb-6">
                     {team.members.map((m) => (
                       <li
                         key={m}
-                        className="text-primary flex items-center justify-between text-xs sm:text-sm"
+                        className="flex items-center justify-between text-xs text-white sm:text-sm"
                       >
                         <span className="inline-flex items-center gap-1">
-                          {team.leaderEmail === m && <Crown size={12} />}
-                          {m}
+                          {team.leaderEmail === m && (
+                            <span className="border-primary text-primary border px-1 text-xs font-bold">
+                              L
+                            </span>
+                          )}
+                          <span>{m}</span>
                         </span>
-
                         {team.leaderEmail === userEmail &&
                           m !== userEmail &&
                           !team.registered && (
@@ -331,17 +452,13 @@ export default function EventRegistration({ eventId }: Props) {
                       </li>
                     ))}
                   </ul>
-
                   <div className="border-primary/50 border-t" />
-
                   <p className="mt-1 flex justify-around gap-8 text-xs text-white uppercase">
                     <span>{`min : ${minMembers}`}</span>
                     <span>{`max : ${maxMembers}`}</span>
                   </p>
                 </div>
-
                 <div className="border-primary/50 border-t" />
-
                 {/* Status + Payment */}
                 <div className="flex flex-col justify-between space-y-1 text-xs font-medium text-white sm:flex-row sm:space-y-0 sm:text-sm">
                   <p>
@@ -357,7 +474,6 @@ export default function EventRegistration({ eventId }: Props) {
                     </span>
                   </p>
                 </div>
-
                 {/* Leader Actions */}
                 {team.leaderEmail === userEmail && !team.paymentDone && (
                   <>
@@ -375,7 +491,11 @@ export default function EventRegistration({ eventId }: Props) {
                           />
                         ) : (
                           <Button
-                            onClick={() => setShowPaymentValidation(true)}
+                            onClick={() =>
+                              toast.error(
+                                `Add ${minMembers - membersCount} more member(s) to proceed to payment.`,
+                              )
+                            }
                             disabled={actionLoading}
                             className="h-fit w-full cursor-pointer rounded-none px-4 py-2 text-xs font-bold tracking-widest text-black uppercase"
                           >
@@ -383,7 +503,6 @@ export default function EventRegistration({ eventId }: Props) {
                           </Button>
                         )}
                       </ClippedCard>
-
                       <ClippedCard
                         innerBg="bg-black"
                         className="flex-1 hover:brightness-95"
@@ -397,13 +516,21 @@ export default function EventRegistration({ eventId }: Props) {
                         </Button>
                       </ClippedCard>
                     </div>
-
-                    {showPaymentValidation && (
-                      <div className="mt-2 text-center text-sm tracking-wide text-red-500">
-                        {`Add ${minMembers - membersCount} more member(s) to proceed to payment.`}
-                      </div>
-                    )}
                   </>
+                )}
+                {/* Member Leave Option */}
+                {team.leaderEmail !== userEmail && !team.registered && (
+                  <div className="mt-4">
+                    <ClippedCard className="hover:brightness-95">
+                      <Button
+                        onClick={handleLeaveTeam}
+                        disabled={actionLoading}
+                        className="h-fit w-full cursor-pointer rounded-none bg-black px-4 py-2 text-xs font-bold tracking-widest text-white uppercase hover:bg-black"
+                      >
+                        Leave Team
+                      </Button>
+                    </ClippedCard>
+                  </div>
                 )}
               </div>
             </div>

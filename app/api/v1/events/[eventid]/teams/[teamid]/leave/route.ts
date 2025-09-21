@@ -1,3 +1,4 @@
+// pages/api/v1/events/[eventid]/teams/[teamid]/leave.ts
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/firebase/admin";
 import { verifyToken } from "@/lib/verify-token";
@@ -10,13 +11,9 @@ export async function POST(
   if (!decoded)
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
 
-  const { memberEmail } = await req.json();
   const { eventid, teamid } = await params;
+  const memberEmail = decoded.email;
 
-  if (!memberEmail)
-    return NextResponse.json({ error: "Missing memberEmail" }, { status: 400 });
-
-  // Flat structure: direct doc in registrations
   const teamRef = adminDb.collection("registrations").doc(teamid);
   const teamDoc = await teamRef.get();
 
@@ -33,18 +30,18 @@ export async function POST(
     );
   }
 
-  // Only leader can remove
-  if (team.leaderEmail !== decoded.email) {
+  // Prevent leader from leaving (use disband instead)
+  if (team.leaderEmail === memberEmail) {
     return NextResponse.json(
-      { error: "Only the team leader can remove members" },
+      { error: "Leader cannot leave the team. Use disband." },
       { status: 403 },
     );
   }
 
-  // Prevent removal if team is registered
+  // Prevent leaving if team is already registered
   if (team.registered) {
     return NextResponse.json(
-      { error: "Cannot remove members from a registered team" },
+      { error: "Cannot leave a registered team" },
       { status: 400 },
     );
   }
@@ -52,7 +49,7 @@ export async function POST(
   // Member must exist
   if (!team.members.includes(memberEmail)) {
     return NextResponse.json(
-      { error: "Member not found in team" },
+      { error: "You are not a member of this team" },
       { status: 400 },
     );
   }
