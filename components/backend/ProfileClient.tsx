@@ -7,7 +7,7 @@ import { ClippedCard } from "@/components/ClippedCard";
 import ProfileForm from "@/components/backend/ProfileForm";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
-import { useState } from "react";
+//import { useState } from "react";
 
 import {
   AlertDialog,
@@ -31,7 +31,7 @@ interface Profile {
   team_id?: string;
 }
 export default function ProfileClient({ profile }: { profile: Profile }) {
-  const [selectedSize, setSelectedSize] = useState<string>("");
+  // const [selectedSize, setSelectedSize] = useState<string>(""); 
 
   const router = useRouter();
   const { signOut } = useAuth();
@@ -172,20 +172,21 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
             </div>
           </ClippedCard>
 
-          {/* Shirt Card */}
+          {/* Shirt Card*/}
           <ClippedCard
             innerBg="bg-[#101810]"
             innerHeight="h-full"
-            className="w-full md:col-span-2 relative"
+            className="relative w-full md:col-span-2"
           >
-            <div className="absolute inset-0 z-20 flex items-center justify-center bg-black bg-opacity-90">
-            <span className="font-orbitron text-primary text-xl font-bold uppercase">
-              Opening Soon .....
-            </span>
+           
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-black bg-opacity-90 pointer-events-none">
+              <span className="font-orbitron text-primary text-xl font-bold uppercase">
+                Coming Soon....
+              </span>
             </div>
 
             <div className="flex flex-col gap-6 px-4 py-6 sm:flex-row sm:px-12">
-              {/* Shirt Image */}
+             
               <div
                 className="relative w-full flex-shrink-0 overflow-hidden sm:w-1/2"
                 style={{
@@ -229,6 +230,7 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
 
                   <div className="border-b border-gray-700 pb-6">
                     <div className="flex justify-between gap-3">
+                      {/*
                       {["S", "M", "L", "XL"].map((size) => (
                         <button
                           key={size}
@@ -243,43 +245,35 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
                           {size}
                         </button>
                       ))}
+                      */}
+                      <button className="flex-1 rounded px-5 py-3 font-semibold bg-gray-700 text-gray-300 cursor-not-allowed">
+                        S
+                      </button>
+                      <button className="flex-1 rounded px-5 py-3 font-semibold bg-gray-700 text-gray-300 cursor-not-allowed">
+                        M
+                      </button>
+                      <button className="flex-1 rounded px-5 py-3 font-semibold bg-gray-700 text-gray-300 cursor-not-allowed">
+                        L
+                      </button>
+                      <button className="flex-1 rounded px-5 py-3 font-semibold bg-gray-700 text-gray-300 cursor-not-allowed">
+                        XL
+                      </button>
                     </div>
                   </div>
 
-                  <p className="text-sm text-gray-400">
-                    {selectedSize
-                      ? `Selected size: ${selectedSize}`
-                      : "Interested? Select a size to proceed"}
-                  </p>
+                  <p className="text-sm text-gray-400">Coming Soon...</p>
                 </div>
 
                 <div className="mt-6 border-t border-gray-700 pt-6">
-                  {selectedSize ? (
-                    <ClippedButton
-                      innerBg="bg-primary"
-                      textColor="text-black"
-                      asChild
-                    >
-                      <Link
-                        href={{
-                          pathname: "/shop",
-                          query: { size: selectedSize },
-                        }}
-                        className="inline-flex w-full items-center justify-center py-3"
-                      >
-                        Finalize
-                      </Link>
-                    </ClippedButton>
-                  ) : (
-                    <ClippedButton
-                      innerBg="bg-gray-500"
-                      textColor="text-black"
-                      className="w-full cursor-not-allowed rounded py-3 font-semibold opacity-70"
-                      disabled
-                    >
-                      Finalize
-                    </ClippedButton>
-                  )}
+                 
+                  <ClippedButton
+                    innerBg="bg-gray-500"
+                    textColor="text-black"
+                    className="w-full cursor-not-allowed rounded py-3 font-semibold opacity-70"
+                    disabled
+                  >
+                    Finalize
+                  </ClippedButton>
                 </div>
               </div>
             </div>
