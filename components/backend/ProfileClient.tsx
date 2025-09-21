@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-
 import { useRouter } from "next/navigation";
 import { ClippedButton } from "@/components/ClippedButton";
 import { ClippedCard } from "@/components/ClippedCard";
 import ProfileForm from "@/components/backend/ProfileForm";
 import { useAuth } from "@/context/AuthContext";
+import Image from "next/image";
+//import { useState } from "react";
+
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -29,6 +31,8 @@ interface Profile {
   team_id?: string;
 }
 export default function ProfileClient({ profile }: { profile: Profile }) {
+  // const [selectedSize, setSelectedSize] = useState<string>(""); // commented out
+
   const router = useRouter();
   const { signOut } = useAuth();
 
@@ -113,23 +117,19 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
         <div className="mt-12 grid w-full grid-cols-1 gap-8 md:grid-cols-2">
           {/* Hackathon Card */}
           <ClippedCard innerBg="bg-[#101810]" innerHeight="h-full">
-            <div className="flex h-full flex-col justify-between border p-8">
-              <div className="h-full">
-                <div className="text-primary font-amiga mb-3 text-2xl">01</div>
-                <h3 className="mb-4 text-2xl font-bold text-white">
-                  Hackathon
-                </h3>
-                <p className="mb-6 flex-grow text-sm text-gray-400">
-                  Team up, build something amazing, and compete for prizes. Join
-                  the hackathon to showcase your skills and push your limits!
-                </p>
-                <p className="mb-6 text-sm text-gray-400">
-                  Registration closes on{" "}
-                  <span className="font-semibold text-white">
-                    September 30, 2025
-                  </span>
-                </p>
-              </div>
+            <div className="flex h-full flex-col border p-8">
+              <div className="text-primary font-amiga mb-3 text-2xl">01</div>
+              <h3 className="mb-4 text-2xl font-bold text-white">Hackathon</h3>
+              <p className="mb-4 flex-grow text-sm leading-relaxed text-gray-400">
+                Team up, build something amazing, and compete for prizes. Join
+                the hackathon to showcase your skills and push your limits!
+              </p>
+              <p className="mb-6 text-sm leading-relaxed text-gray-400">
+                Registration closes on{" "}
+                <span className="font-semibold text-white">
+                  September 30, 2025
+                </span>
+              </p>
               <ClippedButton
                 innerBg="bg-primary"
                 textColor="text-black"
@@ -150,16 +150,13 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
           {/* Events Card */}
           <ClippedCard innerBg="bg-[#101810]" innerHeight="h-full">
             <div className="flex h-full flex-col p-8">
-              <div className="h-full">
-                <div className="text-primary font-amiga mb-3 text-2xl">02</div>
-                <h3 className="mb-4 text-2xl font-bold text-white">Events</h3>
-                <p className="text-sm text-gray-400">
-                  Explore a variety of exciting events lined up just for you.
-                  From workshops to talks and fun activities, there is something
-                  for everyone.
-                </p>
-              </div>
-
+              <div className="text-primary font-amiga mb-3 text-2xl">02</div>
+              <h3 className="mb-4 text-2xl font-bold text-white">Events</h3>
+              <p className="mb-6 flex-grow text-sm leading-relaxed text-gray-400">
+                Explore a variety of exciting events lined up just for you. From
+                workshops to talks and fun activities, there is something for
+                everyone.
+              </p>
               <ClippedButton
                 innerBg="bg-primary"
                 textColor="text-black"
@@ -172,6 +169,111 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
                   Visit Events
                 </Link>
               </ClippedButton>
+            </div>
+          </ClippedCard>
+
+          {/* Shirt Card - Coming Soon */}
+          <ClippedCard
+            innerBg="bg-[#101810]"
+            innerHeight="h-full"
+            className="relative w-full md:col-span-2"
+          >
+            <div className="bg-opacity-90 pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-black">
+              <span className="font-orbitron text-primary text-xl font-bold uppercase">
+                Coming Soon
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-6 px-4 py-6 sm:flex-row sm:px-12">
+              <div
+                className="relative w-full flex-shrink-0 overflow-hidden sm:w-1/2"
+                style={{
+                  minHeight: "500px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Image
+                  src="/event/blazingfingers.webp"
+                  alt="DevHost 2025 Tee"
+                  fill
+                  style={{
+                    clipPath:
+                      "polygon(20px 0%, 100% 0%, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0% 100%, 0% 20px)",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
+
+              {/* Shirt Details */}
+              <div className="flex flex-1 flex-col px-6 py-8 sm:px-12">
+                <div className="flex flex-1 flex-col space-y-8">
+                  <div className="border-b border-gray-700 pb-6">
+                    <div className="text-primary font-amiga mb-2 text-2xl">
+                      03
+                    </div>
+                    <h3 className="mb-4 text-2xl font-bold text-white">
+                      DevHost 2025 Tee
+                    </h3>
+                    <p className="text-sm leading-relaxed text-gray-400">
+                      Exclusive event shirt for DevHost 2025!{" "}
+                      <span className="font-bold text-white">
+                        Shortlisted hackathon teams get it for free
+                      </span>
+                      . Others can purchase their preferred size below and
+                      collect it at the venue.
+                    </p>
+                  </div>
+
+                  <div className="border-b border-gray-700 pb-6">
+                    <div className="flex justify-between gap-3">
+                      {/* Size selection commented out to prevent hydration error */}
+                      {/*
+                      {["S", "M", "L", "XL"].map((size) => (
+                        <button
+                          key={size}
+                          type="button"
+                          onClick={() => setSelectedSize(size)}
+                          className={`flex-1 rounded px-5 py-3 font-semibold transition ${
+                            selectedSize === size
+                              ? "bg-white text-black"
+                              : "bg-primary text-black hover:bg-gray-200"
+                          }`}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                      */}
+                      <button className="flex-1 cursor-not-allowed rounded bg-gray-700 px-5 py-3 font-semibold text-gray-300">
+                        S
+                      </button>
+                      <button className="flex-1 cursor-not-allowed rounded bg-gray-700 px-5 py-3 font-semibold text-gray-300">
+                        M
+                      </button>
+                      <button className="flex-1 cursor-not-allowed rounded bg-gray-700 px-5 py-3 font-semibold text-gray-300">
+                        L
+                      </button>
+                      <button className="flex-1 cursor-not-allowed rounded bg-gray-700 px-5 py-3 font-semibold text-gray-300">
+                        XL
+                      </button>
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-gray-400">Coming Soon...</p>
+                </div>
+
+                <div className="mt-6 border-t border-gray-700 pt-6">
+                  <ClippedButton
+                    innerBg="bg-gray-500"
+                    textColor="text-black"
+                    className="w-full cursor-not-allowed rounded py-3 font-semibold opacity-70"
+                    disabled
+                  >
+                    Finalize
+                  </ClippedButton>
+                </div>
+              </div>
             </div>
           </ClippedCard>
         </div>
