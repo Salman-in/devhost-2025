@@ -176,9 +176,16 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
           <ClippedCard
             innerBg="bg-[#101810]"
             innerHeight="h-full"
-            className="w-full md:col-span-2"
+            className="w-full md:col-span-2 relative"
           >
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-black bg-opacity-90">
+            <span className="font-orbitron text-primary text-xl font-bold uppercase">
+              Opening Soon .....
+            </span>
+            </div>
+
             <div className="flex flex-col gap-6 px-4 py-6 sm:flex-row sm:px-12">
+              {/* Shirt Image */}
               <div
                 className="relative w-full flex-shrink-0 overflow-hidden sm:w-1/2"
                 style={{
