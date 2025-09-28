@@ -62,7 +62,6 @@ export default function EventListing() {
                 clipPath:
                   "polygon(20px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
               }}
-              onClick={() => onCardClick(event.id)}
             >
               <div
                 className="relative z-10 m-[2px] flex h-full flex-col p-4 sm:flex-row"
@@ -133,8 +132,9 @@ export default function EventListing() {
                         innerBg="bg-primary"
                         textColor="text-black"
                         className="font-orbitron flex w-full items-center justify-center gap-2 px-6 py-2 text-center text-xs font-bold tracking-wider uppercase"
+                        onClick={() => onCardClick(event.id)}
                       >
-                        <Link href="/register">Register</Link>
+                        Register
                       </ClippedButton>
                     </div>
                   )}
