@@ -329,9 +329,15 @@ export default function Home() {
             </p>
           </div>
 
-          <p className="font-orbitron text-primary mb-3 text-center text-[0.625rem] font-bold tracking-widest whitespace-nowrap uppercase sm:text-xs md:text-sm">
+          {/* <p className="font-orbitron text-primary mb-3 text-center text-[0.625rem] font-bold tracking-widest whitespace-nowrap uppercase sm:text-xs md:text-sm">
             Registration closes on{" "}
             <span className="text-white">September 30, 2025</span>
+          </p> */}
+
+          <p className="font-orbitron text-primary mb-3 text-center text-[0.625rem] font-bold tracking-widest whitespace-nowrap uppercase sm:text-xs md:text-sm">
+            <span className="font-amiga text-red-500">!!</span> Deadline
+            Extended to <span className="text-white">October 15, 2025</span>{" "}
+            <span className="font-amiga text-red-500">!!</span>
           </p>
 
           <div className="mx-auto flex w-full max-w-md flex-col items-center justify-center gap-4 sm:flex-row">

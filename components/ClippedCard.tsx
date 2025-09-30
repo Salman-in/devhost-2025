@@ -44,7 +44,13 @@ export function ClippedCard({
 
   return (
     <div
-      className={clsx("relative p-[1px]", outerBg, width, height, className)}
+      className={clsx(
+        "relative z-10 p-[1px]",
+        outerBg,
+        width,
+        height,
+        className,
+      )}
       style={{
         clipPath:
           "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)",
