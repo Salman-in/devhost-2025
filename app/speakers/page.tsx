@@ -51,6 +51,19 @@ export default function SpeakerPage() {
 
   return (
     <div className="font-orbitron relative h-screen w-full overflow-hidden bg-black">
+      <div className="pointer-events-none fixed inset-0 opacity-10">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(#a3ff12 2px, transparent 1px),
+              linear-gradient(90deg, #a3ff12 2px, transparent 1px)
+            `,
+            backgroundSize: "80px 80px",
+            backgroundPosition: "center",
+          }}
+        ></div>
+      </div>
       <div className="font-orbitron absolute top-4 left-4 z-20 flex gap-4 md:top-10 md:left-10">
         <ClippedButton onClick={() => router.push("/")}>Back</ClippedButton>
       </div>

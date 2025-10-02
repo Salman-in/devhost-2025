@@ -57,8 +57,14 @@ export default function SponsorsLogo() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex items-center justify-center overflow-hidden bg-black py-20"
+      className="relative flex items-center justify-center overflow-hidden py-28"
     >
+      <div className="absolute top-5 left-5 z-10 h-10 w-10 border-t-2 border-l-2 border-[#c3ff49]/50" />
+      <div className="absolute top-5 right-5 z-10 h-10 w-10 border-t-2 border-r-2 border-[#c3ff49]/50" />
+      <div className="absolute bottom-5 left-5 z-10 h-10 w-10 border-b-2 border-l-2 border-[#c3ff49]/50" />
+      <div className="absolute right-5 bottom-5 z-10 h-10 w-10 border-r-2 border-b-2 border-[#c3ff49]/50" />
+      <div className="absolute top-0 h-12 w-full bg-gradient-to-b from-black/95 via-black/80 to-transparent" />
+
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6">
         <h2
           ref={titleRef}
@@ -78,7 +84,7 @@ export default function SponsorsLogo() {
               href={coSponsor.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="relative h-[115px] w-[260px] transition-transform hover:scale-105"
+              className="relative h-[115px] w-[260px]"
             >
               <Image
                 src={coSponsor.src}
@@ -98,7 +104,7 @@ export default function SponsorsLogo() {
               href={titleSponsor.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="relative h-[170px] w-[360px] transition-transform hover:scale-110"
+              className="relative h-[170px] w-[360px]"
             >
               <Image
                 src={titleSponsor.src}
@@ -118,7 +124,7 @@ export default function SponsorsLogo() {
               href={goodwillSponsor.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="relative h-[100px] w-[220px] transition-transform hover:scale-105"
+              className="relative h-[100px] w-[220px]"
             >
               <Image
                 src={goodwillSponsor.src}
