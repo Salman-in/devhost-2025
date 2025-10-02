@@ -62,7 +62,7 @@ export default function Home() {
         </div>
         <AboutHackathon />
         <TimelineSection />
-        <SpeakersInfo/>
+        <SpeakersInfo />
         <Events />
         <FAQ />
         <Map />
