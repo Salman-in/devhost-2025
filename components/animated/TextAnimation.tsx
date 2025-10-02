@@ -143,7 +143,7 @@ export default function DecryptText({
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0 }}
+      initial={{ opacity: 1 }}
       whileInView={{
         opacity: 1,
         transition: { duration: 0.6, ease: "easeOut" },
