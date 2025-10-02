@@ -11,6 +11,7 @@ import Map from "@/components/Map";
 import Events from "@/components/Events";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useAuth } from "@/context/AuthContext";
+import SponsorsLogo from "@/components/Sponsors";
 
 export default function Home() {
   const [ready, setReady] = useState(false);
@@ -53,6 +54,7 @@ export default function Home() {
       <Suspense fallback={<LoadingSpinner />}>
         <Hero />
         <Counter />
+        <SponsorsLogo />
         <AboutDevhost />
         <div className="relative h-[30vh]">
           <div className="absolute top-0 h-24 w-full bg-gradient-to-b from-black/95 via-black/80 to-transparent" />
