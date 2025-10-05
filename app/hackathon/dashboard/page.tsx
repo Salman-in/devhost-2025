@@ -158,7 +158,7 @@ export default function HackathonDashboardPage() {
             <p className="font-orbitron text-primary text-center text-xs font-bold tracking-widest uppercase">
               Registration closes on{" "}
               <span className="whitespace-pre text-white">
-                September 30, 2025
+                October 15, 2025
               </span>
             </p>
           </div>

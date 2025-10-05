@@ -34,7 +34,7 @@ export default function CallToAction() {
         </ClippedButton>
 
         {/* Deadline Extension */}
-        <p className="font-orbitron pt-2 text-center text-sm text-white">
+        <p className="font-orbitron -mb-8 text-center text-sm text-white sm:pt-2">
           <span className="font-amiga text-red-500">!!</span> Deadline Extended
           to <span className="text-primary">October 15</span>, 2025
           <span className="font-amiga text-red-500">!!</span>
