@@ -1,45 +1,34 @@
-// components/backend/PaymentButton.tsx
 "use client";
-import Script from "next/script";
+import { redirect } from "next/dist/server/api-utils";
 import { useState } from "react";
 import { toast } from "sonner";
 
-interface SuccessResponse {
-  razorpay_signature: string;
-  razorpay_order_id: string;
-  razorpay_payment_id: string;
+interface CashfreeSuccessResponse {
+  order_id: string;
+  payment_id?: string;
+  payment_status?: string;
+  payment_amount?: number;
+  payment_time?: string;
 }
 
-interface CheckoutOptions {
-  key: string;
-  amount: number;
-  currency: string;
-  name: string;
-  description: string;
-  image?: string;
-  order_id: string;
-  handler: (response: SuccessResponse) => void;
-  prefill?: {
-    name?: string;
-    email?: string;
-    contact?: string;
-    method?: "card" | "netbanking" | "wallet" | "emi" | "upi";
-  };
-  theme?: { color: string };
-  notes?: Record<string, string | number | boolean | null>;
-  modal?: { ondismiss?: () => void };
+interface CashfreeCheckoutOptions {
+  paymentSessionId: string;
+  returnUrl?: string;
+  redirectTarget?: "_self" | "_blank" | "_parent" | "_top";
 }
 
 declare global {
   interface Window {
-    Razorpay: new (options: CheckoutOptions) => { open(): void };
+    Cashfree: (config: { mode: "sandbox" | "production" }) => {
+      checkout: (options: CashfreeCheckoutOptions) => Promise<void>;
+    };
   }
 }
 
 type PaymentButtonProps = {
   amount: number;
   disabled?: boolean;
-  onPaymentSuccess: (response: SuccessResponse) => void;
+  onPaymentSuccess: (response: CashfreeSuccessResponse) => void;
   eventName: string;
 };
 
@@ -50,27 +39,45 @@ export default function PaymentButton({
   eventName,
 }: PaymentButtonProps) {
   const [loading, setLoading] = useState(false);
+ 
+  const loadCashfreeSDK = () => {
+    return new Promise((resolve, reject) => {
+      if (typeof window !== "undefined" && window.Cashfree) {
+        resolve(window.Cashfree);
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = "https://sdk.cashfree.com/js/v3/cashfree.js";
+      script.onload = () => {
+        if (window.Cashfree) {
+          resolve(window.Cashfree);
+        } else {
+          reject(new Error("Cashfree SDK not loaded"));
+        }
+      };
+      script.onerror = () => reject(new Error("Failed to load Cashfree SDK"));
+      document.head.appendChild(script);
+    });
+  };
 
   const startPayment = async () => {
     if (disabled || loading) return;
     setLoading(true);
-    try {
-      if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
-        toast.error("Payment configuration missing.");
-        setLoading(false);
-        return;
-      }
-      if (typeof window === "undefined" || !window.Razorpay) {
-        toast.error("Payment SDK not loaded yet. Please retry in a moment.");
-        setLoading(false);
-        return;
-      }
 
-      // Create order with markup
-      const createRes = await fetch("/api/v1/payment/create-order", {
+    try {
+      // Load Cashfree SDK
+      await loadCashfreeSDK();
+
+      // Create order
+      const currentPath = window.location.pathname;
+      const createRes = await fetch("/api/v1/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount }), // This amount already includes markup
+        body: JSON.stringify({
+          amount: amount,
+          redirectUrl: `${window.location.origin}/payment/success?from=${encodeURIComponent(currentPath)}`,
+        }),
       });
 
       if (!createRes.ok) {
@@ -85,51 +92,54 @@ export default function PaymentButton({
       }
 
       const order: {
-        amount: number;
-        currency?: string;
+        paymentSessionId?: string;
         orderId?: string;
-        id?: string;
         error?: string;
+        message?: string;
       } = await createRes.json();
 
-      if (!order || order.error) {
-        toast.error("Order creation failed: " + (order?.error || "unknown"));
+      if (!order || !order.paymentSessionId) {
+        toast.error(
+          "Order creation failed: " +
+            (order?.error || order?.message || "unknown"),
+        );
         setLoading(false);
         return;
       }
 
-      const options: CheckoutOptions = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-        amount: order.amount,
-        currency: order.currency || "INR",
-        name: eventName,
-        description: "Ticket",
-        order_id: order.orderId || order.id!,
-        handler: function (response: SuccessResponse) {
-          onPaymentSuccess(response);
-          setLoading(false);
-        },
-        theme: { color: "#3399cc" },
-        modal: { ondismiss: () => setLoading(false) },
+      // Initialize Cashfree
+      const cashfree = window.Cashfree({
+        mode:
+          process.env.NEXT_PUBLIC_CASHFREE_MODE === "production"
+            ? "production"
+            : "sandbox",
+      });
+
+      // Checkout options
+      const checkoutOptions: CashfreeCheckoutOptions = {
+        paymentSessionId: order.paymentSessionId,
+        returnUrl: `${window.location.origin}/payment/success?order_id=${order.orderId}`,
       };
 
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch {
+      // Open Cashfree checkout
+      await cashfree.checkout(checkoutOptions);
+
+      setLoading(false);
+    } catch (err) {
       toast.error("Could not start payment. Please try again.");
+      console.error("Payment error:", err);
       setLoading(false);
     }
   };
 
   return (
     <>
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
       <button
         onClick={startPayment}
         disabled={disabled || loading}
-        className="bg-primary w-full rounded px-5 py-2 text-xs font-bold tracking-widest text-black uppercase"
+        className="bg-primary w-full rounded px-5 py-2 text-xs font-bold tracking-widest text-black uppercase disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {loading ? "Processing..." : `Pay ₹${(amount / 100).toFixed(2)}`}
+        {loading ? "Processing..." : `Pay ₹${amount.toFixed(2)}`}
       </button>
     </>
   );

@@ -206,11 +206,13 @@ export default function EventRegistration({ eventId }: Props) {
     );
   };
 
-  type RazorpayResponse = {
-    razorpay_order_id: string;
-    razorpay_payment_id: string;
-    razorpay_signature: string;
-  };
+  interface CashfreeSuccessResponse {
+  order_id: string;
+  payment_id?: string;
+  payment_status?: string;
+  payment_amount?: number;
+  payment_time?: string;
+}
 
   const event = events.find((event) => event.id === parseInt(eventId, 10));
   const eventPrice = eventDetails[parseInt(eventId, 10)].amount * 100;
@@ -223,16 +225,17 @@ export default function EventRegistration({ eventId }: Props) {
     !team.paymentDone &&
     membersCount >= minMembers;
 
-  const handlePaymentSuccess = async (response: RazorpayResponse) => {
+  const handlePaymentSuccess = async (response: CashfreeSuccessResponse) => {
     if (!team) return;
     await handleApiAction<{ team?: TeamType }>(
       `/api/v1/events/${eventId}/teams/${team.id}/pay`,
       {
         method: "POST",
         body: JSON.stringify({
-          razorpay_order_id: response.razorpay_order_id,
-          razorpay_payment_id: response.razorpay_payment_id,
-          razorpay_signature: response.razorpay_signature,
+            payment_id: response.payment_id,
+            payment_status: response.payment_status,
+            payment_amount: response.payment_amount,
+            payment_time: response.payment_time
         }),
       },
       (data) => {
