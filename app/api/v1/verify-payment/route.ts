@@ -15,7 +15,7 @@ export async function GET(req: Request) {
     const cashfree = new Cashfree(
       CFEnvironment.SANDBOX,
       process.env.NEXT_PUBLIC_CASHFREE_CLIENT_ID!,
-      process.env.NEXT_PUBLIC_CASHFREE_CLIENT_SECRET!,
+      process.env.CASHFREE_CLIENT_SECRET!,
     );
 
     const response = await cashfree.PGFetchOrder(orderId);
