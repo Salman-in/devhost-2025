@@ -29,7 +29,7 @@ export async function payment_helper(req: Request) {
     const cashfree = new Cashfree(
       CFEnvironment.SANDBOX, // Use Cashfree.PRODUCTION for production
       process.env.NEXT_PUBLIC_CASHFREE_CLIENT_ID!,
-      process.env.NEXT_PUBLIC_CASHFREE_CLIENT_SECRET!,
+      process.env.CASHFREE_CLIENT_SECRET!,
     );
 
     const response = await cashfree.PGCreateOrder(orderRequest);
