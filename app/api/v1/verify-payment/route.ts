@@ -1,4 +1,4 @@
-// app/api/v1/payment/verify/route.ts
+// app/api/v1/verify-payment/route.ts
 import { adminDb } from "@/firebase/admin";
 import { NextResponse } from "next/server";
 import { Cashfree, CFEnvironment } from "cashfree-pg";
