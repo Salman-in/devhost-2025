@@ -143,6 +143,7 @@ export default function SponsorsLogo() {
           className="flex items-center justify-center text-3xl md:text-4xl"
           style={{ height: "120px", position: "relative", overflow: "hidden" }}
         >
+          <div className="border-primary absolute top-0 left-0 z-10 h-full w-12 border-l bg-gradient-to-r from-black to-transparent" />
           <LogoLoop
             logos={otherSponsors}
             speed={55}
@@ -153,6 +154,7 @@ export default function SponsorsLogo() {
             scaleOnHover
             ariaLabel="Other sponsors"
           />
+          <div className="border-primary absolute top-0 right-0 z-10 h-full w-12 border-r bg-gradient-to-l from-black to-transparent" />
         </div>
       </div>
     </section>
