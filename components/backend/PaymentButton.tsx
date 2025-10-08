@@ -29,6 +29,8 @@ type PaymentButtonProps = {
   disabled?: boolean;
   onPaymentSuccess: (response: CashfreeSuccessResponse) => void;
   eventName: string;
+  eventId?: string;
+  teamId?: string;
 };
 
 export default function PaymentButton({
@@ -36,9 +38,11 @@ export default function PaymentButton({
   disabled = false,
   onPaymentSuccess,
   eventName,
+  eventId,
+  teamId,
 }: PaymentButtonProps) {
   const [loading, setLoading] = useState(false);
- 
+
   const loadCashfreeSDK = () => {
     return new Promise((resolve, reject) => {
       if (typeof window !== "undefined" && window.Cashfree) {
@@ -76,6 +80,8 @@ export default function PaymentButton({
         body: JSON.stringify({
           amount: amount,
           redirectUrl: `${window.location.origin}/payment/success?from=${encodeURIComponent(currentPath)}`,
+          eventId,
+          teamId,
         }),
       });
 
