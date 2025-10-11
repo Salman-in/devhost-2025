@@ -2,7 +2,7 @@
 
 //this is for redirecting POST request to payment_helper
 
-import { payment_helper } from "../_payment/utils";
+import { payment_helper } from "../payment/utils";
 
 export async function POST(req: Request) {
   return payment_helper(req);
