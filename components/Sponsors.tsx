@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import LogoLoop from "../components/ui/LogoLoop";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,15 +12,17 @@ const titleSponsor = {
   alt: "Title Sponsor",
   href: "https://egsoftware.com/global/about-us",
 };
-const coSponsor = {
-  src: "/sponsors/EG.png",
-  alt: "Co-Sponsor",
-  href: "https://eg.com",
-};
+
+// const coSponsor = {
+//   src: "/sponsors/EG.png",
+//   alt: "Co-Sponsor",
+//   href: "https://eg.com",
+// };
+
 const goodwillSponsor = {
-  src: "/sponsors/EG.png",
+  src: "/sponsors/Wizdom.png",
   alt: "Goodwill Sponsor",
-  href: "https://wizdom.com",
+  href: "https://www.wizx.org/",
 };
 
 const otherSponsors = [
@@ -76,28 +77,8 @@ export default function SponsorsLogo() {
         {/* Main sponsors */}
         <div
           ref={sponsorsRef}
-          className="mb-16 flex flex-col items-center gap-12 md:flex-row md:justify-center"
+          className="flex flex-col items-center gap-12 md:flex-row md:justify-center"
         >
-          {/* Co-Sponsor */}
-          <div className="flex flex-col items-center gap-3">
-            <a
-              href={coSponsor.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative h-[115px] w-[260px]"
-            >
-              <Image
-                src={coSponsor.src}
-                alt={coSponsor.alt}
-                fill
-                style={{ objectFit: "contain" }}
-              />
-            </a>
-            <p className="font-orbitron text-primary/80 text-sm uppercase">
-              Co-Sponsor
-            </p>
-          </div>
-
           {/* Title Sponsor */}
           <div className="flex flex-col items-center gap-3">
             <a
@@ -114,7 +95,7 @@ export default function SponsorsLogo() {
               />
             </a>
             <p className="font-orbitron text-primary text-base uppercase">
-              Main Sponsor
+              Title Sponsor
             </p>
           </div>
 
@@ -124,7 +105,7 @@ export default function SponsorsLogo() {
               href={goodwillSponsor.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="relative h-[100px] w-[220px]"
+              className="relative h-[170px] w-[360px]"
             >
               <Image
                 src={goodwillSponsor.src}
@@ -133,13 +114,13 @@ export default function SponsorsLogo() {
                 style={{ objectFit: "contain" }}
               />
             </a>
-            <p className="font-orbitron text-primary/80 text-sm uppercase">
+            <p className="font-orbitron text-primary text-base uppercase">
               Goodwill Sponsor
             </p>
           </div>
         </div>
 
-        <div
+        {/* <div
           className="flex items-center justify-center text-3xl md:text-4xl"
           style={{ height: "120px", position: "relative", overflow: "hidden" }}
         >
@@ -155,7 +136,7 @@ export default function SponsorsLogo() {
             ariaLabel="Other sponsors"
           />
           <div className="absolute top-0 right-0 z-10 h-full w-12 bg-gradient-to-l from-black to-transparent" />
-        </div>
+        </div> */}
       </div>
     </section>
   );
