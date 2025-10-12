@@ -24,13 +24,14 @@ function PaymentSuccessPageContent() {
         const res = await fetch(`/api/v1/verify-payment?order_id=${orderId}`);
         const data = await res.json();
 
-        if (data.status === "PAID") {
+        if (data.status === "SUCCESS") {
           setStatus("Payment verified successfully. Redirecting...");
           setTimeout(() => router.push(from), 2000);
-        } else if (data.status === "ACTIVE") {
-          setStatus("Payment is being processed. Please wait...");
+        } else if (data.status === "FAIL") {
+          setStatus("Payment verification failed");
+          setShowBack(true);
         } else {
-          setStatus("Unable to verify payment status.");
+          setStatus("Unknown payment status");
           setShowBack(true);
         }
       } catch {
