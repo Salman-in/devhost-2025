@@ -153,11 +153,11 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
 
           {/* Events Card */}
           <ClippedCard innerBg="bg-[#101810]" innerHeight="h-full">
-            <div className="bg-opacity-90 pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-black">
+            {/* <div className="bg-opacity-90 pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-black">
               <span className="font-orbitron text-primary text-xl font-bold uppercase">
                 Coming Soon
               </span>
-            </div>
+            </div> */}
             <div className="flex h-full flex-col p-8">
               <div className="text-primary font-amiga mb-3 text-2xl">02</div>
               <h3 className="mb-4 text-2xl font-bold text-white">Events</h3>

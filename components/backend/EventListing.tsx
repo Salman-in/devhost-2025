@@ -2,7 +2,6 @@
 
 import React from "react";
 import { ClippedButton } from "../ClippedButton";
-import Link from "next/link";
 import Image from "next/image";
 import { events } from "@/assets/data/events";
 import DecryptText from "../animated/TextAnimation";
@@ -24,7 +23,7 @@ export default function EventListing() {
           innerBg="bg-black"
           outerBg="bg-black"
           textColor="text-white"
-          onClick={() => router.back()}
+          onClick={() => router.push("/profile")}
         >
           Back
         </ClippedButton>

@@ -206,14 +206,7 @@ export default function EventRegistration({ eventId }: Props) {
     );
   };
 
-  type RazorpayResponse = {
-    razorpay_order_id: string;
-    razorpay_payment_id: string;
-    razorpay_signature: string;
-  };
-
   const event = events.find((event) => event.id === parseInt(eventId, 10));
-  const eventPrice = eventDetails[parseInt(eventId, 10)].amount * 100;
   const minMembers = eventDetails[parseInt(eventId, 10)].min;
   const maxMembers = eventDetails[parseInt(eventId, 10)].max;
   const membersCount = team?.members.length ?? 0;
@@ -222,30 +215,6 @@ export default function EventRegistration({ eventId }: Props) {
     team.leaderEmail === userEmail &&
     !team.paymentDone &&
     membersCount >= minMembers;
-
-  const handlePaymentSuccess = async (response: RazorpayResponse) => {
-    if (!team) return;
-    await handleApiAction<{ team?: TeamType }>(
-      `/api/v1/events/${eventId}/teams/${team.id}/pay`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          razorpay_order_id: response.razorpay_order_id,
-          razorpay_payment_id: response.razorpay_payment_id,
-          razorpay_signature: response.razorpay_signature,
-        }),
-      },
-      (data) => {
-        if (data.team) {
-          setTeam(data.team);
-        } else {
-          setTeam((prev) =>
-            prev ? { ...prev, paymentDone: true, registered: true } : prev,
-          );
-        }
-      },
-    );
-  };
 
   // Handlers using ConfirmDialog
   const handleDisband = () => {
@@ -332,7 +301,9 @@ export default function EventRegistration({ eventId }: Props) {
         />
       )}
       <div className="font-orbitron absolute top-4 left-4 z-20 flex gap-4 md:top-10 md:left-10">
-        <ClippedButton onClick={() => router.back()}>Back</ClippedButton>
+        <ClippedButton onClick={() => router.push("/events")}>
+          Back
+        </ClippedButton>
       </div>
       {/* Header */}
       <div className="mb-8 space-y-2 text-center">
@@ -484,10 +455,9 @@ export default function EventRegistration({ eventId }: Props) {
                       >
                         {canPay ? (
                           <PaymentButton
-                            amount={eventPrice}
                             disabled={actionLoading}
-                            onPaymentSuccess={handlePaymentSuccess}
-                            eventName={event?.title ?? "Event"}
+                            eventId={eventId}
+                            teamId={team.id}
                           />
                         ) : (
                           <Button

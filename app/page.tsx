@@ -14,6 +14,7 @@ import { useAuth } from "@/context/AuthContext";
 import SponsorsLogo from "@/components/Sponsors";
 import SpeakersInfo from "@/components/SpeakersInfo";
 
+
 export default function Home() {
   const [ready, setReady] = useState(false);
 

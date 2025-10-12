@@ -1,136 +1,131 @@
-// components/backend/PaymentButton.tsx
+// PaymentButton.tsx (client)
+
 "use client";
-import Script from "next/script";
+import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { toast } from "sonner";
 
-interface SuccessResponse {
-  razorpay_signature: string;
-  razorpay_order_id: string;
-  razorpay_payment_id: string;
-}
-
-interface CheckoutOptions {
-  key: string;
-  amount: number;
-  currency: string;
-  name: string;
-  description: string;
-  image?: string;
-  order_id: string;
-  handler: (response: SuccessResponse) => void;
-  prefill?: {
-    name?: string;
-    email?: string;
-    contact?: string;
-    method?: "card" | "netbanking" | "wallet" | "emi" | "upi";
-  };
-  theme?: { color: string };
-  notes?: Record<string, string | number | boolean | null>;
-  modal?: { ondismiss?: () => void };
+interface CashfreeCheckoutOptions {
+  paymentSessionId: string;
+  returnUrl?: string;
+  redirectTarget?: "_self" | "_blank" | "_parent" | "_top";
 }
 
 declare global {
   interface Window {
-    Razorpay: new (options: CheckoutOptions) => { open(): void };
+    Cashfree: (config: { mode: "sandbox" | "production" }) => {
+      checkout: (options: CashfreeCheckoutOptions) => Promise<void>;
+    };
   }
 }
 
 type PaymentButtonProps = {
-  amount: number;
+  eventId: string;
+  teamId?: string;
   disabled?: boolean;
-  onPaymentSuccess: (response: SuccessResponse) => void;
-  eventName: string;
 };
 
 export default function PaymentButton({
-  amount,
+  eventId,
+  teamId,
   disabled = false,
-  onPaymentSuccess,
-  eventName,
 }: PaymentButtonProps) {
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+
+  const loadCashfreeSDK = () =>
+    new Promise((resolve, reject) => {
+      if (typeof window !== "undefined" && window.Cashfree) {
+        resolve(window.Cashfree);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://sdk.cashfree.com/js/v3/cashfree.js";
+      script.onload = () =>
+        window.Cashfree
+          ? resolve(window.Cashfree)
+          : reject(new Error("Cashfree SDK not loaded"));
+      script.onerror = () => reject(new Error("Failed to load Cashfree SDK"));
+      document.head.appendChild(script);
+    });
 
   const startPayment = async () => {
     if (disabled || loading) return;
     setLoading(true);
-    try {
-      if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
-        toast.error("Payment configuration missing.");
-        setLoading(false);
-        return;
-      }
-      if (typeof window === "undefined" || !window.Razorpay) {
-        toast.error("Payment SDK not loaded yet. Please retry in a moment.");
-        setLoading(false);
-        return;
-      }
 
-      // Create order with markup
-      const createRes = await fetch("/api/v1/payment/create-order", {
+    try {
+      await loadCashfreeSDK();
+
+      const currentPath = window.location.pathname;
+
+      if (!user?.email || !teamId) return;
+
+      const customerName = user.email;
+      const customerEmail = user.email;
+      const customerPhone = "0000000000";
+
+      const createRes = await fetch("/api/v1/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount }), // This amount already includes markup
+        body: JSON.stringify({
+          eventId,
+          teamId,
+          redirectUrl: `${window.location.origin}/payment/success?from=${encodeURIComponent(currentPath)}`,
+          customerId: teamId,
+          customerName,
+          customerEmail,
+          customerPhone,
+        }),
       });
 
       if (!createRes.ok) {
-        const err: { error?: string } = await createRes
-          .json()
-          .catch(() => ({}));
+        const err = await createRes.json().catch(() => ({}));
         toast.error(
-          "Order creation failed: " + (err?.error || createRes.status),
+          "Order creation failed: " + (err.error || createRes.status),
         );
         setLoading(false);
         return;
       }
 
       const order: {
-        amount: number;
-        currency?: string;
+        paymentSessionId?: string;
         orderId?: string;
-        id?: string;
         error?: string;
       } = await createRes.json();
 
-      if (!order || order.error) {
+      if (!order || !order.paymentSessionId) {
         toast.error("Order creation failed: " + (order?.error || "unknown"));
         setLoading(false);
         return;
       }
 
-      const options: CheckoutOptions = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-        amount: order.amount,
-        currency: order.currency || "INR",
-        name: eventName,
-        description: "Ticket",
-        order_id: order.orderId || order.id!,
-        handler: function (response: SuccessResponse) {
-          onPaymentSuccess(response);
-          setLoading(false);
-        },
-        theme: { color: "#3399cc" },
-        modal: { ondismiss: () => setLoading(false) },
-      };
+      const cashfree = window.Cashfree({
+        mode:
+          process.env.NEXT_PUBLIC_CASHFREE_MODE === "production"
+            ? "production"
+            : "sandbox",
+      });
 
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch {
+      await cashfree.checkout({
+        paymentSessionId: order.paymentSessionId,
+        returnUrl: `${window.location.origin}/payment/success?order_id=${order.orderId}&from=${encodeURIComponent(currentPath)}`,
+      });
+
+      setLoading(false);
+    } catch (err) {
       toast.error("Could not start payment. Please try again.");
+      console.error("Payment error:", err);
       setLoading(false);
     }
   };
 
   return (
-    <>
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-      <button
-        onClick={startPayment}
-        disabled={disabled || loading}
-        className="bg-primary w-full rounded px-5 py-2 text-xs font-bold tracking-widest text-black uppercase"
-      >
-        {loading ? "Processing..." : `Pay ₹${(amount / 100).toFixed(2)}`}
-      </button>
-    </>
+    <button
+      onClick={startPayment}
+      disabled={disabled || loading}
+      className="bg-primary w-full rounded px-5 py-2 text-xs font-bold tracking-widest text-black uppercase disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      {loading ? "Processing..." : "Pay Now"}
+    </button>
   );
 }
