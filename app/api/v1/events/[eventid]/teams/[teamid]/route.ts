@@ -12,16 +12,19 @@ export async function DELETE(
 
   const { eventid, teamid } = await params;
 
-  const teamRef = adminDb
-    .collection("registrations")
-    .doc(eventid)
-    .collection("teams")
-    .doc(teamid);
-
+  const teamRef = adminDb.collection("registrations").doc(teamid);
   const snap = await teamRef.get();
 
   if (!snap.exists) {
     return NextResponse.json({ error: "Team not found" }, { status: 404 });
+  }
+
+  const teamData = snap.data();
+  if (!teamData || teamData.eventId !== eventid) {
+    return NextResponse.json(
+      { error: "Team does not belong to this event" },
+      { status: 400 },
+    );
   }
 
   await teamRef.delete();

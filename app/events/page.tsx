@@ -1,4 +1,4 @@
-import Events from "@/components/Events";
+import EventListing from "@/components/backend/EventListing";
 import { verifySessionCookie } from "@/firebase/admin";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -14,5 +14,5 @@ export default async function EventsPage() {
     redirect("/");
   }
 
-  return <Events />;
+  return <EventListing />;
 }

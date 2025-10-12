@@ -1,3 +1,4 @@
+// pages/api/v1/events/[eventid]/teams/[teamid]/leave.ts
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/firebase/admin";
 import { verifyToken } from "@/lib/verify-token";
@@ -10,44 +11,45 @@ export async function POST(
   if (!decoded)
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
 
-  const { memberEmail } = await req.json();
   const { eventid, teamid } = await params;
+  const memberEmail = decoded.email;
 
-  if (!memberEmail)
-    return NextResponse.json({ error: "Missing memberEmail" }, { status: 400 });
-
-  const teamRef = adminDb
-    .collection("registrations")
-    .doc(eventid)
-    .collection("teams")
-    .doc(teamid);
-
+  const teamRef = adminDb.collection("registrations").doc(teamid);
   const teamDoc = await teamRef.get();
+
   if (!teamDoc.exists)
     return NextResponse.json({ error: "Team not found" }, { status: 404 });
 
   const team = teamDoc.data();
 
-  // Only leader can remove
-  if (team?.leaderEmail !== decoded.email) {
+  // Verify team belongs to this event
+  if (!team || team.eventId !== eventid) {
     return NextResponse.json(
-      { error: "Only the team leader can remove members" },
+      { error: "Team does not belong to this event" },
+      { status: 400 },
+    );
+  }
+
+  // Prevent leader from leaving (use disband instead)
+  if (team.leaderEmail === memberEmail) {
+    return NextResponse.json(
+      { error: "Leader cannot leave the team. Use disband." },
       { status: 403 },
     );
   }
 
-  // Prevent removal if team is registered
-  if (team?.registered) {
+  // Prevent leaving if team is already registered
+  if (team.registered) {
     return NextResponse.json(
-      { error: "Cannot remove members from a registered team" },
+      { error: "Cannot leave a registered team" },
       { status: 400 },
     );
   }
 
   // Member must exist
-  if (!team || !team.members.includes(memberEmail)) {
+  if (!team.members.includes(memberEmail)) {
     return NextResponse.json(
-      { error: "Member not found in team" },
+      { error: "You are not a member of this team" },
       { status: 400 },
     );
   }

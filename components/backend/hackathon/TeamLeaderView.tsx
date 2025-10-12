@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useState } from "react";
-import { CheckIcon, CopyIcon, FileWarning, LinkIcon } from "lucide-react";
+import { CheckIcon, CopyIcon, LinkIcon } from "lucide-react";
 import DriveLinkModal from "./DriveLinkModal";
 import { useDriveLink } from "@/lib/hooks/useDriveLink";
 import { useTeamActions } from "@/lib/hooks/useTeamActions";
