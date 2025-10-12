@@ -76,7 +76,7 @@ export const events = [
     date: "All 3 days",
     time: "9:00 AM",
     organizer: "TBA",
-    contact: "later",
+    contact: "TBA",
     image: "/event/blazingfingers.webp",
   },
   {
@@ -88,7 +88,7 @@ export const events = [
     date: "All 3 days",
     time: "9:00 AM",
     organizer: "TBA",
-    contact: "later",
+    contact: "TBA",
     image: "/event/speedcuber.webp",
   },
 ];
