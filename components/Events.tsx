@@ -5,7 +5,7 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import DecryptText from "./animated/TextAnimation";
-import Link from "next/link";
+//import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ClippedButton } from "./ClippedButton";
 import { events } from "@/assets/data/events";
