@@ -1,5 +1,3 @@
-// create-order route (server)
-
 import { NextResponse } from "next/server";
 import { Cashfree, CFEnvironment, CreateOrderRequest } from "cashfree-pg";
 import { adminDb } from "@/firebase/admin";
