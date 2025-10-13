@@ -6,7 +6,7 @@ import { ClippedButton } from "@/components/ClippedButton";
 import { ClippedCard } from "@/components/ClippedCard";
 import ProfileForm from "@/components/backend/ProfileForm";
 import { useAuth } from "@/context/AuthContext";
-import Image from "next/image";
+// import Image from "next/image";
 //import { useState } from "react";
 
 import {
@@ -182,7 +182,7 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
           </ClippedCard>
 
           {/* Shirt Card - Coming Soon */}
-          <ClippedCard
+          {/* <ClippedCard
             innerBg="bg-[#101810]"
             innerHeight="h-full"
             className="relative w-full md:col-span-2"
@@ -216,7 +216,6 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
                 />
               </div>
 
-              {/* Shirt Details */}
               <div className="flex flex-1 flex-col px-6 py-8 sm:px-12">
                 <div className="flex flex-1 flex-col space-y-8">
                   <div className="border-b border-gray-700 pb-6">
@@ -238,23 +237,6 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
 
                   <div className="border-b border-gray-700 pb-6">
                     <div className="flex justify-between gap-3">
-                      {/* Size selection commented out to prevent hydration error */}
-                      {/*
-                      {["S", "M", "L", "XL"].map((size) => (
-                        <button
-                          key={size}
-                          type="button"
-                          onClick={() => setSelectedSize(size)}
-                          className={`flex-1 rounded px-5 py-3 font-semibold transition ${
-                            selectedSize === size
-                              ? "bg-white text-black"
-                              : "bg-primary text-black hover:bg-gray-200"
-                          }`}
-                        >
-                          {size}
-                        </button>
-                      ))}
-                      */}
                       <button className="flex-1 cursor-not-allowed rounded bg-gray-700 px-5 py-3 font-semibold text-gray-300">
                         S
                       </button>
@@ -285,7 +267,7 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
                 </div>
               </div>
             </div>
-          </ClippedCard>
+          </ClippedCard> */}
         </div>
       </div>
     </section>

@@ -99,6 +99,16 @@ export default function EventRegistration({ eventId }: Props) {
     action: () => void;
   }>(null);
 
+  // const firedRef = useRef(false);
+
+  // useEffect(() => {
+  //   if (!userLoading && !user && !firedRef.current) {
+  //     toast.error("Please sign in");
+  //     router.push("/");
+  //     firedRef.current = true;
+  //   }
+  // }, [user, userLoading, router]);
+
   const [step, setStep] = useState<1 | 2>(1);
   const [leaderEmail, setLeaderEmail] = useState("");
   const [team, setTeam] = useState<TeamType | null>(null);
@@ -288,6 +298,8 @@ export default function EventRegistration({ eventId }: Props) {
   const polygonClip =
     "polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)";
 
+  const amount = eventDetails[parseInt(eventId)].amount;
+
   return (
     <div className="max-w-full px-2 sm:px-4">
       {confirmDialog && (
@@ -332,9 +344,13 @@ export default function EventRegistration({ eventId }: Props) {
             <div className="space-y-6">
               {/* Create Team */}
               <div>
-                <h3 className="mb-3 text-xs font-semibold tracking-wide text-white uppercase sm:text-sm">
+                <h3 className="mb-2 text-xs font-semibold tracking-wide text-white uppercase sm:text-sm">
                   Create a Team
                 </h3>
+                <p className="mb-2 text-[11px] text-gray-400">
+                  The team leader should create the team first before others can
+                  join.
+                </p>
                 <ClippedCard
                   innerBg="bg-primary"
                   className="hover:brightness-95"
@@ -348,12 +364,17 @@ export default function EventRegistration({ eventId }: Props) {
                   </Button>
                 </ClippedCard>
               </div>
+
               <div className="border-primary/50 border-t" />
+
               {/* Join Team */}
               <div>
-                <h3 className="mb-3 text-xs font-semibold tracking-wide text-white uppercase sm:text-sm">
+                <h3 className="mb-2 text-xs font-semibold tracking-wide text-white uppercase sm:text-sm">
                   Join a Team
                 </h3>
+                <p className="mb-2 text-[11px] text-gray-400">
+                  Enter your team leaders email to join their team.
+                </p>
                 <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
                   <Input
                     placeholder="Enter Leader's Email"
@@ -390,7 +411,7 @@ export default function EventRegistration({ eventId }: Props) {
                   <p className="text-primary mb-2 text-xs font-medium sm:text-sm">
                     <b>&gt; Members:</b>
                   </p>
-                  <ul className="space-y-2 pb-6">
+                  <ul className="space-y-2 pb-4">
                     {team.members.map((m) => (
                       <li
                         key={m}
@@ -423,12 +444,19 @@ export default function EventRegistration({ eventId }: Props) {
                       </li>
                     ))}
                   </ul>
+
+                  {/* small note */}
+                  <p className="mb-2 text-[11px] text-gray-400">
+                    Teammates should join using the team leaders email.
+                  </p>
+
                   <div className="border-primary/50 border-t" />
                   <p className="mt-1 flex justify-around gap-8 text-xs text-white uppercase">
                     <span>{`min : ${minMembers}`}</span>
                     <span>{`max : ${maxMembers}`}</span>
                   </p>
                 </div>
+
                 <div className="border-primary/50 border-t" />
                 {/* Status + Payment */}
                 <div className="flex flex-col justify-between space-y-1 text-xs font-medium text-white sm:flex-row sm:space-y-0 sm:text-sm">
@@ -469,7 +497,7 @@ export default function EventRegistration({ eventId }: Props) {
                             disabled={actionLoading}
                             className="h-fit w-full cursor-pointer rounded-none px-4 py-2 text-xs font-bold tracking-widest text-black uppercase"
                           >
-                            Pay Now
+                            Pay Rs. {amount}
                           </Button>
                         )}
                       </ClippedCard>

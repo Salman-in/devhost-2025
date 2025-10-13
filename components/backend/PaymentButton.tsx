@@ -1,6 +1,7 @@
 // PaymentButton.tsx (client)
 
 "use client";
+import { eventDetails } from "@/assets/data/eventPayment";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -119,13 +120,15 @@ export default function PaymentButton({
     }
   };
 
+  const amount = eventDetails[parseInt(eventId)].amount;
+
   return (
     <button
       onClick={startPayment}
       disabled={disabled || loading}
       className="bg-primary w-full rounded px-5 py-2 text-xs font-bold tracking-widest text-black uppercase disabled:cursor-not-allowed disabled:opacity-50"
     >
-      {loading ? "Processing..." : "Pay Now"}
+      {loading ? "Processing..." : `Pay Rs. ${amount}`}
     </button>
   );
 }

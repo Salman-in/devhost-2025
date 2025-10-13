@@ -5,10 +5,10 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import DecryptText from "./animated/TextAnimation";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ClippedButton } from "./ClippedButton";
 import { events } from "@/assets/data/events";
+import { eventDetails } from "@/assets/data/eventPayment";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -175,6 +175,20 @@ export default function Events() {
                         </span>
                         {event.contact}
                       </p>
+                      {!noRegister && (
+                        <p className="flex items-baseline gap-2">
+                          <span className="mr-1 font-semibold text-[#b4ff39]">
+                            Amount:
+                          </span>
+                          <span className="text-sm text-gray-400 line-through">
+                            ₹{eventDetails[event.id].amount + 50}
+                          </span>
+                          <span className="font-semibold text-[#b4ff39]">
+                            ₹{eventDetails[event.id].amount}
+                          </span>
+                          / team
+                        </p>
+                      )}
                     </div>
                   </div>
 

@@ -1,6 +1,7 @@
 import admin, { adminDb } from "@/firebase/admin";
 import { NextResponse } from "next/server";
-import { Cashfree, CFEnvironment } from "cashfree-pg";
+import { Cashfree } from "cashfree-pg";
+import { cashfree } from "@/lib/cashfree";
 
 const POLL_DELAY_MS = 3000;
 const MAX_POLL_ATTEMPTS = 5;
@@ -33,25 +34,6 @@ export async function GET(req: Request) {
   const orderId = searchParams.get("order_id");
   if (!orderId)
     return NextResponse.json({ error: "Missing order_id" }, { status: 400 });
-
-  const clientId =
-    process.env.CASHFREE_CLIENT_ID ||
-    process.env.NEXT_PUBLIC_CASHFREE_CLIENT_ID;
-  const clientSecret =
-    process.env.CASHFREE_CLIENT_SECRET ||
-    process.env.NEXT_PUBLIC_CASHFREE_CLIENT_SECRET;
-  if (!clientId || !clientSecret)
-    return NextResponse.json(
-      { error: "Missing Cashfree credentials" },
-      { status: 500 },
-    );
-
-  const env =
-    process.env.NEXT_PUBLIC_CASHFREE_MODE === "production"
-      ? CFEnvironment.PRODUCTION
-      : CFEnvironment.SANDBOX;
-
-  const cashfree = new Cashfree(env, clientId, clientSecret);
 
   try {
     const orderRes = await cashfree.PGFetchOrder(orderId);

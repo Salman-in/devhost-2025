@@ -41,18 +41,18 @@ const speakers = [
       time: "7th November 2025, 10:00am - 10:45am",
     },
   },
-  {
-    id: 4,
-    name: "Vivek Keshore",
-    title: "Software Architect @ EPAM Systems",
-    bio: "Seasoned Python architect with 12+ years of experience in backend development and cloud architecture. A PyCon India speaker and open-source contributor, he specializes in FastAPI, Flask, and scalable systems.",
-    img: "/speakers/vivek.jpg",
-    link: "#",
-    presence: {
-      place: "Masterclass",
-      time: "7th November 2025, 1:00pm - 4:00pm",
-    },
-  },
+  // {
+  //   id: 4,
+  //   name: "Vivek Keshore",
+  //   title: "Software Architect @ EPAM Systems",
+  //   bio: "Seasoned Python architect with 12+ years of experience in backend development and cloud architecture. A PyCon India speaker and open-source contributor, he specializes in FastAPI, Flask, and scalable systems.",
+  //   img: "/speakers/vivek.jpg",
+  //   link: "#",
+  //   presence: {
+  //     place: "Masterclass",
+  //     time: "7th November 2025, 1:00pm - 4:00pm",
+  //   },
+  // },
 ];
 
 export default function SpeakerPage() {
